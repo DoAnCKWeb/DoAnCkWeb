@@ -17,12 +17,15 @@ const login = async (req, res, next) => {
 
     req.logIn(user, (err) => {
       if (err) return next(err); // Lỗi khi lưu thông tin user vào session
-      // Đăng nhập thành công
-      req.session.username = user.Username
-
-      const welcomeMessage = `Chào mừng bạn, ${user.name}!`
-      return res.redirect(`/?message=${encodeURIComponent(welcomeMessage)}`)
-    })
+      req.session.name = user.name;
+      req.session.role = user.role;
+      // Kiểm tra loại người dùng và chuyển hướng đến trang thích hợp
+      if (user.role === 'admin') {
+        return res.redirect('/admin');  // Trang quản trị viên
+      } else {
+        return res.redirect('/user');  // Trang của người dùng thông thường
+      }
+    });
   })(req, res, next); // Gọi hàm authenticate đúng cách
 }
 

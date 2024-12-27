@@ -10,14 +10,14 @@ class CustomStrategy extends passport.Strategy {
   }
 
   authenticate(req, options) {
-    const { email, password } = req.body;
+    const { role,email, password } = req.body;
 
     // Kiểm tra đầu vào hợp lệ
     if (!email || typeof email !== 'string' || !password || typeof password !== 'string') {
       return this.fail({ message: 'Dữ liệu đầu vào không hợp lệ.' });
     }
 
-    this.verify(email, password, (err, user, info) => {
+    this.verify(role,email, password, (err, user, info) => {
       if (err) {
         return this.error(err); // Trả về lỗi hệ thống
       }
@@ -32,15 +32,16 @@ class CustomStrategy extends passport.Strategy {
 }
 
 // Hàm xác thực
-const verify = async (email, password, done) => {
+const verify = async (role,email, password, done) => {
   try {
-      const user = await getUserByEmail(email); // Lấy người dùng từ DB theo email
+    const user = await getUserByEmail(email); // Lấy người dùng từ DB theo email
     if (!user) {
       return done(null, false, { message: 'Email không tồn tại.' });
-      }
-      if (!password || !user.password) {
+    }
+    if (role != user.role) {
       return done(null, false, { message: 'Dữ liệu không hợp lệ.' });
     }
+
 
     // Kiểm tra mật khẩu
     const match = await bcrypt.compare(password, user.password);
@@ -48,7 +49,7 @@ const verify = async (email, password, done) => {
       return done(null, false, { message: 'Mật khẩu không đúng.' });
     }
 
-    return done(null, user); // Xác thực thành công
+    return done(null, { id: user.id, fullname: user.name, role: user.role });
   } catch (err) {
     return done(err); // Xử lý lỗi hệ thống
   }

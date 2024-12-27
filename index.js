@@ -54,6 +54,12 @@ app.use(loginRouter)
 const logoutRoutes = require('./routers/logoutRouter')
 app.use(logoutRoutes)
 
+const adminRouter = require('./routers/adminRouters/adminRouters')
+app.use(adminRouter);
+
+const customerRouter = require('./routers/customerRouters.js/customerRouter')
+app.use(customerRouter);
+
 const options = {
   key: fs.readFileSync('./sslkeys/key.pem'),
   cert: fs.readFileSync('./sslkeys/cert.pem')

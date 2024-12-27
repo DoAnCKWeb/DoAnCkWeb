@@ -1,7 +1,8 @@
 const { checkAccountExists, addUser } = require('../models/connectDatabase')
 const bcrypt= require('bcrypt')
 const register = async (req, res) => {
-    const { username, email, password } = req.body;
+    const { role, username, email, password } = req.body;
+    //console.log(role, username, email, password);
     try { 
         const userExists = await checkAccountExists(email);
         if (userExists) {
@@ -10,7 +11,7 @@ const register = async (req, res) => {
 
         //hash mật khẩu
         const hashedPassword = await bcrypt.hash(password, 10);
-        await addUser(username,email, hashedPassword);
+        await addUser(role,username,email, hashedPassword);
         res.redirect('/login');
     }
     catch(err) {

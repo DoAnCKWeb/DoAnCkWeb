@@ -47,9 +47,9 @@ async function getUserById(id) {
     const res = await db.query('SELECT * FROM "users" WHERE "id" = $1', [id]);
     return res[0];
 }
-const addUser = async (username,email, password) => { 
+const addUser = async (role,username,email, password) => { 
     try {
-        await db.none('INSERT INTO "users" ("name", "password","email") VALUES ($1, $2,$3)', [username, password,email])
+        await db.none('INSERT INTO "users" ("role","name", "password","email") VALUES ($1, $2,$3,$4)', [role,username, password,email])
         console.log('Thêm tài khoản thành công!');
     } catch (e) {
         throw e;
