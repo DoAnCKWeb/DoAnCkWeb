@@ -36,7 +36,12 @@ initializePassport(passport)
 // Template engine
 app.engine('handlebars', engine({
   defaultLayout: 'main',
-  layoutsDir: path.join(__dirname, 'views', 'layouts')
+  layoutsDir: path.join(__dirname, 'views', 'layouts'),
+  helpers: {
+    json: function (context) {
+      return JSON.stringify(context)
+    }
+  }
 }))
 app.set('view engine', 'handlebars')
 app.set('views', path.join(__dirname, 'views'))
@@ -55,10 +60,10 @@ const logoutRoutes = require('./routers/logoutRouter')
 app.use(logoutRoutes)
 
 const adminRouter = require('./routers/adminRouters/adminRouters')
-app.use(adminRouter);
+app.use(adminRouter)
 
 const customerRouter = require('./routers/customerRouters.js/customerRouter')
-app.use(customerRouter);
+app.use(customerRouter)
 
 const options = {
   key: fs.readFileSync('./sslkeys/key.pem'),

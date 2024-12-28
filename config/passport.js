@@ -1,6 +1,6 @@
 const passport = require('passport');
 const bcrypt = require('bcrypt');
-const { getUserByEmail, getUserById } = require('../models/connectDatabase'); // Các hàm lấy người dùng từ DB
+const { getUserByEmail, getUserById } = require('../models/authModels/auth'); // Các hàm lấy người dùng từ DB
 
 class CustomStrategy extends passport.Strategy {
   constructor(options = {}, verify) {

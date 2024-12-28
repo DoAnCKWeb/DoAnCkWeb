@@ -1,4 +1,4 @@
-const { checkAccountExists, addUser } = require('../models/connectDatabase')
+const { checkAccountExists, addUser } = require('../models/authModels/auth')
 const bcrypt= require('bcrypt')
 const register = async (req, res) => {
     const { role, username, email, password } = req.body;
