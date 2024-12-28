@@ -10,7 +10,6 @@ const renderHome = async (req, res) => {
 
         // Lặp qua tất cả danh mục và lấy sản phẩm tương ứng
         const categoriesWithProducts = await Promise.all(categories.map(async (category) => {
-            // Lấy sản phẩm tương ứng với CatID của mỗi category
             const products = await getProduct(category.id);
             //console.log(products);
             category.products = products; 
@@ -27,18 +26,18 @@ const renderHome = async (req, res) => {
 
 // Hàm render form thêm sản phẩm
 const renderAddProduct = async (req, res) => { 
-    const { CatID } = req.params;
+    const { id } = req.params;
     // Lấy CatID từ params
-    res.render('addProduct', { CatID });
+    res.render('adminViews/addProduct', { id });
 }
 
 // Hàm thêm sản phẩm
 const addProductHandler = async (req, res) => {
-    const { CatID } = req.params;
-    const catid = parseInt(CatID);
+    const { id } = req.params;
+    const catid = parseInt(id);
 
     if (isNaN(catid)) {
-        console.error('CatID không hợp lệ:', CatID);
+        console.error('CatID không hợp lệ:', id);
         return res.status(400).send('CatID không hợp lệ!');
     }
     const { name, price, description,fulldes,quantity } = req.body;    
@@ -59,7 +58,7 @@ const renderEditProduct = async (req, res) => {
 
     try {
         const product = await getProductById(id);  // Lấy thông tin sản phẩm tương ứng với ProID
-        res.render('editProduct', { product });
+        res.render('adminViews/editProduct', { product });
     } catch (err) {
         console.error('Lỗi khi lấy thông tin sản phẩm:', err);
         res.status(500).send('Lỗi server!');
@@ -91,10 +90,10 @@ const editProductHandler = async (req, res) => {
 
 // Hàm xóa sản phẩm
 const deleteProductHandler = async (req, res) => {
-    const id = parseInt(req.params.ProID);
+    const id = parseInt(req.params.id);
     try {
         await deleteProduct(id); // Xóa sản phẩm khỏi database
-        res.redirect('/'); // Quay lại trang chủ sau khi xóa
+        res.redirect('/admin/categories'); // Quay lại trang chủ sau khi xóa
     } catch (err) {
         console.error('Lỗi khi xóa sản phẩm:', err);
         res.status(500).send('Lỗi server!');
@@ -102,8 +101,8 @@ const deleteProductHandler = async (req, res) => {
 };
 const uploadProductImageHandler = async (req, res) => {
     // Lấy ProID từ URL
-    const ProID = parseInt(req.params.ProID);
-    if (isNaN(ProID)) {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
         return res.status(400).send('ProID không hợp lệ.');
     }
 
@@ -113,7 +112,7 @@ const uploadProductImageHandler = async (req, res) => {
     }
 
     const imageFile = req.files.productImage;
-    const uploadPath = path.join(__dirname, '../uploads/', imageFile.name);
+    const uploadPath = path.join(__dirname, '../../../uploads', imageFile.name);
 
     try {
         // Lưu tệp ảnh vào thư mục "uploads"
@@ -121,10 +120,10 @@ const uploadProductImageHandler = async (req, res) => {
 
         // Cập nhật đường dẫn ảnh trong cơ sở dữ liệu
         const imageUrl = `/uploads/${imageFile.name}`;
-        await updateProductImage(ProID, imageUrl);
+        await updateProductImage(id, imageUrl);
 
         // Chuyển hướng về trang chủ sau khi tải ảnh thành công
-        res.redirect('/');
+        res.redirect('/admin/categories');
     } catch (err) {
         console.error('Lỗi khi tải ảnh:', err);
         res.status(500).send('Lỗi server khi tải ảnh.');

@@ -33,11 +33,11 @@ router.post('/admin/edit/:id', updateUser)
 
 // Categories
 router.get('/admin/categories', renderHome); // Trang chủ hiển thị danh sách category và sản phẩm
-router.get('/admin/categories/addProduct/:CatID', renderAddProduct); // Trang thêm sản phẩm cho category
-router.post('/admin/categories/addProduct/:CatID', addProductHandler); // Thêm sản phẩm vào database
-router.get('/admin/categories/editProduct/:ProID', renderEditProduct); // Trang sửa sản phẩm
-router.post('/admin/categories/editProduct/:ProID', editProductHandler); // Sửa sản phẩm trong database
-router.post('/admin/categories/deleteProduct/:ProID', deleteProductHandler); // Xóa sản phẩm khỏi database
-router.post('/admin/categories/uploadImage/:ProID', uploadProductImageHandler); // Upload ảnh
+router.get('/admin/categories/addProduct/:id', renderAddProduct); // Trang thêm sản phẩm cho category
+router.post('/admin/categories/addProduct/:id', addProductHandler); // Thêm sản phẩm vào database
+router.get('/admin/categories/editProduct/:id', renderEditProduct); // Trang sửa sản phẩm
+router.post('/admin/categories/editProduct/:id', editProductHandler); // Sửa sản phẩm trong database
+router.post('/admin/categories/deleteProduct/:id', deleteProductHandler); // Xóa sản phẩm khỏi database
+router.post('/admin/categories/uploadImage/:id', uploadProductImageHandler); // Upload ảnh
 
 module.exports = router

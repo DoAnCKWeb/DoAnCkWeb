@@ -1,9 +1,8 @@
 <header class="bg-success text-white text-center py-4">
-    <h1>Quản lý Category</h1>
+    <h1>Quản lý Category và Product</h1>
 </header>
 
 <main class="container my-5">
-
     <!-- Danh sách Category -->
     <section>
         <h2 class="text-primary">Danh sách Category</h2>
@@ -22,7 +21,7 @@
                     <div class="accordion-body">
                         <!-- Thêm sản phẩm -->
                         <div class="addProduct mb-4">
-                            <a href="/addProduct/{{id}}" class="btn btn-primary">Thêm Sản phẩm</a>
+                            <a href="/admin/categories/addProduct/{{id}}" class="btn btn-primary">Thêm Sản phẩm</a>
                         </div>
 
                         <!-- Hiển thị danh sách Product thuộc Category -->
@@ -32,13 +31,13 @@
                             {{#each this.products}}
                             <div class="col mb-4">
                                 <div class="card h-100">
-                                    <img src="{{this.Image}}" class="card-img-top" alt="Product Image"
+                                    <img src="{{this.image}}" class="card-img-top" alt="Product Image"
                                         style="height: 200px; object-fit: cover;">
                                     <div class="card-body">
                                         <h5 class="card-title">{{this.product_name}}</h5>
                                         <p class="card-text"><strong>Giá:</strong> {{this.price}} VND</p>
                                         <!-- Input tải ảnh -->
-                                        <form action="/uploadImage/{{this.ProID}}" method="POST"
+                                        <form action="/admin/categories/uploadImage/{{this.product_id}}" method="POST"
                                             enctype="multipart/form-data">
                                             <label for="productImage" class="form-label">Tải ảnh lên:</label>
                                             <input type="file" id="productImage" name="productImage"
@@ -47,9 +46,9 @@
                                         </form>
                                         <!-- Sửa và xóa sản phẩm -->
                                         <div class="d-flex flex-column" style="margin-top:5px">
-                                            <a href="/editProduct/{{this.ProID}}"
+                                            <a href="/admin/categories/editProduct/{{this.product_id}}"
                                                 class="btn btn-warning btn-sm mb-2">Sửa</a>
-                                            <form action="/deleteProduct/{{this.ProID}}" method="POST"
+                                            <form action="/admin/categories/deleteProduct/{{this.product_id}}" method="POST"
                                                 onsubmit="return confirm('Bạn có chắc chắn muốn xóa?');">
                                                 <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
                                             </form>
