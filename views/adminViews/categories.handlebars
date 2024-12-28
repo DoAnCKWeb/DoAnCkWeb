@@ -1,0 +1,74 @@
+<header class="bg-success text-white text-center py-4">
+    <h1>Quản lý Category</h1>
+</header>
+
+<main class="container my-5">
+
+    <!-- Danh sách Category -->
+    <section>
+        <h2 class="text-primary">Danh sách Category</h2>
+        {{#if categories.length}}
+        <div class="accordion" id="categoryAccordion">
+            {{#each categories}}
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading{{id}}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapse{{id}}" aria-expanded="false" aria-controls="collapse{{id}}">
+                        {{name}}
+                    </button>
+                </h2>
+                <div id="collapse{{id}}" class="accordion-collapse collapse" aria-labelledby="heading{{id}}"
+                    data-bs-parent="#categoryAccordion">
+                    <div class="accordion-body">
+                        <!-- Thêm sản phẩm -->
+                        <div class="addProduct mb-4">
+                            <a href="/addProduct/{{id}}" class="btn btn-primary">Thêm Sản phẩm</a>
+                        </div>
+
+                        <!-- Hiển thị danh sách Product thuộc Category -->
+                        <h5 class="mb-3">Sản phẩm:</h5>
+                        {{#if this.products.length}}
+                        <div class="row row-cols-1 row-cols-md-3 g-4">
+                            {{#each this.products}}
+                            <div class="col mb-4">
+                                <div class="card h-100">
+                                    <img src="{{this.Image}}" class="card-img-top" alt="Product Image"
+                                        style="height: 200px; object-fit: cover;">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{this.product_name}}</h5>
+                                        <p class="card-text"><strong>Giá:</strong> {{this.price}} VND</p>
+                                        <!-- Input tải ảnh -->
+                                        <form action="/uploadImage/{{this.ProID}}" method="POST"
+                                            enctype="multipart/form-data">
+                                            <label for="productImage" class="form-label">Tải ảnh lên:</label>
+                                            <input type="file" id="productImage" name="productImage"
+                                                class="form-control mb-2">
+                                            <button type="submit" class="btn btn-primary btn-sm">Tải lên</button>
+                                        </form>
+                                        <!-- Sửa và xóa sản phẩm -->
+                                        <div class="d-flex flex-column" style="margin-top:5px">
+                                            <a href="/editProduct/{{this.ProID}}"
+                                                class="btn btn-warning btn-sm mb-2">Sửa</a>
+                                            <form action="/deleteProduct/{{this.ProID}}" method="POST"
+                                                onsubmit="return confirm('Bạn có chắc chắn muốn xóa?');">
+                                                <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {{/each}}
+                        </div>
+                        {{else}}
+                        <p class="text-muted">Không có sản phẩm nào trong Category này.</p>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+        {{else}}
+        <p class="text-muted">Không có Category nào.</p>
+        {{/if}}
+    </section>
+</main>

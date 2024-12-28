@@ -1,0 +1,40 @@
+<header class="bg-success text-white text-center py-4">
+    <h1>Thêm Sản phẩm</h1>
+</header>
+
+<main class="container my-5">
+    <h2 class="text-primary">Thêm Sản phẩm vào danh mục</h2>
+
+    <!-- Form thêm sản phẩm -->
+    <form action="/addProduct/{{CatID}}" method="POST" class="row g-3">
+        <div class="col-md-6">
+            <label for="productName" class="form-label">Tên sản phẩm:</label>
+            <input type="text" id="productName" name="name" class="form-control" placeholder="Nhập tên sản phẩm"
+                required>
+        </div>
+        <div class="col-md-6">
+            <label for="productPrice" class="form-label">Giá sản phẩm:</label>
+            <input type="number" id="productPrice" name="price" class="form-control" placeholder="Nhập giá sản phẩm"
+                required>
+        </div>
+        <div class="col-md-6">
+            <label for="productDescription" class="form-label">Mô tả ngắn:</label>
+            <input type="text" id="productDescription" name="description" class="form-control"
+                placeholder="Nhập mô tả ngắn" required>
+        </div>
+        <div class="col-md-6">
+            <label for="productFullDes" class="form-label">Mô tả đầy đủ:</label>
+            <textarea id="productFullDes" name="fulldes" class="form-control" placeholder="Nhập mô tả đầy đủ"
+                rows="4"></textarea>
+        </div>
+        <div class="col-md-6">
+            <label for="productQuantity" class="form-label">Số lượng:</label>
+            <input type="number" id="productQuantity" name="quantity" class="form-control" placeholder="Nhập số lượng"
+                required>
+        </div>
+
+        <div class="col-md-12">
+            <button type="submit" class="btn btn-success w-100">Thêm sản phẩm</button>
+        </div>
+    </form>
+</main>
