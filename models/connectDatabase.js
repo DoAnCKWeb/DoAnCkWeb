@@ -10,7 +10,6 @@ port: '5432',
 database: 'web',
 };
 
-
 const db = pgp(dbConfig)
 db.connect()
     .then(obj => {

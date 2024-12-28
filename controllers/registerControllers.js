@@ -6,7 +6,7 @@ const register = async (req, res) => {
     try { 
         const userExists = await checkAccountExists(email);
         if (userExists) {
-             res.redirect('/register');
+             res.redirect('/register?message="email đã tồn tại , vui lòng nhập email mới !"');
         }
 
         //hash mật khẩu

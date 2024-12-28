@@ -22,7 +22,12 @@ router.post('/admin/adduser', addUserController)
 // delete user
 const {deleteUser} = require('../../controllers/adminControllers/accountsControllers/deleteUserControllers')
 router.post('/admin/delete/:id', deleteUser)
-
-
+// detail user
+const {showDetail } = require('../../controllers/adminControllers/accountsControllers/detailControllers')
+router.get('/admin/detail/:id', showDetail)
+// edit user
+const {showEdit, updateUser} = require('../../controllers/adminControllers/accountsControllers/editUserControllers')
+router.get('/admin/edit/:id', showEdit)
+router.post('/admin/edit/:id', updateUser)
 
 module.exports = router

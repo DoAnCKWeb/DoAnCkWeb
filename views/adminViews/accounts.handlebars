@@ -64,6 +64,8 @@
                     <th scope="col">Loại tài khoản</th>
                     <th scope="col">Ngày đăng kí</th>
                     <th scope="col">Delete</th>
+                    <th scope="col">Detail</th>
+                    <th scope="col">Edit</th>
                 </tr>
             </thead>
             <tbody id="accountTable">
@@ -138,10 +140,18 @@
                 <td>${account.role}</td>
                 <td>${account.created_at}</td>
                 <td>
-                <form action="/admin/delete/${account.id}" method="POST" style="display:inline;">
-                    <button type="submit" class="btn btn-sm btn-danger">Xóa</button>
-                </form>
-            </td>
+                    <form action="/admin/delete/${account.id}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+                <td>
+                    <a href="/admin/detail/${account.id}" class="btn btn-sm btn-primary">Detail</a>
+                </td>
+                 <td>
+                    <a href="/admin/edit/${account.id}" class="btn btn-sm btn-primary">Edit</a>
+                </td>
+
+
         `;
             tableBody.appendChild(row);
         });
