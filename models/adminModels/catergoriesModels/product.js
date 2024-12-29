@@ -18,27 +18,88 @@ const getProductById = async (id) => {
         throw e;
     }
 }
+
 // Thêm sản phẩm mới
-const addProduct = async ({ name, price, description, catid,fulldes ,quantity}) => {
+const addProduct = async ({ 
+    product_name, 
+    price, 
+    storage_capacity, 
+    operating_system, 
+    screen_size, 
+    weight, 
+    release_year, 
+    category_id, 
+    image 
+}) => {
     try {
-        await db.none('INSERT INTO "products" ("ProName", "Price", "TinyDes","CatID","FullDes","Quantity") VALUES ($1, $2, $3, $4,$5,$6)', 
-            [name, price, description, catid,fulldes,quantity]);
+        // Chèn dữ liệu vào bảng "products"
+        await db.none(
+            `INSERT INTO "products" 
+            ("product_name", "price", "storage_capacity", "operating_system", "screen_size", "weight", "release_year", "category_id", "image") 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`, 
+            [
+                product_name, 
+                price, 
+                storage_capacity, 
+                operating_system, 
+                screen_size, 
+                weight, 
+                release_year, 
+                category_id, 
+                image
+            ]
+        );
     } catch (err) {
         console.error('Lỗi khi thêm sản phẩm:', err);
         throw new Error('Lỗi khi thêm sản phẩm');
     }
 };
 
+
 // Sửa thông tin sản phẩm
-const updateProduct = async ({ id, name, price, description, fulldes, quantity}) => {
+const updateProduct = async ({ 
+    product_id, 
+    product_name, 
+    price, 
+    storage_capacity, 
+    operating_system, 
+    screen_size, 
+    weight, 
+    release_year, 
+    image 
+}) => {
     try {
-        await db.none('UPDATE "products" SET "ProName" = $2, "Price" = $3, "Quantity" = $6, "TinyDes" = $4, "FullDes" = $5 WHERE "ProID" = $1', 
-            [id, name, price, description, fulldes, quantity]);
+        await db.none(
+            `UPDATE "products" 
+             SET 
+                "product_name" = $2, 
+                "price" = $3, 
+                "storage_capacity" = $4, 
+                "operating_system" = $5, 
+                "screen_size" = $6, 
+                "weight" = $7, 
+                "release_year" = $8, 
+                "image" = $9
+             WHERE 
+                "product_id" = $1`,
+            [
+                product_id, 
+                product_name, 
+                price, 
+                storage_capacity, 
+                operating_system, 
+                screen_size, 
+                weight, 
+                release_year, 
+                image
+            ]
+        );
     } catch (err) {
         console.error('Lỗi khi sửa sản phẩm:', err);
         throw new Error('Lỗi khi sửa sản phẩm');
     }
 };
+
 
 // Xóa sản phẩm
 const deleteProduct = async (id) => {

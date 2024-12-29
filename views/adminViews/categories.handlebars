@@ -36,22 +36,25 @@
                                     <div class="card-body">
                                         <h5 class="card-title">{{this.product_name}}</h5>
                                         <p class="card-text"><strong>Giá:</strong> {{this.price}} VND</p>
+
                                         <!-- Input tải ảnh -->
                                         <form action="/admin/categories/uploadImage/{{this.product_id}}" method="POST"
                                             enctype="multipart/form-data">
-                                            <label for="productImage" class="form-label">Tải ảnh lên:</label>
-                                            <input type="file" id="productImage" name="productImage"
+                                            <label for="productImage{{this.product_id}}" class="form-label">Tải ảnh lên:</label>
+                                            <input type="file" id="productImage{{this.product_id}}" name="productImage"
                                                 class="form-control mb-2">
                                             <button type="submit" class="btn btn-primary btn-sm">Tải lên</button>
                                         </form>
+
                                         <!-- Sửa và xóa sản phẩm -->
-                                        <div class="d-flex flex-column" style="margin-top:5px">
+                                        <div class="d-flex flex-column mt-3">
                                             <a href="/admin/categories/editProduct/{{this.product_id}}"
                                                 class="btn btn-warning btn-sm mb-2">Sửa</a>
                                             <form action="/admin/categories/deleteProduct/{{this.product_id}}" method="POST"
                                                 onsubmit="return confirm('Bạn có chắc chắn muốn xóa?');">
                                                 <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
                                             </form>
+                                            <a href="/admin/categories/product/{{this.product_id}}" class="btn btn-info btn-sm mt-2">Xem chi tiết</a>
                                         </div>
                                     </div>
                                 </div>

@@ -33,17 +33,41 @@ const renderAddProduct = async (req, res) => {
 
 // Hàm thêm sản phẩm
 const addProductHandler = async (req, res) => {
-    const { id } = req.params;
-    const catid = parseInt(id);
+    const { id } = req.params; // Lấy category_id từ URL
+    const catid = parseInt(id); // Chuyển đổi sang số nguyên
 
     if (isNaN(catid)) {
         console.error('CatID không hợp lệ:', id);
         return res.status(400).send('CatID không hợp lệ!');
     }
-    const { name, price, description,fulldes,quantity } = req.body;    
+
+    // Lấy dữ liệu từ form
+    const { 
+        product_name, 
+        price, 
+        storage_capacity, 
+        operating_system, 
+        screen_size, 
+        weight, 
+        release_year, 
+        image 
+    } = req.body;
+
     try {
-        await addProduct({ name, price, description , catid,fulldes ,quantity}); // Thêm sản phẩm vào database
-        res.redirect('/');  // Quay lại trang chủ sau khi thêm
+        // Gọi service để thêm sản phẩm vào database
+        await addProduct({ 
+            product_name, 
+            price, 
+            storage_capacity, 
+            operating_system, 
+            screen_size, 
+            weight: parseFloat(weight), // Chuyển trọng lượng sang kiểu số thực
+            release_year: parseInt(release_year), // Chuyển năm phát hành sang kiểu số nguyên
+            category_id: catid, 
+            image 
+        });
+
+        res.redirect('/'); // Quay lại trang chủ sau khi thêm sản phẩm
     } catch (err) {
         console.error('Lỗi khi thêm sản phẩm:', err);
         res.status(500).send('Lỗi server!');
@@ -51,13 +75,25 @@ const addProductHandler = async (req, res) => {
 };
 
 
+
 // Hàm render form chỉnh sửa sản phẩm
 const renderEditProduct = async (req, res) => {
-    const { ProID } = req.params;  // Lấy ProID từ params
-    const id = parseInt(ProID);  // Chuyển ProID thành số nguyên
+    const { id } = req.params;  // Lấy product_id từ params
+    const productId = parseInt(id);  // Chuyển product_id thành số nguyên
+
+    if (isNaN(productId)) {
+        return res.status(400).send('ID sản phẩm không hợp lệ!');
+    }
 
     try {
-        const product = await getProductById(id);  // Lấy thông tin sản phẩm tương ứng với ProID
+        // Lấy thông tin sản phẩm từ database
+        const product = await getProductById(productId);
+
+        if (!product) {
+            return res.status(404).send('Không tìm thấy sản phẩm!');
+        }
+
+        // Render view với dữ liệu sản phẩm
         res.render('adminViews/editProduct', { product });
     } catch (err) {
         console.error('Lỗi khi lấy thông tin sản phẩm:', err);
@@ -66,21 +102,43 @@ const renderEditProduct = async (req, res) => {
 };
 
 
+
 // Hàm chỉnh sửa sản phẩm
 const editProductHandler = async (req, res) => {
-    const { ProID } = req.params;  // Lấy ProID từ URL params
-    const id = parseInt(ProID);  // Chuyển ProID thành số nguyên
-    const { name, price, description, fulldes, quantity } = req.body;  // Lấy dữ liệu từ body
+    const { id } = req.params;  // Lấy product_id từ URL
+    const productId = parseInt(id);  // Chuyển product_id thành số nguyên
 
-    // Kiểm tra xem ProID có hợp lệ không
-    if (isNaN(id)) {
-        console.error('ProID không hợp lệ:', ProID);
-        return res.status(400).send('ProID không hợp lệ!');
+    // Lấy dữ liệu từ form
+    const {
+        product_name,
+        price,
+        storage_capacity,
+        operating_system,
+        screen_size,
+        weight,
+        release_year,
+        image
+    } = req.body;
+
+    if (isNaN(productId)) {
+        console.error('Product ID không hợp lệ:', id);
+        return res.status(400).send('Product ID không hợp lệ!');
     }
 
     try {
-        await updateProduct(id, name, price, description, fulldes, quantity);  // Cập nhật sản phẩm trong database
-        res.redirect('/');  // Quay lại trang chủ sau khi sửa
+        // Gọi service để cập nhật sản phẩm
+        await updateProduct({
+            product_id: productId,
+            product_name,
+            price: parseFloat(price),
+            storage_capacity,
+            operating_system,
+            screen_size,
+            weight: parseFloat(weight),
+            release_year: parseInt(release_year),
+            image
+        });
+
     } catch (err) {
         console.error('Lỗi khi sửa sản phẩm:', err);
         res.status(500).send('Lỗi server!');
@@ -93,12 +151,12 @@ const deleteProductHandler = async (req, res) => {
     const id = parseInt(req.params.id);
     try {
         await deleteProduct(id); // Xóa sản phẩm khỏi database
-        res.redirect('/admin/categories'); // Quay lại trang chủ sau khi xóa
     } catch (err) {
         console.error('Lỗi khi xóa sản phẩm:', err);
         res.status(500).send('Lỗi server!');
     }
 };
+
 const uploadProductImageHandler = async (req, res) => {
     // Lấy ProID từ URL
     const id = parseInt(req.params.id);
@@ -130,7 +188,29 @@ const uploadProductImageHandler = async (req, res) => {
     }
 };
 
+const showProductDetail = async (req, res) => {
+    const { id } = req.params; // Lấy product_id từ URL
+    const productId = parseInt(id); // Chuyển product_id thành số nguyên
 
+    if (isNaN(productId)) {
+        return res.status(400).send('Product ID không hợp lệ!');
+    }
+
+    try {
+        // Lấy sản phẩm từ database
+        const product = await getProductById(productId);
+
+        if (!product) {
+            return res.status(404).send('Không tìm thấy sản phẩm!');
+        }
+
+        // Render trang chi tiết sản phẩm
+        res.render('adminViews/detailProduct', { product });
+    } catch (err) {
+        console.error('Lỗi khi lấy thông tin chi tiết sản phẩm:', err);
+        res.status(500).send('Lỗi server!');
+    }
+};
 
 module.exports = {
     renderHome,
@@ -139,5 +219,6 @@ module.exports = {
     renderEditProduct,
     editProductHandler,
     deleteProductHandler,
-    uploadProductImageHandler
+    uploadProductImageHandler,
+    showProductDetail
 };

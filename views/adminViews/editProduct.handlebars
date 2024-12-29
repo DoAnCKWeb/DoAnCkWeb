@@ -3,34 +3,41 @@
 </header>
 
 <main class="container my-5">
-    <h2 class="text-primary">Chỉnh sửa Sản phẩm {{product.ProName}}</h2>
+    <h2 class="text-primary">Chỉnh sửa Sản phẩm {{product.product_name}}</h2>
 
     <!-- Form chỉnh sửa sản phẩm -->
-    <form action="/editProduct/{{product.ProID}}" method="POST" class="row g-3">
+    <form action="/admin/categories/editProduct/{{product.product_id}}" method="POST" class="row g-3">
         <div class="col-md-6">
             <label for="productName" class="form-label">Tên sản phẩm:</label>
-            <input type="text" id="productName" name="name" class="form-control" placeholder="Nhập tên sản phẩm"
-                required>
+            <input type="text" id="productName" name="product_name" class="form-control" value="{{product.product_name}}" required>
         </div>
         <div class="col-md-6">
             <label for="productPrice" class="form-label">Giá sản phẩm:</label>
-            <input type="number" id="productPrice" name="price" class="form-control" placeholder="Nhập giá sản phẩm"
-                required>
+            <input type="number" id="productPrice" name="price" class="form-control" value="{{product.price}}" required>
         </div>
         <div class="col-md-6">
-            <label for="productDescription" class="form-label">Mô tả ngắn:</label>
-            <input type="text" id="productDescription" name="description" class="form-control"
-                placeholder="Nhập mô tả ngắn" required>
+            <label for="storageCapacity" class="form-label">Dung lượng lưu trữ:</label>
+            <input type="text" id="storageCapacity" name="storage_capacity" class="form-control" value="{{product.storage_capacity}}">
         </div>
         <div class="col-md-6">
-            <label for="productFullDes" class="form-label">Mô tả đầy đủ:</label>
-            <textarea id="productFullDes" name="fulldes" class="form-control" placeholder="Nhập mô tả đầy đủ"
-                rows="4"></textarea>
+            <label for="operatingSystem" class="form-label">Hệ điều hành:</label>
+            <input type="text" id="operatingSystem" name="operating_system" class="form-control" value="{{product.operating_system}}">
         </div>
         <div class="col-md-6">
-            <label for="productQuantity" class="form-label">Số lượng:</label>
-            <input type="number" id="productQuantity" name="quantity" class="form-control" placeholder="Nhập số lượng"
-                required>
+            <label for="screenSize" class="form-label">Kích thước màn hình:</label>
+            <input type="text" id="screenSize" name="screen_size" class="form-control" value="{{product.screen_size}}">
+        </div>
+        <div class="col-md-6">
+            <label for="weight" class="form-label">Trọng lượng:</label>
+            <input type="number" id="weight" name="weight" class="form-control" value="{{product.weight}}">
+        </div>
+        <div class="col-md-6">
+            <label for="releaseYear" class="form-label">Năm phát hành:</label>
+            <input type="number" id="releaseYear" name="release_year" class="form-control" value="{{product.release_year}}">
+        </div>
+        <div class="col-md-6">
+            <label for="productImage" class="form-label">URL Hình ảnh:</label>
+            <input type="text" id="productImage" name="image" class="form-control" value="{{product.image}}">
         </div>
         <div class="col-md-12">
             <button type="submit" class="btn btn-warning w-100">Cập nhật sản phẩm</button>

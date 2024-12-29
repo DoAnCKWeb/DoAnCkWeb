@@ -6,33 +6,56 @@
     <h2 class="text-primary">Thêm Sản phẩm vào danh mục</h2>
 
     <!-- Form thêm sản phẩm -->
-    <form action="/addProduct/{{id}}" method="POST" class="row g-3">
+    <form action="/admin/categories/addProduct/{{id}}" method="POST" class="row g-3">
+        <!-- Tên sản phẩm -->
         <div class="col-md-6">
             <label for="productName" class="form-label">Tên sản phẩm:</label>
-            <input type="text" id="productName" name="name" class="form-control" placeholder="Nhập tên sản phẩm"
-                required>
-        </div>
-        <div class="col-md-6">
-            <label for="productPrice" class="form-label">Giá sản phẩm:</label>
-            <input type="number" id="productPrice" name="price" class="form-control" placeholder="Nhập giá sản phẩm"
-                required>
-        </div>
-        <div class="col-md-6">
-            <label for="productDescription" class="form-label">Mô tả ngắn:</label>
-            <input type="text" id="productDescription" name="description" class="form-control"
-                placeholder="Nhập mô tả ngắn" required>
-        </div>
-        <div class="col-md-6">
-            <label for="productFullDes" class="form-label">Mô tả đầy đủ:</label>
-            <textarea id="productFullDes" name="fulldes" class="form-control" placeholder="Nhập mô tả đầy đủ"
-                rows="4"></textarea>
-        </div>
-        <div class="col-md-6">
-            <label for="productQuantity" class="form-label">Số lượng:</label>
-            <input type="number" id="productQuantity" name="quantity" class="form-control" placeholder="Nhập số lượng"
-                required>
+            <input type="text" id="productName" name="product_name" class="form-control" placeholder="Nhập tên sản phẩm" required>
         </div>
 
+        <!-- Giá sản phẩm -->
+        <div class="col-md-6">
+            <label for="productPrice" class="form-label">Giá sản phẩm:</label>
+            <input type="number" id="productPrice" name="price" class="form-control" placeholder="Nhập giá sản phẩm" required>
+        </div>
+
+        <!-- Dung lượng lưu trữ -->
+        <div class="col-md-6">
+            <label for="storageCapacity" class="form-label">Dung lượng lưu trữ:</label>
+            <input type="text" id="storageCapacity" name="storage_capacity" class="form-control" placeholder="Nhập dung lượng lưu trữ" required>
+        </div>
+
+        <!-- Hệ điều hành -->
+        <div class="col-md-6">
+            <label for="operatingSystem" class="form-label">Hệ điều hành:</label>
+            <input type="text" id="operatingSystem" name="operating_system" class="form-control" placeholder="Nhập hệ điều hành" required>
+        </div>
+
+        <!-- Kích thước màn hình -->
+        <div class="col-md-6">
+            <label for="screenSize" class="form-label">Kích thước màn hình:</label>
+            <input type="text" id="screenSize" name="screen_size" class="form-control" placeholder="Nhập kích thước màn hình" required>
+        </div>
+
+        <!-- Trọng lượng -->
+        <div class="col-md-6">
+            <label for="weight" class="form-label">Trọng lượng:</label>
+            <input type="number" id="weight" name="weight" step="0.01" class="form-control" placeholder="Nhập trọng lượng (kg)" required>
+        </div>
+
+        <!-- Năm phát hành -->
+        <div class="col-md-6">
+            <label for="releaseYear" class="form-label">Năm phát hành:</label>
+            <input type="number" id="releaseYear" name="release_year" class="form-control" placeholder="Nhập năm phát hành" required>
+        </div>
+
+        <!-- Hình ảnh -->
+        <div class="col-md-6">
+            <label for="productImage" class="form-label">URL Hình ảnh:</label>
+            <input type="text" id="productImage" name="image" class="form-control" placeholder="Nhập URL hình ảnh sản phẩm">
+        </div>
+
+        <!-- Nút gửi form -->
         <div class="col-md-12">
             <button type="submit" class="btn btn-success w-100">Thêm sản phẩm</button>
         </div>
