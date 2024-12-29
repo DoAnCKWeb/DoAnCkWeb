@@ -12,7 +12,8 @@ const getCategory = async () => {
 
 const addCategory = async (name) => {
     try {
-        await db.none('INSERT INTO "categories" ("name") VALUES ($1)', [name]);
+        await db.none(
+            `INSERT INTO "categories" ("name") VALUES ($1)`, [name]);
     } catch (e) {
         console.error('Lỗi khi thêm danh mục:', e);
         throw e;
