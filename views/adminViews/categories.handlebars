@@ -9,11 +9,13 @@
 
         <!-- Nút thêm danh mục -->
         <div class="addCategory mb-4 text-end">
-            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Thêm Danh mục</button>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Thêm Danh
+                mục</button>
         </div>
 
         <!-- Modal thêm danh mục -->
-        <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryLabel" aria-hidden="true">
+        <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryLabel"
+            aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -50,7 +52,8 @@
                     data-bs-parent="#categoryAccordion">
                     <div class="accordion-body">
                         <!-- Nút xóa danh mục -->
-                        <form action="/admin/categories/deleteCategory/{{id}}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa danh mục này?');" class="text-end mb-3">
+                        <form action="/admin/categories/deleteCategory/{{id}}" method="POST"
+                            onsubmit="return confirm('Bạn có chắc chắn muốn xóa danh mục này?');" class="text-end mb-3">
                             <button type="submit" class="btn btn-danger btn-sm">Xóa Danh mục</button>
                         </form>
 
@@ -75,7 +78,8 @@
                                         <!-- Input tải ảnh -->
                                         <form action="/admin/categories/uploadImage/{{this.product_id}}" method="POST"
                                             enctype="multipart/form-data">
-                                            <label for="productImage{{this.product_id}}" class="form-label">Tải ảnh lên:</label>
+                                            <label for="productImage{{this.product_id}}" class="form-label">Tải ảnh
+                                                lên:</label>
                                             <input type="file" id="productImage{{this.product_id}}" name="productImage"
                                                 class="form-control mb-2">
                                             <button type="submit" class="btn btn-primary btn-sm">Tải lên</button>
@@ -85,11 +89,12 @@
                                         <div class="d-flex flex-column mt-3">
                                             <a href="/admin/categories/editProduct/{{this.product_id}}"
                                                 class="btn btn-warning btn-sm mb-2">Sửa</a>
-                                            <form action="/admin/categories/deleteProduct/{{this.product_id}}" method="POST"
-                                                onsubmit="return confirm('Bạn có chắc chắn muốn xóa?');">
+                                            <form action="/admin/categories/deleteProduct/{{this.product_id}}"
+                                                method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa?');">
                                                 <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
                                             </form>
-                                            <a href="/admin/categories/product/{{this.product_id}}" class="btn btn-info btn-sm mt-2">Xem chi tiết</a>
+                                            <a href="/admin/categories/product/{{this.product_id}}"
+                                                class="btn btn-info btn-sm mt-2">Xem chi tiết</a>
                                         </div>
                                     </div>
                                 </div>
@@ -107,5 +112,7 @@
         {{else}}
         <p class="text-muted">Không có Category nào.</p>
         {{/if}}
+        <a href="/admin" class="btn btn-secondary mt-4">Quay lại</a>
+
     </section>
 </main>

@@ -1,110 +1,108 @@
-{{#if successMessage}}
-<div id="successMessage" class="alert alert-success">
-    {{successMessage}}
-</div>
-{{/if}}
-
-{{#if errorMessage}}
-<div id="errorMessage" class="alert alert-danger">
-    {{errorMessage}}
-</div>
-{{/if}}
-<div class="d-flex align-items-start">
-    <div class="me-3">
-        <a href="/admin" class="btn btn-outline-primary" style="margin-top: 20px;">Home</a>
+<div class="container my-4">
+    <!-- Thông báo -->
+    {{#if successMessage}}
+    <div id="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+        {{successMessage}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-    <div class="flex-grow-1">
-        <h2 class="my-4">Quản lý tài khoản</h2>
-        <div class="input-group rounded" style="gap: 10px; margin-top: 20px;">
-            <!-- Form tìm kiếm -->
-            <form action="/admin/search" method="POST" class="d-flex align-items-center w-100">
-                <input type="search" name="name" class="form-control rounded shadow-sm border-primary"
-                    placeholder="Search name user" aria-label="Search" aria-describedby="search-addon" />
-                <button type="submit" class="btn btn-primary ms-2 px-3 shadow-sm"><i class="fas fa-search"></i></button>
-            </form>
-            <!-- Nút thêm tài khoản -->
-            <button id="toggleFormButton" class="btn btn-success shadow-sm px-3 py-2">
-                <i class="fas fa-user-plus"></i> Add account
-            </button>
-        </div>
-        <!-- Form thêm tài khoản (ẩn ban đầu) -->
-        <form id="addUserForm" method="POST" action="/admin/adduser" class="p-4 shadow rounded bg-light mt-4"
-            style="max-width: 500px; margin: auto; display: none;">
-            <h3 class="text-center mb-4">Thêm người dùng</h3>
-            <div class="mb-3">
-                <label for="name" class="form-label">Name</label>
-                <input type="text" id="name" name="name" class="form-control" placeholder="Nhập tên" required />
-            </div>
-            <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" id="email" name="email" class="form-control" placeholder="Nhập email" required />
-            </div>
-            <div class="mb-3">
-                <label for="role" class="form-label">Vai trò</label>
-                <select id="role" name="role" class="form-select" required>
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Mật khẩu</label>
-                <input type="password" id="password" name="password" class="form-control" placeholder="Nhập mật khẩu"
-                    required />
-            </div>
-            <div class="d-grid">
-                <button type="submit" class="btn btn-success">Thêm người dùng</button>
-            </div>
+    {{/if}}
+
+    {{#if errorMessage}}
+    <div id="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{errorMessage}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {{/if}}
+
+    <h2 class="mb-4">Quản lý tài khoản</h2>
+
+    <!-- Tìm kiếm và thêm tài khoản -->
+    <div class="d-flex align-items-center gap-3">
+        <!-- Form tìm kiếm -->
+        <form action="/admin/search" method="POST" class="input-group w-50">
+            <input type="search" name="name" class="form-control shadow-sm border-primary"
+                placeholder="Search name user" aria-label="Search" />
+            <button type="submit" class="btn btn-primary shadow-sm"><i class="fas fa-search"></i></button>
         </form>
 
-        <table class="table table-striped table-bordered table-hover" style="margin-top:10px; margin-bottom:10px ">
-            <thead class="thead-light">
-                <tr>
-                    <th scope="col">Tên</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Loại tài khoản</th>
-                    <th scope="col">Ngày đăng kí</th>
-                    <th scope="col">Delete</th>
-                    <th scope="col">Detail</th>
-                    <th scope="col">Edit</th>
-                </tr>
-            </thead>
-            <tbody id="accountTable">
-                <!-- Hiển thị tài khoản -->
-            </tbody>
-        </table>
-        <!-- Phân trang -->
-        <nav aria-label="Pagination">
-            <ul class="pagination justify-content-end" id="pagination">
-            </ul>
-        </nav>
-
+        <!-- Nút thêm tài khoản -->
+        <button id="toggleFormButton" class="btn btn-success shadow-sm">
+            <i class="fas fa-user-plus"></i> Add account
+        </button>
     </div>
+
+    <!-- Form thêm tài khoản -->
+    <form id="addUserForm" method="POST" action="/admin/adduser" class="p-4 shadow rounded bg-light mt-4"
+        style="max-width: 500px; margin: auto; display: none;">
+        <h3 class="text-center mb-4">Thêm người dùng</h3>
+        <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" id="name" name="name" class="form-control" placeholder="Nhập tên" required />
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" id="email" name="email" class="form-control" placeholder="Nhập email" required />
+        </div>
+        <div class="mb-3">
+            <label for="role" class="form-label">Vai trò</label>
+            <select id="role" name="role" class="form-select" required>
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Mật khẩu</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Nhập mật khẩu"
+                required />
+        </div>
+        <div class="d-grid">
+            <button type="submit" class="btn btn-success">Thêm người dùng</button>
+        </div>
+    </form>
+
+    <!-- Bảng hiển thị tài khoản -->
+    <table class="table table-striped table-bordered table-hover mt-4">
+        <thead class="table-light">
+            <tr>
+                <th scope="col">Tên</th>
+                <th scope="col">Email</th>
+                <th scope="col">Loại tài khoản</th>
+                <th scope="col">Ngày đăng ký</th>
+                <th scope="col">Delete</th>
+                <th scope="col">Detail</th>
+                <th scope="col">Edit</th>
+            </tr>
+        </thead>
+        <tbody id="accountTable">
+            <!-- Hiển thị tài khoản -->
+        </tbody>
+    </table>
+
+    <!-- Phân trang -->
+    <nav aria-label="Pagination">
+        <ul class="pagination justify-content-end" id="pagination"></ul>
+    </nav>
+
+    <a href="/admin" class="btn btn-secondary mt-4">Quay lại</a>
 </div>
+
 <style>
-    .form-control:hover,
     .form-control:focus {
         border-color: #0d6efd;
         box-shadow: 0 0 8px rgba(13, 110, 253, 0.5);
     }
 
-    .btn-primary:hover {
-        background-color: #0b5ed7;
-        border-color: #0a58ca;
+    .btn:hover {
         transform: scale(1.05);
         transition: all 0.2s ease-in-out;
     }
 
-    .btn-success:hover {
-        background-color: #157347;
-        border-color: #146c43;
-        transform: scale(1.05);
-        transition: all 0.2s ease-in-out;
-    }
-
-    .hover-add-btn i {
-        margin-right: 5px;
+    #successMessage,
+    #errorMessage {
+        transition: opacity 0.5s ease-in-out;
     }
 </style>
+
 <script>
     // Đảm bảo rằng mã JavaScript chỉ chạy sau khi DOM đã tải xong
     document.addEventListener('DOMContentLoaded', () => {

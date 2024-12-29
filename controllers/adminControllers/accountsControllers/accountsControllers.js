@@ -1,6 +1,9 @@
 const { GetAllUser } = require('../../../models/adminModels/accountsModels/GetUser');
 
 const showAccounts = async (req, res) => {
+     if (!req.isAuthenticated()) {
+    return res.redirect('/login'); 
+  }
     try {
         const accounts = await GetAllUser(); 
         res.render('adminViews/accounts', {

@@ -7,7 +7,7 @@ const {renderHome, renderAddProduct, addProductHandler, renderEditProduct, editP
 router.get('/admin', (req, res) => {
   // Kiểm tra nếu người dùng là admin
   if (!req.isAuthenticated()) {
-    return res.redirect('/login'); // Nếu chưa đăng nhập, chuyển đến trang login
+    return res.redirect('/login'); 
   }
 
   res.render('adminViews/adminViews')

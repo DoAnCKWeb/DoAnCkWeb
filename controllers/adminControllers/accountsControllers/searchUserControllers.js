@@ -1,5 +1,8 @@
 const {getUsersByName}=require('../../../models/adminModels/accountsModels/searchUser')
-const Search=async(req,res)=>{
+const Search = async (req, res) => {
+     if (!req.isAuthenticated()) {
+    return res.redirect('/login'); 
+  }
     const { name } = req.body;
     try {
         const users = await getUsersByName(name);
