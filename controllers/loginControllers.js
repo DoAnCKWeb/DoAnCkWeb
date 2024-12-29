@@ -23,7 +23,7 @@ const login = async (req, res, next) => {
       if (user.role === 'admin') {
         return res.redirect('/admin');  // Trang quản trị viên
       } else {
-        return res.redirect('/user');  // Trang của người dùng thông thường
+        return res.redirect('/categories');  // Trang của người dùng thông thường
       }
     });
   })(req, res, next); // Gọi hàm authenticate đúng cách
