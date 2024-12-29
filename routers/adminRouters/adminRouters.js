@@ -39,9 +39,16 @@ router.get('/admin/categories/editProduct/:id', renderEditProduct); // Trang s�
 router.post('/admin/categories/editProduct/:id', editProductHandler); // Sửa sản phẩm trong database
 router.post('/admin/categories/deleteProduct/:id', deleteProductHandler); // Xóa sản phẩm khỏi database
 router.post('/admin/categories/uploadImage/:id', uploadProductImageHandler); // Upload ảnh
+
 router.get('/admin/categories/product/:id', showProductDetail);
 router.post('/admin/categories/addCategory', addCategoryHandler);
 router.post('/admin/categories/deleteCategory/:id', deleteCategoryHandler);
 
 
+// Thống kê doanh thu
+router.get('/admin/statistics', (req, res) => {
+  const categories = ['Điện thoại', 'Laptop', 'Máy tính bảng', 'Tai nghe', 'Smartwatch']
+  const revenues = [500000000, 750000000, 300000000, 150000000, 200000000]
+  res.render('adminViews/statistics', {categories: JSON.stringify(categories),revenues: JSON.stringify(revenues)})
+})
 module.exports = router

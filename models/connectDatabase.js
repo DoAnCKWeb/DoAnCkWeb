@@ -4,10 +4,10 @@ const initOption = {
 const pgp=require('pg-promise')(initOption)
 const dbConfig = {
 user: 'postgres',
-password: 'Mquan_11a2',
+password: '123456',
 host: 'localhost',
 port: '5432',
-database: 'postgres',
+database: 'web',
 };
 
 const db = pgp(dbConfig)
@@ -20,8 +20,5 @@ db.connect()
     .catch(error => {
         console.error('Lỗi kết nối:', error);
     });
-
-
-
 
 module.exports = {db};
