@@ -4,7 +4,7 @@ const { engine } = require('express-handlebars')
 const passport = require('passport')
 const session = require('express-session')
 const https = require('https')
-
+require('dotenv').config(); // Nên đặt ở đầu file
 const { initializePassport } = require('./config/passport'); // Cấu hình Passport với chiến lược tự xây dựng
 const fileUpload = require('express-fileupload')
 const { Server } = require('socket.io'); // Sử dụng socket.io

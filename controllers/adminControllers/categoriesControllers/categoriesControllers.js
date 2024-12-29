@@ -73,7 +73,7 @@ const addProductHandler = async (req, res) => {
             image 
         });
 
-        res.redirect('/'); // Quay lại trang chủ sau khi thêm sản phẩm
+        res.redirect('/admin/categories'); // Quay lại trang danh sách danh mục sau khi xóa
     } catch (err) {
         console.error('Lỗi khi thêm sản phẩm:', err);
         res.status(500).send('Lỗi server!');
