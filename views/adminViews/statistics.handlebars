@@ -79,9 +79,23 @@
 </head>
 
 <body>
-    <h1>Revenue by Category</h1>
+    <h1>Thống kê doanh thu và tỉ lệ bán hàng</h1>
 
-    <canvas id="myChart" width="400" height="200"></canvas>
+    <div class="container">
+        <!-- Biểu đồ tỉ lệ doanh thu -->
+        <div class="chart-container">
+            <h2>Tỉ lệ doanh thu theo danh mục</h2>
+            <canvas id="categoryChart"></canvas>
+        </div>
+
+        <!-- Biểu đồ top sản phẩm -->
+        <div class="chart-container">
+            <h2>Top 3 sản phẩm theo doanh thu</h2>
+            <canvas id="topProductsChart"></canvas>
+            <!-- Custom Legend for Bar Chart -->
+            <div id="barChartLegend" class="custom-legend"></div>
+        </div>
+    </div>
 
     <script>
         // Dữ liệu từ server
