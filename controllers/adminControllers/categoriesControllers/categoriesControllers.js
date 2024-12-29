@@ -101,8 +101,6 @@ const renderEditProduct = async (req, res) => {
     }
 };
 
-
-
 // Hàm chỉnh sửa sản phẩm
 const editProductHandler = async (req, res) => {
     const { id } = req.params;  // Lấy product_id từ URL
@@ -138,6 +136,8 @@ const editProductHandler = async (req, res) => {
             release_year: parseInt(release_year),
             image
         });
+
+        res.redirect('/admin/categories');
 
     } catch (err) {
         console.error('Lỗi khi sửa sản phẩm:', err);
@@ -217,6 +217,7 @@ const addCategoryHandler = async (req, res) => {
     const { name } = req.body; // Lấy tên danh mục từ form
 
     if (!name) {
+        console.error('Tên danh mục không được để trống!');
         return res.status(400).send('Tên danh mục không được để trống!');
     }
 
@@ -230,6 +231,7 @@ const addCategoryHandler = async (req, res) => {
         res.status(500).send('Lỗi server!');
     }
 };
+
 
 module.exports = {
     renderHome,
