@@ -2,7 +2,7 @@ const passport = require('passport');
 const bcrypt = require('bcrypt');
 const { getUserByEmail, getUserById, getUserByGoogleId, createGoogleUser } = require('../models/authModels/auth'); // Các hàm lấy người dùng từ DB
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-
+require('dotenv').config();
 // === Định nghĩa CustomStrategy ===
 class CustomStrategy extends passport.Strategy {
   constructor(options = {}, verify) {
