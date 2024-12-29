@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const {showAccounts} = require('../../controllers/adminControllers/accountsControllers/accountsControllers')
-const {renderHome, renderAddProduct, addProductHandler, renderEditProduct, editProductHandler, deleteProductHandler, uploadProductImageHandler, showProductDetail, addCategoryHandler} = require('../../controllers/adminControllers/categoriesControllers/categoriesControllers')
+const {renderHome, renderAddProduct, addProductHandler, renderEditProduct, editProductHandler, deleteProductHandler, uploadProductImageHandler, showProductDetail, addCategoryHandler, deleteCategoryHandler} = require('../../controllers/adminControllers/categoriesControllers/categoriesControllers')
 
 // Route Admin: Trang quản trị admin
 router.get('/admin', (req, res) => {
@@ -41,5 +41,7 @@ router.post('/admin/categories/deleteProduct/:id', deleteProductHandler); // Xó
 router.post('/admin/categories/uploadImage/:id', uploadProductImageHandler); // Upload ảnh
 router.get('/admin/categories/product/:id', showProductDetail);
 router.post('/admin/categories/addCategory', addCategoryHandler);
+router.post('/admin/categories/deleteCategory/:id', deleteCategoryHandler);
+
 
 module.exports = router

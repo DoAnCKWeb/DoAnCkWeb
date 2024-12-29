@@ -49,6 +49,11 @@
                 <div id="collapse{{id}}" class="accordion-collapse collapse" aria-labelledby="heading{{id}}"
                     data-bs-parent="#categoryAccordion">
                     <div class="accordion-body">
+                        <!-- Nút xóa danh mục -->
+                        <form action="/admin/categories/deleteCategory/{{id}}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa danh mục này?');" class="text-end mb-3">
+                            <button type="submit" class="btn btn-danger btn-sm">Xóa Danh mục</button>
+                        </form>
+
                         <!-- Thêm sản phẩm -->
                         <div class="addProduct mb-4">
                             <a href="/admin/categories/addProduct/{{id}}" class="btn btn-primary">Thêm Sản phẩm</a>

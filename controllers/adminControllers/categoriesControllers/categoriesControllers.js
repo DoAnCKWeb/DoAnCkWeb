@@ -1,5 +1,5 @@
-const { getCategory, addCategory } = require('../../../models/adminModels/catergoriesModels/catergories')
-const { getProduct, getProductById, addProduct, updateProduct, deleteProduct, updateProductImage } = require('../../../models/adminModels/catergoriesModels/product');
+const { getCategory, addCategory, deleteCategory, } = require('../../../models/adminModels/catergoriesModels/catergories')
+const { getProduct, getProductById, addProduct, updateProduct, deleteProduct, updateProductImage,  } = require('../../../models/adminModels/catergoriesModels/product');
 const path = require('path');
 // Hàm render trang chủ với danh sách category và sản phẩm
 const renderHome = async (req, res) => {
@@ -232,6 +232,26 @@ const addCategoryHandler = async (req, res) => {
     }
 };
 
+// Hàm xóa danh mục
+const deleteCategoryHandler = async (req, res) => {
+    const id = parseInt(req.params.id); // Lấy category_id từ URL
+
+    if (isNaN(id)) {
+        console.error('Category ID không hợp lệ:', id);
+        return res.status(400).send('Category ID không hợp lệ!');
+    }
+
+    try {
+        // Gọi service để xóa danh mục
+        await deleteCategory(id);
+
+        res.redirect('/admin/categories'); // Quay lại trang danh sách danh mục sau khi xóa
+    } catch (err) {
+        console.error('Lỗi khi xóa danh mục:', err);
+        res.status(500).send('Lỗi server!');
+    }
+};
+
 
 module.exports = {
     renderHome,
@@ -242,5 +262,6 @@ module.exports = {
     deleteProductHandler,
     uploadProductImageHandler,
     showProductDetail,
-    addCategoryHandler
+    addCategoryHandler,
+    deleteCategoryHandler,
 };

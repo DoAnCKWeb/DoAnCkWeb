@@ -20,5 +20,13 @@ const addCategory = async (name) => {
     }
 };
 
+const deleteCategory = async (id) => {
+    try {
+        await db.none(`DELETE FROM "categories" WHERE id = $1`, [id]);
+    } catch (e) {
+        console.error('Lỗi khi xóa danh mục:', e);
+        throw e;
+    }
+};
 
-module.exports = { getCategory, addCategory };
+module.exports = { getCategory, addCategory, deleteCategory, };
