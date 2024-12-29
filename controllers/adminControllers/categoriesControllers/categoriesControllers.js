@@ -99,9 +99,8 @@ const renderEditProduct = async (req, res) => {
             return res.status(404).send('Không tìm thấy sản phẩm!');
         }
          if (!req.isAuthenticated()) {
-    return res.redirect('/login'); 
-  }
-
+           return res.redirect('/login'); 
+        }
         // Render view với dữ liệu sản phẩm
         res.render('adminViews/editProduct', { product });
     } catch (err) {
@@ -213,9 +212,8 @@ const showProductDetail = async (req, res) => {
             return res.status(404).send('Không tìm thấy sản phẩm!');
         }
          if (!req.isAuthenticated()) {
-    return res.redirect('/login'); 
+          return res.redirect('/login'); 
   }
-
         // Render trang chi tiết sản phẩm
         res.render('adminViews/detailProduct', { product });
     } catch (err) {

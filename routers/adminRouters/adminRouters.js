@@ -114,8 +114,11 @@ router.get('/admin/statistics', async (req, res) => {
 
       // Dữ liệu cho biểu đồ 2: Top sản phẩm theo doanh thu
       const productLabels = topProducts.map(product => `${product.category_name} - ${product.product_name}`);
-      const productRevenues = topProducts.map(product => product.total_revenue);
+    const productRevenues = topProducts.map(product => product.total_revenue);
 
+     if (!req.isAuthenticated()) {
+           return res.redirect('/login'); 
+    }
       res.render('adminViews/statistics', {
           categories: JSON.stringify(categories),
           revenues: JSON.stringify(revenues),
