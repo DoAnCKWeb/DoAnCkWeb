@@ -1,4 +1,4 @@
-const { getCategory } = require('../../../models/adminModels/catergoriesModels/catergories')
+const { getCategory, addCategory } = require('../../../models/adminModels/catergoriesModels/catergories')
 const { getProduct, getProductById, addProduct, updateProduct, deleteProduct, updateProductImage } = require('../../../models/adminModels/catergoriesModels/product');
 const path = require('path');
 // Hàm render trang chủ với danh sách category và sản phẩm
@@ -212,6 +212,25 @@ const showProductDetail = async (req, res) => {
     }
 };
 
+// Hàm thêm danh mục
+const addCategoryHandler = async (req, res) => {
+    const { name } = req.body; // Lấy tên danh mục từ form
+
+    if (!name) {
+        return res.status(400).send('Tên danh mục không được để trống!');
+    }
+
+    try {
+        // Gọi service để thêm danh mục vào database
+        await addCategory(name);
+
+        res.redirect('/admin/categories'); // Quay lại trang danh sách danh mục sau khi thêm
+    } catch (err) {
+        console.error('Lỗi khi thêm danh mục:', err);
+        res.status(500).send('Lỗi server!');
+    }
+};
+
 module.exports = {
     renderHome,
     renderAddProduct,
@@ -220,5 +239,6 @@ module.exports = {
     editProductHandler,
     deleteProductHandler,
     uploadProductImageHandler,
-    showProductDetail
+    showProductDetail,
+    addCategoryHandler
 };

@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const {showAccounts} = require('../../controllers/adminControllers/accountsControllers/accountsControllers')
-const {renderHome, renderAddProduct, addProductHandler, renderEditProduct, editProductHandler, deleteProductHandler, uploadProductImageHandler, showProductDetail} = require('../../controllers/adminControllers/categoriesControllers/categoriesControllers')
+const {renderHome, renderAddProduct, addProductHandler, renderEditProduct, editProductHandler, deleteProductHandler, uploadProductImageHandler, showProductDetail, addCategoryHandler} = require('../../controllers/adminControllers/categoriesControllers/categoriesControllers')
 
 // Route Admin: Trang quản trị admin
 router.get('/admin', (req, res) => {
@@ -40,6 +40,6 @@ router.post('/admin/categories/editProduct/:id', editProductHandler); // Sửa s
 router.post('/admin/categories/deleteProduct/:id', deleteProductHandler); // Xóa sản phẩm khỏi database
 router.post('/admin/categories/uploadImage/:id', uploadProductImageHandler); // Upload ảnh
 router.get('/admin/categories/product/:id', showProductDetail);
-
+router.post('/admin/categories/addCategory', addCategoryHandler);
 
 module.exports = router

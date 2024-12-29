@@ -6,6 +6,36 @@
     <!-- Danh sách Category -->
     <section>
         <h2 class="text-primary">Danh sách Category</h2>
+
+        <!-- Nút thêm danh mục -->
+        <div class="addCategory mb-4 text-end">
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Thêm Danh mục</button>
+        </div>
+
+        <!-- Modal thêm danh mục -->
+        <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addCategoryLabel">Thêm Danh mục mới</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="/admin/categories/addCategory" method="POST">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="categoryName" class="form-label">Tên danh mục</label>
+                                <input type="text" id="categoryName" name="name" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Thêm</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         {{#if categories.length}}
         <div class="accordion" id="categoryAccordion">
             {{#each categories}}
