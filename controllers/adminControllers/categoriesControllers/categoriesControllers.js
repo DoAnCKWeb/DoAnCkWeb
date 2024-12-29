@@ -3,6 +3,9 @@ const { getProduct, getProductById, addProduct, updateProduct, deleteProduct, up
 const path = require('path');
 // Hàm render trang chủ với danh sách category và sản phẩm
 const renderHome = async (req, res) => {
+     if (!req.isAuthenticated()) {
+    return res.redirect('/login'); 
+  }
     try {
         // Lấy tất cả danh mục
         const categories = await getCategory();
@@ -26,6 +29,9 @@ const renderHome = async (req, res) => {
 
 // Hàm render form thêm sản phẩm
 const renderAddProduct = async (req, res) => { 
+     if (!req.isAuthenticated()) {
+    return res.redirect('/login'); 
+  }
     const { id } = req.params;
     // Lấy CatID từ params
     res.render('adminViews/addProduct', { id });
@@ -92,6 +98,9 @@ const renderEditProduct = async (req, res) => {
         if (!product) {
             return res.status(404).send('Không tìm thấy sản phẩm!');
         }
+         if (!req.isAuthenticated()) {
+    return res.redirect('/login'); 
+  }
 
         // Render view với dữ liệu sản phẩm
         res.render('adminViews/editProduct', { product });
@@ -203,6 +212,9 @@ const showProductDetail = async (req, res) => {
         if (!product) {
             return res.status(404).send('Không tìm thấy sản phẩm!');
         }
+         if (!req.isAuthenticated()) {
+    return res.redirect('/login'); 
+  }
 
         // Render trang chi tiết sản phẩm
         res.render('adminViews/detailProduct', { product });
