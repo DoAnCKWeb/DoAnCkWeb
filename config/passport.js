@@ -19,7 +19,7 @@ class CustomStrategy extends passport.Strategy {
       return this.fail({ message: 'Dữ liệu đầu vào không hợp lệ.' });
     }
 
-    this.verify(role, email, password, (err, user, info) => {
+    this.verify( email, password, (err, user, info) => {
       if (err) {
         return this.error(err); // Trả về lỗi hệ thống
       }
@@ -34,15 +34,15 @@ class CustomStrategy extends passport.Strategy {
 }
 
 // === Hàm xác thực cho CustomStrategy ===
-const verify = async (role, email, password, done) => {
+const verify = async ( email, password, done) => {
   try {
     const user = await getUserByEmail(email); // Lấy người dùng từ DB theo email
     if (!user) {
       return done(null, false, { message: 'Email không tồn tại.' });
     }
-    if (role !== user.role) {
-      return done(null, false, { message: 'Dữ liệu không hợp lệ.' });
-    }
+    // if (role !== user.role) {
+    //   return done(null, false, { message: 'Dữ liệu không hợp lệ.' });
+    // }
 
     // Kiểm tra mật khẩu
     const match = await bcrypt.compare(password, user.password);
