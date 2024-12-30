@@ -66,7 +66,7 @@ passport.use(new GoogleStrategy({
   callbackURL: '/google/callback',
 }, async (accessToken, refreshToken, profile, done) => {
   try {
-      console.log('Google Profile:', profile); // Log toàn bộ dữ liệu từ Google
+      //console.log('Google Profile:', profile); // Log toàn bộ dữ liệu từ Google
 
       const googleId = profile.id;
       const name = profile.displayName || 'No Name';
@@ -77,11 +77,11 @@ passport.use(new GoogleStrategy({
           return done(null, false, { message: 'Google profile không chứa email.' });
       }
 
-      console.log('Dữ liệu truyền vào createGoogleUser:', { googleId, name, email });
+      //console.log('Dữ liệu truyền vào createGoogleUser:', { googleId, name, email });
 
       // Gọi hàm tạo người dùng
       const user = await createGoogleUser(googleId, name, email);
-      console.log('Người dùng được tạo:', user);
+      //console.log('Người dùng được tạo:', user);
 
       return done(null, user);
   } catch (err) {
