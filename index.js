@@ -4,6 +4,7 @@ const { engine } = require('express-handlebars')
 const passport = require('passport')
 const session = require('express-session')
 const https = require('https')
+const Handlebars = require('handlebars');
 
 const { initializePassport } = require('./config/passport'); // Cấu hình Passport với chiến lược tự xây dựng
 const fileUpload = require('express-fileupload')
@@ -36,7 +37,14 @@ initializePassport(passport)
 // Template engine
 app.engine('handlebars', engine({
   defaultLayout: 'main',
-  layoutsDir: path.join(__dirname, 'views', 'layouts')
+  layoutsDir: path.join(__dirname, 'views', 'layouts'),
+  helpers: {
+    formatCurrency: function (value) {
+      if (isNaN(value) || value === null || value === undefined) return "0";
+      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+  },
+  
+  },
 }))
 app.set('view engine', 'handlebars')
 app.set('views', path.join(__dirname, 'views'))
@@ -59,6 +67,9 @@ app.use(adminRouter);
 
 const customerRouter = require('./routers/customerRouters/customerRouter');
 app.use(customerRouter);
+
+const cartRouter = require('./routers/customerRouters/cartRouter');
+app.use(cartRouter);
 
 
 const options = {

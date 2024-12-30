@@ -1,0 +1,43 @@
+<div class="container my-5">
+  <h1 class="text-center mb-4">Giỏ hàng của bạn</h1>
+
+  {{#if items.length}}
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Sản phẩm</th>
+        <th>Số lượng</th>
+        <th>Giá</th>
+        <th>Tổng cộng</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each items}}
+      <tr>
+        <td>{{product_name}}</td>
+        <td>{{quantity}}</td>
+        <td>{{price}} VND</td>
+        <td>{{total}} VND</td>
+        <td>
+          <form action="/cart/remove" method="POST">
+            <input type="hidden" name="item_id" value="{{id}}">
+            <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+          </form>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  <div class="text-end">
+    <h3>Tổng cộng: {{formatCurrency total}} VND</h3>
+
+  </div>
+  {{else}}
+  <p class="text-center text-muted">Giỏ hàng của bạn đang trống.</p>
+  {{/if}}
+
+  <div class="text-center mt-4">
+    <a href="/categories" class="btn btn-primary">Tiếp tục mua sắm</a>
+  </div>
+</div>

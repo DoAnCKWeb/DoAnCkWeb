@@ -17,6 +17,8 @@ const login = async (req, res, next) => {
 
     req.logIn(user, (err) => {
       if (err) return next(err); // Lỗi khi lưu thông tin user vào session
+      console.log(`Đăng nhập thành công: User ID: ${user.id}, Name: ${user.name}, Role: ${user.role}`);
+      req.session.user_id = user.id;
       req.session.name = user.name;
       req.session.role = user.role;
       // Kiểm tra loại người dùng và chuyển hướng đến trang thích hợp
