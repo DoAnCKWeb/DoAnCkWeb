@@ -19,8 +19,9 @@ const renderHome = async (req, res) => {
             //console.log(category);
             return category;
         }));
+         const role = req.session.role;
         //console.log(categoriesWithProducts);
-        res.render('adminViews/categories', { categories: categoriesWithProducts });
+        res.render('adminViews/categories', { categories: categoriesWithProducts,role });
     } catch (err) {
         console.error('Lỗi khi lấy dữ liệu:', err);
         res.status(500).send('Lỗi server!');

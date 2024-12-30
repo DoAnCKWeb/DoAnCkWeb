@@ -2,16 +2,17 @@ const express = require('express')
 const router = express.Router()
 const {showAccounts} = require('../../controllers/adminControllers/accountsControllers/accountsControllers')
 const {renderHome, renderAddProduct, addProductHandler, renderEditProduct, editProductHandler, deleteProductHandler, uploadProductImageHandler, showProductDetail, addCategoryHandler, deleteCategoryHandler} = require('../../controllers/adminControllers/categoriesControllers/categoriesControllers')
-const { getStatistics } = require('../../controllers/adminControllers/statisticsControllers/statisticsControllers');
+const { getStatistics } = require('../../controllers/adminControllers/statisticsControllers/statisticsControllers')
 
 // Route Admin: Trang quản trị admin
 router.get('/admin', (req, res) => {
   // Kiểm tra nếu người dùng là admin
   if (!req.isAuthenticated()) {
-    return res.redirect('/login'); 
+    return res.redirect('/login')
   }
+  const role = req.session.role
 
-  res.render('adminViews/adminViews')
+  res.render('adminViews/adminViews', {role})
 })
 // Route: Hiển thị danh sách tài khoản
 router.get('/admin/accounts', showAccounts)
@@ -41,11 +42,10 @@ router.post('/admin/categories/editProduct/:id', editProductHandler); // Sửa s
 router.post('/admin/categories/deleteProduct/:id', deleteProductHandler); // Xóa sản phẩm khỏi database
 router.post('/admin/categories/uploadImage/:id', uploadProductImageHandler); // Upload ảnh
 
-router.get('/admin/categories/product/:id', showProductDetail);
-router.post('/admin/categories/addCategory', addCategoryHandler);
-router.post('/admin/categories/deleteCategory/:id', deleteCategoryHandler);
+router.get('/admin/categories/product/:id', showProductDetail)
+router.post('/admin/categories/addCategory', addCategoryHandler)
+router.post('/admin/categories/deleteCategory/:id', deleteCategoryHandler)
 
-router.get('/admin/statistics', getStatistics);
+router.get('/admin/statistics', getStatistics)
 
-
-module.exports = router;
+module.exports = router
