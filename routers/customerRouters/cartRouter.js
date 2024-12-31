@@ -130,43 +130,37 @@ router.get('/cart', async (req, res) => {
 
 // Xóa sản phẩm khỏi giỏ hàng
 router.post('/cart/remove', async (req, res) => {
-  const { product_id } = req.body;
+  const { id } = req.body; // Chỉ nhận `id` từ client
+  console.log('Dữ liệu xóa:', id);
+  
 
   try {
-    if (!product_id) {
-      console.log('product_id không được truyền từ client.');
-      return res.status(400).json({ message: 'product_id là bắt buộc.' });
+    if (!id) {
+      console.log('ID không được truyền từ client.');
+      return res.status(400).json({ message: 'ID là bắt buộc.' });
     }
 
-    console.log('Xóa sản phẩm khỏi giỏ hàng:', product_id);
-
     if (req.session?.user_id) {
-      const user_id = req.session.user_id;
-      console.log('Người dùng đã đăng nhập. User ID:', user_id);
-
+      // Người dùng đã đăng nhập - xóa trong database
       await db.none(
-        'DELETE FROM cart_items WHERE product_id = $1 AND cart_id = (SELECT id FROM cart WHERE user_id = $2)',
-        [product_id, user_id]
+        'DELETE FROM cart_items WHERE id = $1 AND cart_id = (SELECT id FROM cart WHERE user_id = $2)',
+        [id, req.session.user_id]
       );
-
-      console.log(`Đã xóa sản phẩm (product_id: ${product_id}) khỏi giỏ hàng.`);
-      res.json({ message: 'Sản phẩm đã được xóa khỏi giỏ hàng.' });
+      return res.json({ message: 'Sản phẩm đã được xóa khỏi giỏ hàng.' });
     } else {
-      let sessionCart = req.session.cart || [];
+      // Người dùng chưa đăng nhập - xóa trong session
+      const sessionCart = req.session.cart || [];
       console.log('Giỏ hàng ban đầu:', sessionCart);
 
       const initialLength = sessionCart.length;
-      sessionCart = sessionCart.filter(item => item.product_id !== product_id);
-      req.session.cart = sessionCart;
+      req.session.cart = sessionCart.filter(item => item.id !== parseInt(id, 10)); // So sánh với `id`
 
-      console.log('Giỏ hàng sau khi xóa:', sessionCart);
-
-      if (sessionCart.length < initialLength) {
-        console.log(`Đã xóa sản phẩm (product_id: ${product_id}) khỏi giỏ hàng trong session.`);
-        res.json({ message: 'Sản phẩm đã được xóa khỏi giỏ hàng.' });
+      if (req.session.cart.length < initialLength) {
+        console.log(`Đã xóa sản phẩm (id: ${id}) khỏi giỏ hàng trong session.`);
+        return res.json({ message: 'Sản phẩm đã được xóa khỏi giỏ hàng.' });
       } else {
-        console.log(`Không tìm thấy sản phẩm (product_id: ${product_id}) trong giỏ hàng.`);
-        res.json({ message: 'Không tìm thấy sản phẩm trong giỏ hàng.' });
+        console.log(`Không tìm thấy sản phẩm (id: ${id}) trong giỏ hàng.`);
+        return res.status(404).json({ message: 'Không tìm thấy sản phẩm trong giỏ hàng.' });
       }
     }
   } catch (err) {
@@ -174,5 +168,6 @@ router.post('/cart/remove', async (req, res) => {
     res.status(500).json({ message: 'Lỗi khi xóa sản phẩm khỏi giỏ hàng.' });
   }
 });
+
 
 module.exports = router;

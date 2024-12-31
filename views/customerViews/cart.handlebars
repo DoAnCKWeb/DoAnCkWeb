@@ -1,43 +1,95 @@
 <div class="container my-5">
   <h1 class="text-center mb-4">Giỏ hàng của bạn</h1>
 
-  {{#if items.length}}
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>Sản phẩm</th>
-        <th>Số lượng</th>
-        <th>Giá</th>
-        <th>Tổng cộng</th>
-        <th>Hành động</th>
-      </tr>
-    </thead>
-    <tbody>
-      {{#each items}}
-      <tr>
-        <td>{{product_name}}</td>
-        <td>{{quantity}}</td>
-        <td>{{price}} VND</td>
-        <td>{{total}} VND</td>
-        <td>
-          <form action="/cart/remove" method="POST">
-            <input type="hidden" name="item_id" value="{{id}}">
-            <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
-          </form>
-        </td>
-      </tr>
-      {{/each}}
-    </tbody>
-  </table>
-  <div class="text-end">
-    <h3>Tổng cộng: {{formatCurrency total}} VND</h3>
+  {{#if items}}
+    {{#if items.length}}
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Sản phẩm</th>
+            <th>Số lượng</th>
+            <th>Giá</th>
+            <th>Tổng cộng</th>
+            <th>Hành động</th>
+          </tr>
+        </thead>
+        <tbody>
+  {{#each items}}
+  <tr data-id="{{id}}">
+    <td>{{product_name}}</td>
+    <td>{{quantity}}</td>
+    <td>{{formatCurrency price}}</td>
+    <td>{{formatCurrency total}}</td>
+    <td>
+      <button class="btn btn-danger btn-sm remove-item-btn" data-id="{{id}}">Xóa</button>
+    </td>
+  </tr>
+  {{/each}}
+</tbody>
 
-  </div>
+      </table>
+      <div class="text-end">
+        <h3>Tổng cộng: <span class="total-price">{{formatCurrency total}}</span></h3>
+      </div>
+    {{else}}
+      <p class="text-center text-muted">Giỏ hàng của bạn đang trống.</p>
+    {{/if}}
   {{else}}
-  <p class="text-center text-muted">Giỏ hàng của bạn đang trống.</p>
+    <p class="text-center text-muted">Giỏ hàng của bạn đang trống.</p>
   {{/if}}
 
   <div class="text-center mt-4">
     <a href="/categories" class="btn btn-primary">Tiếp tục mua sắm</a>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+  const removeButtons = document.querySelectorAll('.remove-item-btn');
+
+  removeButtons.forEach(button => {
+    button.addEventListener('click', async (event) => {
+      const id = event.target.getAttribute('data-id');
+      console.log('ID to remove:', id); // Log kiểm tra
+
+      if (!id) {
+        alert('Không tìm thấy ID sản phẩm để xóa.');
+        return;
+      }
+
+      try {
+        const response = await fetch('/cart/remove', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id }), // Gửi `id` thay vì `product_id`
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          alert(result.message);
+          event.target.closest('tr').remove(); // Xóa hàng tương ứng trong bảng
+          updateTotalPrice();
+        } else {
+          alert(result.message);
+        }
+      } catch (error) {
+        console.error('Lỗi khi xóa sản phẩm:', error);
+        alert('Có lỗi xảy ra khi xóa sản phẩm.');
+      }
+    });
+  });
+
+  function updateTotalPrice() {
+    let total = 0;
+    document.querySelectorAll('tbody tr').forEach(row => {
+      const price = parseInt(row.querySelector('td:nth-child(4)').innerText.replace(/\D/g, ''), 10);
+      total += price;
+    });
+    document.querySelector('.total-price').innerText = `${total.toLocaleString()} VND`;
+  }
+});
+
+</script>

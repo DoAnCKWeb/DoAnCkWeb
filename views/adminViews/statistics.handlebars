@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin: 20px;
+        }
+
+        .chart-container {
+            flex: 1;
+            min-width: 45%;
+            max-width: 45%;
+            margin: 10px;
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        /* Custom Legend Styling */
+        .custom-legend {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+            gap: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-color-box {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Thống kê doanh thu và tỉ lệ bán hàng</h1>
+
+    <div class="container">
+        <!-- Biểu đồ tỉ lệ doanh thu -->
+        <div class="chart-container">
+            <h2>Tỉ lệ doanh thu theo danh mục</h2>
+            <canvas id="categoryChart"></canvas>
+        </div>
+
+        <!-- Biểu đồ top sản phẩm -->
+        <div class="chart-container">
+            <h2>Top 3 sản phẩm theo doanh thu</h2>
+            <canvas id="topProductsChart"></canvas>
+            <!-- Custom Legend for Bar Chart -->
+            <div id="barChartLegend" class="custom-legend"></div>
+        </div>
+    </div>
+    {{!-- <a href="/admin" class="btn btn-secondary mt-4">Quay lại</a> --}}
+
+
+    <script>
+        // Dữ liệu từ server
+        const categories = {{{ categories }}}; // e.g., ["iPhone", "Oppo", "Samsung", "Xiaomi"]
+        const revenues = {{{ revenues }}}; // e.g., [500000, 300000, 200000, 100000]
+        const topProducts = {{{ topProducts }}}; // e.g., [{category_name: "iPhone", product_name: "iPhone 14", total_revenue: 150000}, ...]
+
+        // Định nghĩa màu sắc cho từng danh mục
+        const categoryColors = {
+            'iPhone': 'rgba(255, 99, 132, 0.6)',      // Pink
+            'Oppo': 'rgba(54, 162, 235, 0.6)',        // Blue
+            'Samsung': 'rgba(255, 206, 86, 0.6)',     // Yellow
+            'Xiaomi': 'rgba(75, 192, 192, 0.6)'       // Green
+        };
+
+        const categoryBorderColors = {
+            'iPhone': 'rgba(255, 99, 132, 1)',        // Pink
+            'Oppo': 'rgba(54, 162, 235, 1)',          // Blue
+            'Samsung': 'rgba(255, 206, 86, 1)',       // Yellow
+            'Xiaomi': 'rgba(75, 192, 192, 1)'         // Green
+        };
+
+        // ================================
+        // Chart 1: Pie Chart for Categories
+        // ================================
+        const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+        new Chart(categoryCtx, {
+            type: 'pie',
+            data: {
+                labels: categories, // Danh mục
+                datasets: [{
+                    label: 'Tỉ lệ (%) doanh thu',
+                    data: revenues, // Tỉ lệ doanh thu
+                    backgroundColor: categories.map(cat => categoryColors[cat] || 'rgba(200, 200, 200, 0.6)'),
+                    borderColor: categories.map(cat => categoryBorderColors[cat] || 'rgba(200, 200, 200, 1)'),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top', // Vị trí legend
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    title: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // =====================================
+        // Chart 2: Bar Chart for Top Products
+        // =====================================
+        // Chuẩn bị dữ liệu cho biểu đồ bar với danh mục trên trục x và Top 3 sản phẩm mỗi danh mục
+        const datasets = []; // Mảng chứa các dataset cho Top 1, Top 2, Top 3
+
+        // Tạo một mảng chứa tên các Top
+        const tops = ['Top 1', 'Top 2', 'Top 3'];
+
+        // Khởi tạo dữ liệu cho từng Top
+        tops.forEach((top, index) => {
+            const data = categories.map(category => {
+                const products = topProducts.filter(p => p.category_name === category);
+                if (products[index]) {
+                    return {
+                        revenue: products[index].total_revenue,
+                        productName: products[index].product_name
+                    };
+                } else {
+                    return {
+                        revenue: 0,
+                        productName: ''
+                    };
+                }
+            });
+
+            datasets.push({
+                label: top,
+                data: data.map(d => d.revenue),
+                backgroundColor: categories.map(cat => categoryColors[cat] || 'rgba(200, 200, 200, 0.6)'),
+                borderColor: categories.map(cat => categoryBorderColors[cat] || 'rgba(200, 200, 200, 1)'),
+                borderWidth: 1,
+                // Thêm thông tin sản phẩm để sử dụng trong tooltip
+                productNames: data.map(d => d.productName),
+            });
+        });
+
+        // Tạo bar chart
+        const topProductsCtx = document.getElementById('topProductsChart').getContext('2d');
+        const barChart = new Chart(topProductsCtx, {
+            type: 'bar',
+            data: {
+                labels: categories, // Danh mục trên trục x
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            // Tùy chỉnh nội dung tooltip để hiển thị tên sản phẩm
+                            label: function (context) {
+                                const datasetIndex = context.datasetIndex;
+                                const dataIndex = context.dataIndex;
+                                const revenue = context.parsed.y || 0;
+                                const productName = context.chart.data.datasets[datasetIndex].productNames[dataIndex];
+                                return `${productName}: ${revenue.toLocaleString()} VND`;
+                            }
+                        }
+                    },
+                    legend: {
+                        display: false // Ẩn legend mặc định
+                    },
+                    title: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Doanh thu (VND)'
+                        },
+                        ticks: {
+                            callback: function (value) {
+                                return value.toLocaleString();
+                            }
+                        }
+                    },
+                    x: {
+                        // Tùy chỉnh khoảng cách giữa các nhóm
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Tạo Custom Legend cho Bar Chart
+        const legendContainer = document.getElementById('barChartLegend');
+        categories.forEach(category => {
+            const legendItem = document.createElement('div');
+            legendItem.classList.add('legend-item');
+
+            const colorBox = document.createElement('div');
+            colorBox.classList.add('legend-color-box');
+            colorBox.style.backgroundColor = categoryColors[category] || 'rgba(200, 200, 200, 0.6)';
+
+            const label = document.createElement('span');
+            label.textContent = category;
+
+            legendItem.appendChild(colorBox);
+            legendItem.appendChild(label);
+            legendContainer.appendChild(legendItem);
+        });
+    </script>
+
+</body>
+
+</html>

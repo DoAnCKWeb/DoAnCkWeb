@@ -7,7 +7,7 @@ const renderLogin = async (req, res) => {
     res.render('login', { message });
 };
 
-// Xử lý đăng nhập
+// Xử lý đăng nhập bằng Custom Strategy
 const login = async (req, res, next) => {
     passport.authenticate('custom', async (err, user, info) => {
         if (err) return next(err);
@@ -19,10 +19,13 @@ const login = async (req, res, next) => {
             if (err) return next(err);
 
             req.session.user_id = user.id;
+            req.session.name = user.name;
+            req.session.role = user.role;
 
             // Đồng bộ giỏ hàng tạm thời
             const sessionCart = req.session.cart || [];
             let cart = await db.oneOrNone('SELECT * FROM cart WHERE user_id = $1', [user.id]);
+
             if (!cart) {
                 cart = await db.one(
                     'INSERT INTO cart (user_id, session_id) VALUES ($1, $2) RETURNING id',
@@ -52,12 +55,63 @@ const login = async (req, res, next) => {
             // Xóa giỏ hàng tạm thời sau khi đồng bộ
             delete req.session.cart;
 
-            res.redirect('/categories');
+            // Chuyển hướng dựa trên role
+            if (user.role === 'admin') {
+                res.redirect('/admin');
+            } else {
+                res.redirect('/categories');
+            }
         });
     })(req, res, next);
+};
+
+// Xử lý đăng nhập bằng Google
+const googleAuth = passport.authenticate('google', { scope: ['profile', 'email'] });
+
+// Xử lý callback sau khi Google xác thực
+const googleCallback = async (req, res, next) => {
+    passport.authenticate('google', async (err, user, info) => {
+        if (err) return next(err);
+        if (!user) {
+            return res.redirect('/login?message=' + encodeURIComponent(info?.message || 'Đăng nhập bằng Google thất bại.'));
+        }
+
+        req.logIn(user, async (err) => {
+            if (err) return next(err);
+
+            req.session.user_id = user.id;
+            req.session.name = user.name;
+            req.session.role = user.role;
+
+            // Chuyển hướng dựa trên role
+            if (user.role === 'admin') {
+                res.redirect('/admin');
+            } else {
+                res.redirect('/categories');
+            }
+        });
+    })(req, res, next);
+};
+
+// Xử lý đăng xuất
+const logout = (req, res, next) => {
+    req.logout(function(err) {
+        if (err) return next(err);
+        req.session.destroy((err) => {
+            if (err) {
+                console.error('Error destroying session during logout:', err);
+                return next(err);
+            }
+            res.clearCookie('connect.sid'); // Xóa cookie session
+            res.redirect('/login?message=' + encodeURIComponent('Bạn đã đăng xuất thành công.'));
+        });
+    });
 };
 
 module.exports = {
     renderLogin,
     login,
+    googleAuth,
+    googleCallback,
+    logout
 };

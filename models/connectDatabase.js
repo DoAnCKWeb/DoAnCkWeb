@@ -10,6 +10,7 @@ const dbConfig = {
     database: 'web',
 };
 
+
 const db = pgp(dbConfig);
 
 console.log('Kết nối thành công!');
@@ -79,3 +80,4 @@ const checkLogin = async (email, password) => {
 };
 
 module.exports = { db, all, getUserByEmail, getUserById, checkAccountExists, addUser, checkLogin };
+

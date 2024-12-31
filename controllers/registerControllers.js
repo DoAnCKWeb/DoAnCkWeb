@@ -1,4 +1,4 @@
-const { checkAccountExists, addUser } = require('../models/connectDatabase')
+const { checkAccountExists, addUser } = require('../models/authModels/auth')
 const bcrypt= require('bcrypt')
 const register = async (req, res) => {
     const { role, username, email, password } = req.body;
@@ -6,7 +6,7 @@ const register = async (req, res) => {
     try { 
         const userExists = await checkAccountExists(email);
         if (userExists) {
-             res.redirect('/register');
+             res.redirect('/register?message="email đã tồn tại , vui lòng nhập email mới !"');
         }
 
         //hash mật khẩu

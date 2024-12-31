@@ -1,0 +1,118 @@
+<header class="bg-success text-white text-center py-4">
+    <h1>Quản lý Category và Product</h1>
+</header>
+
+<main class="container my-5">
+    <!-- Danh sách Category -->
+    <section>
+        <h2 class="text-primary">Danh sách Category</h2>
+
+        <!-- Nút thêm danh mục -->
+        <div class="addCategory mb-4 text-end">
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Thêm Danh
+                mục</button>
+        </div>
+
+        <!-- Modal thêm danh mục -->
+        <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addCategoryLabel">Thêm Danh mục mới</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="/admin/categories/addCategory" method="POST">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="categoryName" class="form-label">Tên danh mục</label>
+                                <input type="text" id="categoryName" name="name" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Thêm</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {{#if categories.length}}
+        <div class="accordion" id="categoryAccordion">
+            {{#each categories}}
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading{{id}}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapse{{id}}" aria-expanded="false" aria-controls="collapse{{id}}">
+                        {{name}}
+                    </button>
+                </h2>
+                <div id="collapse{{id}}" class="accordion-collapse collapse" aria-labelledby="heading{{id}}"
+                    data-bs-parent="#categoryAccordion">
+                    <div class="accordion-body">
+                        <!-- Nút xóa danh mục -->
+                        <form action="/admin/categories/deleteCategory/{{id}}" method="POST"
+                            onsubmit="return confirm('Bạn có chắc chắn muốn xóa danh mục này?');" class="text-end mb-3">
+                            <button type="submit" class="btn btn-danger btn-sm">Xóa Danh mục</button>
+                        </form>
+
+                        <!-- Thêm sản phẩm -->
+                        <div class="addProduct mb-4">
+                            <a href="/admin/categories/addProduct/{{id}}" class="btn btn-primary">Thêm Sản phẩm</a>
+                        </div>
+
+                        <!-- Hiển thị danh sách Product thuộc Category -->
+                        <h5 class="mb-3">Sản phẩm:</h5>
+                        {{#if this.products.length}}
+                        <div class="row row-cols-1 row-cols-md-3 g-4">
+                            {{#each this.products}}
+                            <div class="col mb-4">
+                                <div class="card h-100">
+                                    <img src="{{this.image}}" class="card-img-top" alt="Product Image"
+                                        style="height: 200px; object-fit: cover;">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{this.product_name}}</h5>
+                                        <p class="card-text"><strong>Giá:</strong> {{this.price}} VND</p>
+
+                                        <!-- Input tải ảnh -->
+                                        <form action="/admin/categories/uploadImage/{{this.product_id}}" method="POST"
+                                            enctype="multipart/form-data">
+                                            <label for="productImage{{this.product_id}}" class="form-label">Tải ảnh
+                                                lên:</label>
+                                            <input type="file" id="productImage{{this.product_id}}" name="productImage"
+                                                class="form-control mb-2">
+                                            <button type="submit" class="btn btn-primary btn-sm">Tải lên</button>
+                                        </form>
+
+                                        <!-- Sửa và xóa sản phẩm -->
+                                        <div class="d-flex flex-column mt-3">
+                                            <a href="/admin/categories/editProduct/{{this.product_id}}"
+                                                class="btn btn-warning btn-sm mb-2">Sửa</a>
+                                            <form action="/admin/categories/deleteProduct/{{this.product_id}}"
+                                                method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa?');">
+                                                <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                                            </form>
+                                            <a href="/admin/categories/product/{{this.product_id}}"
+                                                class="btn btn-info btn-sm mt-2">Xem chi tiết</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {{/each}}
+                        </div>
+                        {{else}}
+                        <p class="text-muted">Không có sản phẩm nào trong Category này.</p>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+        {{else}}
+        <p class="text-muted">Không có Category nào.</p>
+        {{/if}}
+        {{!-- <a href="/admin" class="btn btn-secondary mt-4">Quay lại</a> --}}
+
+    </section>
+</main>
