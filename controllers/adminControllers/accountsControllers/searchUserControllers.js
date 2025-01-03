@@ -6,7 +6,9 @@ const Search = async (req, res) => {
     const { name } = req.body;
     try {
         const users = await getUsersByName(name);
-        res.render('adminViews/accounts', { accounts:users });
+        const role = req.session.role;
+
+        res.render('adminViews/accounts', { accounts:users,role });
         
     } catch (err) {
         console.error(err);
