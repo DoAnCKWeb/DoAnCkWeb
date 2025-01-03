@@ -31,7 +31,8 @@ const renderAddProduct = async (req, res) => {
     try {
         const { id } = req.params;
         const availableColors = await db.any('SELECT DISTINCT color_name FROM product_colors');
-        res.render('adminViews/addProduct', { id, availableColors });
+        const role = req.session.role;
+        res.render('adminViews/addProduct', { id, availableColors,role });
     } catch (err) {
         console.error('Lỗi khi render form thêm sản phẩm:', err);
         res.status(500).send('Lỗi server!');
@@ -97,8 +98,11 @@ const renderEditProduct = async (req, res) => {
         }
 
         const availableColors = product.colors; // Lấy danh sách màu sắc của sản phẩm
+        const role = req.session.role;
+        console.log(role);
 
-        res.render('adminViews/editProduct', { product, availableColors }); // Truyền dữ liệu vào view
+
+        res.render('adminViews/editProduct', { product, availableColors,role}); // Truyền dữ liệu vào view
     } catch (err) {
         console.error('Lỗi khi render form chỉnh sửa sản phẩm:', err);
         res.status(500).send('Lỗi server!');
@@ -186,10 +190,13 @@ const showProductDetail = async (req, res) => {
             return res.status(404).send('Không tìm thấy sản phẩm!');
         }
          if (!req.isAuthenticated()) {
-          return res.redirect('/login'); 
-  }
+             return res.redirect('/login'); 
+             
+        }
+        const role = req.session.role;
+
         // Render trang chi tiết sản phẩm
-        res.render('adminViews/detailProduct', { product });
+        res.render('adminViews/detailProduct', { product,role });
     } catch (err) {
         console.error('Lỗi khi lấy thông tin chi tiết sản phẩm:', err);
         res.status(500).send('Lỗi server!');
