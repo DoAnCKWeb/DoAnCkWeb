@@ -77,11 +77,13 @@ const getStatistics = async (req, res) => {
         if (!req.isAuthenticated()) {
             return res.redirect('/login'); 
         }
+         const role = req.session.role;
 
         res.render('adminViews/statistics', {
             categories: JSON.stringify(categories),
             revenues: JSON.stringify(revenues),
             topProducts: JSON.stringify(topProducts), // Truyền topProducts
+            role
         });
     } catch (error) {
         console.error('Lỗi khi truy vấn dữ liệu:', error);
