@@ -24,7 +24,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(session({
   secret: 'secret_key',
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   cookie: { secure: false,httpOnly: true,  maxAge: 1000 * 60 * 60 * 24 * 7 }
 }))
 
