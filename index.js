@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(fileUpload())
 app.use(cors())
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Cấu hình session
 app.use(session({

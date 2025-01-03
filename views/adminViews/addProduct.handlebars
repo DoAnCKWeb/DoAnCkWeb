@@ -40,7 +40,7 @@
         <!-- Trọng lượng -->
         <div class="col-md-6">
             <label for="weight" class="form-label">Trọng lượng:</label>
-            <input type="number" id="weight" name="weight" step="0.01" class="form-control" placeholder="Nhập trọng lượng (kg)" required>
+            <input type="number" id="weight" name="weight" step="0.01" class="form-control" placeholder="Nhập trọng lượng (g)" required>
         </div>
 
         <!-- Năm phát hành -->
@@ -49,10 +49,27 @@
             <input type="number" id="releaseYear" name="release_year" class="form-control" placeholder="Nhập năm phát hành" required>
         </div>
 
-        <!-- Hình ảnh -->
-        <div class="col-md-6">
-            <label for="productImage" class="form-label">URL Hình ảnh:</label>
-            <input type="text" id="productImage" name="image" class="form-control" placeholder="Nhập URL hình ảnh sản phẩm">
+        <!-- Thêm màu sắc -->
+        <div class="col-md-12">
+            <h4 class="mt-4">Màu sắc</h4>
+            <div id="colorContainer">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Tên màu:</label>
+                        <input type="text" name="colors[0][name]" class="form-control color-input" placeholder="Nhập tên màu hoặc chọn từ danh sách" list="colorOptions" required>
+                        <datalist id="colorOptions">
+                            {{#each availableColors}}
+                            <option value="{{this.color_name}}">{{this.color_name}}</option>
+                            {{/each}}
+                        </datalist>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Số lượng:</label>
+                        <input type="number" name="colors[0][stock]" class="form-control" placeholder="Nhập số lượng" required>
+                    </div>
+                </div>
+            </div>
+            <button type="button" id="addColor" class="btn btn-secondary mt-3">Thêm màu</button>
         </div>
 
         <!-- Nút gửi form -->
@@ -61,3 +78,29 @@
         </div>
     </form>
 </main>
+
+<script>
+    let colorIndex = 1; // Chỉ số màu sắc bắt đầu
+    document.getElementById('addColor').addEventListener('click', () => {
+        const container = document.getElementById('colorContainer');
+        const colorRow = document.createElement('div');
+        colorRow.classList.add('row', 'g-3', 'mb-3');
+        colorRow.innerHTML = `
+            <div class="col-md-6">
+                <label class="form-label">Tên màu:</label>
+                <input type="text" name="colors[${colorIndex}][name]" class="form-control color-input" placeholder="Nhập tên màu hoặc chọn từ danh sách" list="colorOptions" required>
+                <datalist id="colorOptions">
+                    {{#each availableColors}}
+                    <option value="{{this.color_name}}">{{this.color_name}}</option>
+                    {{/each}}
+                </datalist>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Số lượng:</label>
+                <input type="number" name="colors[${colorIndex}][stock]" class="form-control" placeholder="Nhập số lượng" required>
+            </div>
+        `;
+        container.appendChild(colorRow);
+        colorIndex++;
+    });
+</script>

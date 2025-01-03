@@ -19,9 +19,9 @@ const getStatistics = async (req, res) => {
             JOIN 
                 orders o ON oi.order_id = o.id
             GROUP BY 
-                c.name
+                c.id, c.name
             ORDER BY 
-                percentage_revenue DESC;
+                c.id; -- Sắp xếp theo thứ tự ID trong bảng categories
         `;
         const categoryPercentages = await db.any(categoryPercentageQuery);
 
@@ -29,6 +29,7 @@ const getStatistics = async (req, res) => {
         const topProductsQuery = `
             WITH category_product_revenue AS (
                 SELECT 
+                    c.id AS category_id,
                     c.name AS category_name,
                     p.product_name,
                     SUM(oi.price) AS total_revenue
@@ -39,14 +40,15 @@ const getStatistics = async (req, res) => {
                 JOIN 
                     categories c ON p.category_id = c.id
                 GROUP BY 
-                    c.name, p.product_name
+                    c.id, c.name, p.product_name
             ),
             ranked_products AS (
                 SELECT 
+                    category_id,
                     category_name,
                     product_name,
                     total_revenue,
-                    RANK() OVER (PARTITION BY category_name ORDER BY total_revenue DESC) AS rank
+                    RANK() OVER (PARTITION BY category_id ORDER BY total_revenue DESC) AS rank
                 FROM 
                     category_product_revenue
             )
@@ -57,7 +59,9 @@ const getStatistics = async (req, res) => {
             FROM 
                 ranked_products
             WHERE 
-                rank <= 3;
+                rank <= 3
+            ORDER BY 
+                category_id, rank; -- Sắp xếp theo thứ tự danh mục (ID) và thứ hạng sản phẩm
         `;
         const topProducts = await db.any(topProductsQuery);
 

@@ -1,25 +1,19 @@
 const { getCategory, addCategory, deleteCategory, } = require('../../../models/adminModels/catergoriesModels/catergories')
 const { getProduct, getProductById, addProduct, updateProduct, deleteProduct, updateProductImage,  } = require('../../../models/adminModels/catergoriesModels/product');
 const path = require('path');
+const {db} = require('../../../models/connectDatabase');
 // Hàm render trang chủ với danh sách category và sản phẩm
 const renderHome = async (req, res) => {
-     if (!req.isAuthenticated()) {
-    return res.redirect('/login'); 
-  }
+    if (!req.isAuthenticated()) {
+        return res.redirect('/login');
+    }
     try {
-        // Lấy tất cả danh mục
         const categories = await getCategory();
-        //console.log(categories);
-
-        // Lặp qua tất cả danh mục và lấy sản phẩm tương ứng
         const categoriesWithProducts = await Promise.all(categories.map(async (category) => {
             const products = await getProduct(category.id);
-            //console.log(products);
-            category.products = products; 
-            //console.log(category);
+            category.products = products;
             return category;
         }));
-        //console.log(categoriesWithProducts);
         res.render('adminViews/categories', { categories: categoriesWithProducts });
     } catch (err) {
         console.error('Lỗi khi lấy dữ liệu:', err);
@@ -28,52 +22,54 @@ const renderHome = async (req, res) => {
 };
 
 // Hàm render form thêm sản phẩm
-const renderAddProduct = async (req, res) => { 
-     if (!req.isAuthenticated()) {
-    return res.redirect('/login'); 
-  }
-    const { id } = req.params;
-    // Lấy CatID từ params
-    res.render('adminViews/addProduct', { id });
-}
+const renderAddProduct = async (req, res) => {
+    if (!req.isAuthenticated()) {
+        return res.redirect('/login');
+    }
+    try {
+        const { id } = req.params;
+        const availableColors = await db.any('SELECT DISTINCT color_name FROM product_colors');
+        res.render('adminViews/addProduct', { id, availableColors });
+    } catch (err) {
+        console.error('Lỗi khi render form thêm sản phẩm:', err);
+        res.status(500).send('Lỗi server!');
+    }
+};
+
 
 // Hàm thêm sản phẩm
 const addProductHandler = async (req, res) => {
-    const { id } = req.params; // Lấy category_id từ URL
-    const catid = parseInt(id); // Chuyển đổi sang số nguyên
-
-    if (isNaN(catid)) {
-        console.error('CatID không hợp lệ:', id);
-        return res.status(400).send('CatID không hợp lệ!');
-    }
-
-    // Lấy dữ liệu từ form
-    const { 
-        product_name, 
-        price, 
-        storage_capacity, 
-        operating_system, 
-        screen_size, 
-        weight, 
-        release_year, 
-        image 
-    } = req.body;
+    const { id } = req.params;
+    const { product_name, price, storage_capacity, operating_system, screen_size, weight, release_year, image, colors } = req.body;
 
     try {
-        // Gọi service để thêm sản phẩm vào database
-        await addProduct({ 
-            product_name, 
-            price, 
-            storage_capacity, 
-            operating_system, 
-            screen_size, 
-            weight: parseFloat(weight), // Chuyển trọng lượng sang kiểu số thực
-            release_year: parseInt(release_year), // Chuyển năm phát hành sang kiểu số nguyên
-            category_id: catid, 
-            image 
+        const colors = req.body.colors.map(color => {
+            const colorName = color.custom_name || color.name; // Ưu tiên tên màu tự nhập
+            return {
+                name: colorName,
+                stock: parseInt(color.stock),
+                image: color.image
+            };
         });
 
-        res.redirect('/admin/categories'); // Quay lại trang danh sách danh mục sau khi xóa
+        const newProduct = await addProduct({
+            product_name,
+            price,
+            storage_capacity,
+            operating_system,
+            screen_size,
+            weight: parseFloat(weight),
+            release_year: parseInt(release_year),
+            category_id: parseInt(id),
+            image,
+            colors: colors.map(color => ({
+                name: color.name,
+                stock: parseInt(color.stock),
+                image: color.image
+            }))
+        });
+
+        res.redirect('/admin/categories');
     } catch (err) {
         console.error('Lỗi khi thêm sản phẩm:', err);
         res.status(500).send('Lỗi server!');
@@ -82,59 +78,44 @@ const addProductHandler = async (req, res) => {
 
 
 
+
 // Hàm render form chỉnh sửa sản phẩm
 const renderEditProduct = async (req, res) => {
-    const { id } = req.params;  // Lấy product_id từ params
-    const productId = parseInt(id);  // Chuyển product_id thành số nguyên
-
-    if (isNaN(productId)) {
-        return res.status(400).send('ID sản phẩm không hợp lệ!');
+    if (!req.isAuthenticated()) {
+        return res.redirect('/login');
     }
 
+    const { id } = req.params; // Lấy product_id từ params
+
     try {
-        // Lấy thông tin sản phẩm từ database
-        const product = await getProductById(productId);
+        const product = await getProductById(parseInt(id)); // Lấy thông tin sản phẩm
 
         if (!product) {
             return res.status(404).send('Không tìm thấy sản phẩm!');
         }
-         if (!req.isAuthenticated()) {
-           return res.redirect('/login'); 
-        }
-        // Render view với dữ liệu sản phẩm
-        res.render('adminViews/editProduct', { product });
+
+        const availableColors = product.colors; // Lấy danh sách màu sắc của sản phẩm
+
+        res.render('adminViews/editProduct', { product, availableColors }); // Truyền dữ liệu vào view
     } catch (err) {
-        console.error('Lỗi khi lấy thông tin sản phẩm:', err);
+        console.error('Lỗi khi render form chỉnh sửa sản phẩm:', err);
         res.status(500).send('Lỗi server!');
     }
 };
 
+
 // Hàm chỉnh sửa sản phẩm
 const editProductHandler = async (req, res) => {
-    const { id } = req.params;  // Lấy product_id từ URL
-    const productId = parseInt(id);  // Chuyển product_id thành số nguyên
-
-    // Lấy dữ liệu từ form
-    const {
-        product_name,
-        price,
-        storage_capacity,
-        operating_system,
-        screen_size,
-        weight,
-        release_year,
-        image
-    } = req.body;
-
-    if (isNaN(productId)) {
-        console.error('Product ID không hợp lệ:', id);
-        return res.status(400).send('Product ID không hợp lệ!');
-    }
+    const { id } = req.params; // Lấy product_id từ URL
+    const { product_name, price, storage_capacity, operating_system, screen_size, weight, release_year, image, colors } = req.body;
 
     try {
+        // Kiểm tra xem colors có tồn tại không
+        console.log(colors); // Kiểm tra dữ liệu màu sắc được gửi từ form
+
         // Gọi service để cập nhật sản phẩm
         await updateProduct({
-            product_id: productId,
+            product_id: parseInt(id),
             product_name,
             price: parseFloat(price),
             storage_capacity,
@@ -142,13 +123,16 @@ const editProductHandler = async (req, res) => {
             screen_size,
             weight: parseFloat(weight),
             release_year: parseInt(release_year),
-            image
+            image,
+            colors: colors.map(color => ({
+                name: color.name, // Tên màu
+                stock: parseInt(color.stock), // Số lượng màu
+            }))
         });
 
         res.redirect('/admin/categories');
-
     } catch (err) {
-        console.error('Lỗi khi sửa sản phẩm:', err);
+        console.error('Lỗi khi cập nhật sản phẩm:', err);
         res.status(500).send('Lỗi server!');
     }
 };
@@ -156,43 +140,31 @@ const editProductHandler = async (req, res) => {
 
 // Hàm xóa sản phẩm
 const deleteProductHandler = async (req, res) => {
-    const id = parseInt(req.params.id);
     try {
-        await deleteProduct(id); // Xóa sản phẩm khỏi database
+        await deleteProduct(parseInt(req.params.id));
+        res.redirect('/admin/categories');
     } catch (err) {
         console.error('Lỗi khi xóa sản phẩm:', err);
         res.status(500).send('Lỗi server!');
     }
 };
 
+// Hàm tải ảnh
 const uploadProductImageHandler = async (req, res) => {
-    // Lấy ProID từ URL
     const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-        return res.status(400).send('ProID không hợp lệ.');
-    }
-
-    // Lấy file từ req.files
     if (!req.files || !req.files.productImage) {
         return res.status(400).send('Không có tệp ảnh nào được tải lên.');
     }
-
     const imageFile = req.files.productImage;
     const uploadPath = path.join(__dirname, '../../../uploads', imageFile.name);
-
     try {
-        // Lưu tệp ảnh vào thư mục "uploads"
         await imageFile.mv(uploadPath);
-
-        // Cập nhật đường dẫn ảnh trong cơ sở dữ liệu
         const imageUrl = `/uploads/${imageFile.name}`;
         await updateProductImage(id, imageUrl);
-
-        // Chuyển hướng về trang chủ sau khi tải ảnh thành công
         res.redirect('/admin/categories');
     } catch (err) {
         console.error('Lỗi khi tải ảnh:', err);
-        res.status(500).send('Lỗi server khi tải ảnh.');
+        res.status(500).send('Lỗi server!');
     }
 };
 

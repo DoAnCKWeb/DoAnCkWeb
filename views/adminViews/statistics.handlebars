@@ -6,80 +6,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Statistics</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <style>
+        
         body {
-            font-family: Arial, sans-serif;
-        }
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
 
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 20px;
-            margin: 20px;
-        }
+.stat-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Chia đều thành 4 cột */
+    gap: 20px; /* Khoảng cách giữa các ô */
+    padding: 20px;
+    margin: 0 auto; /* Căn giữa toàn bộ */
+    max-width: 1200px; /* Giới hạn chiều rộng */
+}
 
-        .chart-container {
-            flex: 1;
-            min-width: 45%;
-            max-width: 45%;
-            margin: 10px;
-            background: #f9f9f9;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
+.stat-box {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
 
-        h1 {
-            text-align: center;
-        }
+.stat-box h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
 
-        table {
-            width: 80%;
-            margin: 20px auto;
-            border-collapse: collapse;
-        }
+.stat-box p {
+    font-size: 18px;
+    font-weight: bold;
+    color: #007bff;
+}
 
-        th,
-        td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
 
-        th {
-            background-color: #f4f4f4;
-        }
+.container {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 20px; /* Khoảng cách giữa các ô */
+    padding: 20px;
+    margin: 0 auto; /* Căn giữa toàn bộ */
+    max-width: 1200px; /* Giới hạn chiều rộng */
+}
 
-        .text-center {
-            text-align: center;
-        }
+.chart-container {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
 
-        /* Custom Legend Styling */
-        .custom-legend {
-            display: flex;
-            justify-content: center;
-            margin-top: 10px;
-            gap: 20px;
-        }
+.chart-container canvas {
+    width: 100%; /* Chiều rộng của canvas chiếm toàn bộ container */
+    height: 200px; /* Đặt chiều cao tối đa cho canvas */
+}
 
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .legend-color-box {
-            width: 15px;
-            height: 15px;
-            border-radius: 3px;
-        }
     </style>
 </head>
 
 <body>
-    <h1>Thống kê doanh thu và tỉ lệ bán hàng</h1>
+    
+
+<div class="stat-container">
+        <div class="stat-box">
+            <h2>Tổng doanh thu</h2>
+            <p>1,200,000,000 VND</p>
+        </div>
+        <div class="stat-box">
+            <h2>Tổng sản phẩm bán ra</h2>
+            <p>3,200</p>
+        </div>
+        <div class="stat-box">
+            <h2>Tổng lượng khách hàng</h2>
+            <p>1,500</p>
+        </div>
+        <div class="stat-box">
+            <h2>Tổng đơn hàng</h2>
+            <p>1,500</p>
+        </div>
+    </div>
 
     <div class="container">
         <!-- Biểu đồ tỉ lệ doanh thu -->
@@ -92,10 +103,11 @@
         <div class="chart-container">
             <h2>Top 3 sản phẩm theo doanh thu</h2>
             <canvas id="topProductsChart"></canvas>
-            <!-- Custom Legend for Bar Chart -->
-            <div id="barChartLegend" class="custom-legend"></div>
         </div>
+
+
     </div>
+
     <a href="/admin" class="btn btn-secondary mt-4">Quay lại</a>
 
 
@@ -106,18 +118,22 @@
         const topProducts = {{{ topProducts }}}; // e.g., [{category_name: "iPhone", product_name: "iPhone 14", total_revenue: 150000}, ...]
 
         // Định nghĩa màu sắc cho từng danh mục
-        const categoryColors = {
-            'iPhone': 'rgba(255, 99, 132, 0.6)',      // Pink
-            'Oppo': 'rgba(54, 162, 235, 0.6)',        // Blue
-            'Samsung': 'rgba(255, 206, 86, 0.6)',     // Yellow
-            'Xiaomi': 'rgba(75, 192, 192, 0.6)'       // Green
+    const categoryColors = {
+            'Iphone': 'rgba(0, 123, 255, 0.6)',        // Xanh dương
+            'Samsung': 'rgba(40, 167, 69, 0.6)',      // Xanh lá
+            'Xiaomi': 'rgba(255, 87, 51, 0.6)',       // Cam đỏ
+            'Oppo': 'rgba(255, 193, 7, 0.6)',         // Vàng
+            'Realme': 'rgba(255, 99, 132, 0.6)',      // Hồng đỏ
+            'Vivo': 'rgba(255, 165, 0, 0.6)'          // Vàng cam
         };
 
         const categoryBorderColors = {
-            'iPhone': 'rgba(255, 99, 132, 1)',        // Pink
-            'Oppo': 'rgba(54, 162, 235, 1)',          // Blue
-            'Samsung': 'rgba(255, 206, 86, 1)',       // Yellow
-            'Xiaomi': 'rgba(75, 192, 192, 1)'         // Green
+            'Iphone': 'rgba(0, 123, 255, 1)',         // Xanh dương
+            'Samsung': 'rgba(40, 167, 69, 1)',        // Xanh lá
+            'Xiaomi': 'rgba(255, 87, 51, 1)',         // Cam đỏ
+            'Oppo': 'rgba(255, 193, 7, 1)',           // Vàng
+            'Realme': 'rgba(255, 99, 132, 1)',        // Hồng đỏ
+            'Vivo': 'rgba(255, 165, 0, 1)'            // Vàng cam
         };
 
         // ================================
