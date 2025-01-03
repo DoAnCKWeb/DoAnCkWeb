@@ -55,3 +55,52 @@
         </div>
     </div>
 </section>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const emailInput = document.getElementById("form3Example3cg"); // Ô input email
+    const messageDiv = document.createElement("div"); //  thông báo
+    messageDiv.classList.add("alert", "mt-2"); 
+    messageDiv.style.display = "none"; // Ẩn thông báo 
+    emailInput.parentElement.appendChild(messageDiv);
+
+    // Lắng nghe sự kiện nhập vào ô email
+    emailInput.addEventListener("input", async () => {
+      const email = emailInput.value.trim();
+
+      if (!email || !email.includes("@gmail.com")) {
+        messageDiv.textContent = "Email không hợp lệ. Vui lòng sử dụng @gmail.com.";
+        messageDiv.classList.add("alert-danger"); // Thông báo lỗi 
+        messageDiv.classList.remove("alert-success");
+        messageDiv.style.display = "block"; // Hiển thị thông báo
+        return; 
+      }
+
+      try {
+        const response = await fetch("/check-email", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }), // Gửi email
+        });
+
+        const result = await response.json();
+
+        // Hiển thị thông báo dựa trên kết quả
+        if (result.exists) {
+          messageDiv.textContent = result.message || "Email đã tồn tại!";
+          messageDiv.classList.add("alert-danger"); // Thông báo lỗi (màu đỏ)
+          messageDiv.classList.remove("alert-success");
+          messageDiv.style.display = "block"; // Hiển thị thông báo
+        } else {
+          messageDiv.textContent = result.message || "Email hợp lệ.";
+          messageDiv.classList.add("alert-success"); // Thông báo thành công
+          messageDiv.classList.remove("alert-danger");
+          messageDiv.style.display = "block"; // Hiển thị thông báo
+        }
+      } catch (error) {
+        console.error("Error checking email:", error);
+      }
+    });
+  });
+</script>
