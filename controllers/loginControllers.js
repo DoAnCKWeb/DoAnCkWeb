@@ -6,7 +6,6 @@ const renderLogin = async (req, res) => {
     const message = req.query.message;
     res.render('login', { message });
 };
-
 // Xử lý đăng nhập bằng Custom Strategy
 const login = async (req, res, next) => {
     passport.authenticate('custom', async (err, user, info) => {
@@ -22,49 +21,51 @@ const login = async (req, res, next) => {
             req.session.name = user.name;
             req.session.role = user.role;
 
-            // Đồng bộ giỏ hàng tạm thời
-            const sessionCart = req.session.cart || [];
-            let cart = await db.oneOrNone('SELECT * FROM cart WHERE user_id = $1', [user.id]);
+            try {
+                console.log('Session ID during login:', req.sessionID);
 
-            if (!cart) {
-                cart = await db.one(
-                    'INSERT INTO cart (user_id, session_id) VALUES ($1, $2) RETURNING id',
-                    [user.id, req.sessionID]
-                );
-            }
+                // Đồng bộ dữ liệu từ `temporary_cart` vào `cart_items`
+                const temporaryCart = await db.any('SELECT * FROM temporary_cart WHERE session_id = $1', [req.sessionID]);
+                console.log('Lấy giỏ hàng tạm thời:', temporaryCart);
 
-            for (const item of sessionCart) {
-                const existingItem = await db.oneOrNone(
-                    'SELECT * FROM cart_items WHERE cart_id = $1 AND product_id = $2',
-                    [cart.id, item.product_id]
-                );
-
-                if (existingItem) {
-                    await db.none(
-                        'UPDATE cart_items SET quantity = quantity + $1 WHERE id = $2',
-                        [item.quantity, existingItem.id]
-                    );
-                } else {
-                    await db.none(
-                        'INSERT INTO cart_items (cart_id, product_id, quantity, price) VALUES ($1, $2, $3, $4)',
-                        [cart.id, item.product_id, item.quantity, item.price]
+                let cart = await db.oneOrNone('SELECT * FROM cart WHERE user_id = $1', [user.id]);
+                if (!cart) {
+                    cart = await db.one(
+                        'INSERT INTO cart (user_id, session_id) VALUES ($1, $2) RETURNING id',
+                        [user.id, req.sessionID]
                     );
                 }
+
+                for (const item of temporaryCart) {
+                    const existingItem = await db.oneOrNone(
+                        'SELECT * FROM cart_items WHERE cart_id = $1 AND product_id = $2',
+                        [cart.id, item.product_id]
+                    );
+
+                    if (existingItem) {
+                        await db.none(
+                            'UPDATE cart_items SET quantity = quantity + $1 WHERE id = $2',
+                            [item.quantity, existingItem.id]
+                        );
+                    } else {
+                        await db.none(
+                            'INSERT INTO cart_items (cart_id, product_id, quantity, price) VALUES ($1, $2, $3, $4)',
+                            [cart.id, item.product_id, item.quantity, item.price]
+                        );
+                    }
+                }
+
+                // Xóa giỏ hàng tạm sau khi đồng bộ
+                await db.none('DELETE FROM temporary_cart WHERE session_id = $1', [req.sessionID]);
+                console.log('Đồng bộ giỏ hàng thành công.');
+            } catch (error) {
+                console.error('Lỗi khi đồng bộ giỏ hàng:', error);
             }
 
-            // Xóa giỏ hàng tạm thời sau khi đồng bộ
-            delete req.session.cart;
-
-            // Chuyển hướng dựa trên role
-            if (user.role === 'admin') {
-                res.redirect('/admin');
-            } else {
-                res.redirect('/categories');
-            }
+            res.redirect(user.role === 'admin' ? '/admin' : '/categories');
         });
     })(req, res, next);
 };
-
 // Xử lý đăng nhập bằng Google
 const googleAuth = passport.authenticate('google', { scope: ['profile', 'email'] });
 

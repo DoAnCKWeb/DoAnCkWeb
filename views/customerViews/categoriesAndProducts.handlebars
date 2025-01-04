@@ -1,4 +1,21 @@
 <div class="container my-5">
+
+  <!-- Thanh tìm kiếm -->
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <form method="GET" action="/search" class="d-flex">
+        <input
+          type="text"
+          name="q"
+          class="form-control me-2"
+          placeholder="Tìm kiếm sản phẩm..."
+          value="{{query}}">
+        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+      </form>
+    </div>
+  </div>
+
+  
   <!-- Hiển thị danh mục -->
   <h1 class="text-center mb-4">Danh mục sản phẩm</h1>
   <div class="row mb-4">

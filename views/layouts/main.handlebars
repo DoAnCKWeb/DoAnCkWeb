@@ -203,16 +203,17 @@
 
 
         async function updateCartCount() {
-            try {
-                const response = await fetch('/cart/items-count');
-                const data = await response.json();
-                document.getElementById('cart-count').innerText = data.totalItems || 0;
-            } catch (error) {
-                console.error('Lỗi khi tải số lượng giỏ hàng:', error);
-            }
-        }
+    try {
+        const response = await fetch('/cart/items-count');
+        const data = await response.json();
+        document.getElementById('cart-count').innerText = data.totalItems || 0;
+    } catch (error) {
+        console.error('Lỗi khi tải số lượng giỏ hàng:', error);
+    }
+}
 
-        document.addEventListener('DOMContentLoaded', updateCartCount);
+document.addEventListener('DOMContentLoaded', updateCartCount);
+
     </script>
 </body>
 

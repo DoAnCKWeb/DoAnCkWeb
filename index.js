@@ -3,37 +3,52 @@ const express = require('express');
 const { engine } = require('express-handlebars');
 const passport = require('passport');
 const session = require('express-session');
+const pgSession = require('connect-pg-simple')(session); // Thư viện lưu session vào PostgreSQL
 const https = require('https');
 const fileUpload = require('express-fileupload');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const fs = require('fs');
-
 require('dotenv').config(); // Load biến môi trường từ file .env
 
+const { Pool } = require('pg');
 const { initializePassport } = require('./config/passport'); // Cấu hình Passport với chiến lược tự xây dựng
 
 const port = 4000;
 const app = express();
 
+// Cấu hình Pool kết nối tới PostgreSQL
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL || 'postgres://postgres:123456789@localhost:5432/web',
+});
+
 // Middleware xử lý request
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(fileUpload());
-app.use(cors());
+app.use(cors({
+  origin: 'https://localhost:4000', // Đảm bảo phù hợp với domain của bạn
+  credentials: true, // Cho phép gửi cookie qua domain khác
+}));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Cấu hình session
 app.use(session({
+  store: new pgSession({
+      pool,
+      tableName: 'session',
+  }),
   secret: process.env.SESSION_SECRET || 'secret_key',
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   cookie: {
-    secure: false, // Set thành true nếu sử dụng HTTPS
-    httpOnly: true,
-    maxAge: 1000 * 60 * 60 * 24 * 7 // 7 ngày
-  }
+      secure: true, // Đảm bảo dùng HTTPS
+      httpOnly: true,
+      sameSite: 'lax', // Cookie chỉ gửi khi điều hướng từ cùng domain
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 ngày
+  },
 }));
+
+
 
 // Khởi tạo Passport
 app.use(passport.initialize());
@@ -88,7 +103,8 @@ const server = https.createServer(options, app);
 // Tích hợp Socket.IO
 const io = new Server(server, {
   cors: {
-    origin: '*'
+    origin: 'https://localhost:4000', // Phù hợp với domain của bạn
+    credentials: true, // Cho phép cookie
   }
 });
 
