@@ -48,8 +48,6 @@ app.use(session({
   },
 }));
 
-
-
 // Khởi tạo Passport
 app.use(passport.initialize());
 app.use(passport.session());

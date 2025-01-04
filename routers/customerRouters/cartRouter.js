@@ -75,6 +75,7 @@ router.post('/cart/add', async (req, res) => {
 router.get('/cart/items-count', async (req, res) => {
   try {
     if (req.session?.user_id) {
+      // Người dùng đã đăng nhập: Tính số lượng sản phẩm từ cart_items
       const user_id = req.session.user_id;
       const totalItems = await db.oneOrNone(
         `SELECT COALESCE(SUM(quantity), 0) AS total 
@@ -85,9 +86,19 @@ router.get('/cart/items-count', async (req, res) => {
 
       return res.json({ totalItems: totalItems?.total || 0 });
     } else {
-      const sessionCart = req.session.cart || [];
-      const totalItems = sessionCart.reduce((sum, item) => sum + item.quantity, 0);
-      return res.json({ totalItems });
+      // Người dùng chưa đăng nhập: Tính số lượng sản phẩm từ temporary_cart
+      console.log('Session ID during items-count:', req.sessionID);
+
+      const session_id = req.sessionID;
+      const totalItems = await db.oneOrNone(
+        `SELECT COALESCE(SUM(quantity), 0) AS total 
+         FROM temporary_cart 
+         WHERE session_id = $1`,
+        [session_id]
+      );
+
+      console.log('Total items in temporary_cart:', totalItems?.total || 0);
+      return res.json({ totalItems: totalItems?.total || 0 });
     }
   } catch (err) {
     console.error('Lỗi khi lấy số lượng sản phẩm:', err);
