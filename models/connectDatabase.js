@@ -3,19 +3,11 @@ const pgp = require('pg-promise')({
 });
 
 const dbConfig = {
-<<<<<<< HEAD
-user: 'postgres',
-password: '123456',
-host: 'localhost',
-port: '5432',
-database: 'webofffical',
-=======
     user: 'postgres',
     password: '123456',
     host: 'localhost',
     port: 5432,
-    database: 'web',
->>>>>>> kimphuong
+    database: 'webofffical',
 };
 
 

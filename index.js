@@ -3,7 +3,7 @@ const express = require('express');
 const { engine } = require('express-handlebars');
 const passport = require('passport');
 const session = require('express-session');
-const pgSession = require('connect-pg-simple')(session); // Thư viện lưu session vào PostgreSQL
+// const pgSession = require('connect-pg-simple')(session); // Thư viện lưu session vào PostgreSQL
 const https = require('https');
 const fileUpload = require('express-fileupload');
 const { Server } = require('socket.io');
@@ -11,25 +11,16 @@ const cors = require('cors');
 const fs = require('fs');
 require('dotenv').config(); // Load biến môi trường từ file .env
 
-const { Pool } = require('pg');
+// const { Pool } = require('pg');
 const { initializePassport } = require('./config/passport'); // Cấu hình Passport với chiến lược tự xây dựng
 
-<<<<<<< HEAD
-const port = 4000
-const app = express()
-// Middleware xử lý
-app.use(express.urlencoded({ extended: true }))
-app.use(express.json())
-app.use(fileUpload())
-app.use(cors())
-=======
 const port = 4000;
 const app = express();
 
 // Cấu hình Pool kết nối tới PostgreSQL
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgres://postgres:123456789@localhost:5432/web',
-});
+// const pool = new Pool({
+//   connectionString: process.env.DATABASE_URL || 'postgres://postgres:123456789@localhost:5432/web',
+// });
 
 // Middleware xử lý request
 app.use(express.urlencoded({ extended: true }));
@@ -39,21 +30,16 @@ app.use(cors({
   origin: 'https://localhost:4000', // Đảm bảo phù hợp với domain của bạn
   credentials: true, // Cho phép gửi cookie qua domain khác
 }));
->>>>>>> kimphuong
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(session({
-  store: new pgSession({
-      pool,
-      tableName: 'session',
-  }),
+  // store: new pgSession({
+  //     pool,
+  //     tableName: 'session',
+  // }),
   secret: process.env.SESSION_SECRET || 'secret_key',
   resave: false,
   saveUninitialized: false,
-<<<<<<< HEAD
-  cookie: { secure: false,httpOnly: true,  maxAge: 1000 * 60 * 60 * 24 * 7 }
-}))
-=======
   cookie: {
       secure: true, // Đảm bảo dùng HTTPS
       httpOnly: true,
@@ -61,7 +47,6 @@ app.use(session({
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7 ngày
   },
 }));
->>>>>>> kimphuong
 
 
 
