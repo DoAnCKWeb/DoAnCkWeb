@@ -1,0 +1,16 @@
+<div class="container my-5">
+  <div class="card">
+    <div class="card-header text-center">
+      <h2>{{product.product_name}}</h2>
+    </div>
+    <div class="card-body text-center">
+      <img src="{{product.image}}" class="img-fluid mb-4" alt="{{product.product_name}}" style="max-height: 300px; object-fit: contain;">
+      <p><strong>Giá:</strong> {{product.price}} VND</p>
+      <p><strong>Bộ nhớ:</strong> {{product.storage_capacity}}</p>
+      <p><strong>Hệ điều hành:</strong> {{product.operating_system}}</p>
+      <p><strong>Màn hình:</strong> {{product.screen_size}}</p>
+      <p><strong>Năm phát hành:</strong> {{product.release_year}}</p>
+      <a href="/categories/{{product.category_id}}/products" class="btn btn-primary">Quay lại sản phẩm</a>
+    </div>
+  </div>
+</div>

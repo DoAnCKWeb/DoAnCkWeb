@@ -1,0 +1,29 @@
+<div class="container my-5">
+  <h1 class="text-center mb-4">Sản phẩm trong danh mục: {{category.name}}</h1>
+  <div class="row">
+    {{#each products}}
+    <div class="col-md-3 mb-4">
+      <div class="card h-100">
+        <img src="{{image}}" class="card-img-top" alt="{{product_name}}" style="height: 200px; object-fit: cover;">
+        <div class="card-body text-center">
+          <h5 class="card-title">{{product_name}}</h5>
+          <p class="card-text">Giá: {{price}} VND</p>
+          {{#if ../isLoggedIn}}
+            <a href="/product/{{product_id}}" class="btn btn-success">Xem chi tiết</a>
+            <form action="/cart/add" method="POST">
+              <input type="hidden" name="product_id" value="{{product_id}}">
+              <input type="hidden" name="quantity" value="1">
+              <button type="submit" class="btn btn-primary mt-2">Thêm vào giỏ hàng</button>
+            </form>
+          {{else}}
+            <a href="/login" class="btn btn-success">Đăng nhập để mua hàng</a>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+    {{/each}}
+  </div>
+  <div class="text-center mt-4">
+    <a href="/categories" class="btn btn-secondary">Quay lại danh mục</a>
+  </div>
+</div>
