@@ -39,7 +39,7 @@ app.use(session({
   // }),
   secret: process.env.SESSION_SECRET || 'secret_key',
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: true,
   cookie: {
       secure: true, // Đảm bảo dùng HTTPS
       httpOnly: true,
