@@ -7,7 +7,7 @@ router.post('/cart/add', async (req, res) => {
   const { product_id, quantity } = req.body;
 
   try {
-      console.log('Session ID during add to cart:', req.sessionID);
+      //console.log('Session ID during add to cart:', req.sessionID);
 
       if (!product_id || !quantity) {
           return res.status(400).json({ message: 'product_id và quantity là bắt buộc.' });
@@ -87,7 +87,7 @@ router.get('/cart/items-count', async (req, res) => {
       return res.json({ totalItems: totalItems?.total || 0 });
     } else {
       // Người dùng chưa đăng nhập: Tính số lượng sản phẩm từ temporary_cart
-      console.log('Session ID during items-count:', req.sessionID);
+      //console.log('Session ID during items-count:', req.sessionID);
 
       const session_id = req.sessionID;
       const totalItems = await db.oneOrNone(
@@ -97,7 +97,7 @@ router.get('/cart/items-count', async (req, res) => {
         [session_id]
       );
 
-      console.log('Total items in temporary_cart:', totalItems?.total || 0);
+      //console.log('Total items in temporary_cart:', totalItems?.total || 0);
       return res.json({ totalItems: totalItems?.total || 0 });
     }
   } catch (err) {
@@ -131,9 +131,9 @@ router.get('/cart', async (req, res) => {
           return res.render('customerViews/cart', { items, total });
       } else {
           // Chưa đăng nhập: Lấy giỏ hàng từ `temporary_cart`
-          console.log('Session ID during get cart:', req.sessionID);
+          //console.log('Session ID during get cart:', req.sessionID);
           const session_id = req.sessionID;
-          console.log('Lấy giỏ hàng tạm thời với session_id:', session_id);
+          //console.log('Lấy giỏ hàng tạm thời với session_id:', session_id);
 
           const items = await db.any(
               `SELECT tc.id, p.product_name, tc.quantity, tc.price, 
@@ -143,7 +143,7 @@ router.get('/cart', async (req, res) => {
                WHERE tc.session_id = $1`,
               [session_id]
           );
-          console.log('Sản phẩm trong giỏ hàng tạm:', items);
+          //console.log('Sản phẩm trong giỏ hàng tạm:', items);
 
           const total = items.reduce((sum, item) => sum + (parseFloat(item.total) || 0), 0);
           return res.render('customerViews/cart', { items, total });
@@ -161,7 +161,7 @@ router.post('/cart/remove', async (req, res) => {
 
   try {
     if (!id) {
-      console.log('ID không được truyền từ client.');
+      //console.log('ID không được truyền từ client.');
       return res.status(400).json({ message: 'ID là bắt buộc.' });
     }
 
@@ -175,16 +175,16 @@ router.post('/cart/remove', async (req, res) => {
     } else {
       // Người dùng chưa đăng nhập - Xóa từ session cart
       const sessionCart = req.session.cart || [];
-      console.log('Giỏ hàng trước khi xóa:', JSON.stringify(sessionCart, null, 2));
+      //console.log('Giỏ hàng trước khi xóa:', JSON.stringify(sessionCart, null, 2));
 
       const initialLength = sessionCart.length;
       req.session.cart = sessionCart.filter(item => item.id !== parseInt(id, 10)); // Tìm và xóa bằng id
 
       if (req.session.cart.length < initialLength) {
-        console.log('Giỏ hàng sau khi xóa:', JSON.stringify(req.session.cart, null, 2));
+        //console.log('Giỏ hàng sau khi xóa:', JSON.stringify(req.session.cart, null, 2));
         return res.json({ message: 'Sản phẩm đã được xóa khỏi giỏ hàng.' });
       } else {
-        console.log('Không tìm thấy sản phẩm cần xóa:', id);
+        //console.log('Không tìm thấy sản phẩm cần xóa:', id);
         return res.status(404).json({ message: 'Không tìm thấy sản phẩm trong giỏ hàng.' });
       }
     }
