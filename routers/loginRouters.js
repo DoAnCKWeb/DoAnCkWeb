@@ -1,7 +1,7 @@
 const express = require('express');
 const passport = require('passport');
 const router = express.Router();
-const { renderLogin, login, googleAuth, googleCallback, logout } = require('../controllers/loginControllers');
+const { renderLogin, login, googleAuth, googleCallback } = require('../controllers/loginControllers');
 
 // Route trang login
 router.get('/login', renderLogin); // Hiển thị form login
@@ -12,8 +12,5 @@ router.get('/google', googleAuth);
 
 // Route callback sau khi Google xác thực
 router.get('/google/callback', googleCallback);
-
-// Route đăng xuất
-router.get('/logout', logout);
 
 module.exports = router;

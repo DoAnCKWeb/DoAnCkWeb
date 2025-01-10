@@ -9,6 +9,7 @@ const renderHome = async (req, res) => {
             FROM "products" p
             INNER JOIN "categories" c ON p.category_id = c.id
         `);
+        
 
         // Render file categoriesAndProducts.handlebars
         res.render('customerViews/categoriesAndProducts', { categories, products });

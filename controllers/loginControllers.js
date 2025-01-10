@@ -94,25 +94,9 @@ const googleCallback = async (req, res, next) => {
     })(req, res, next);
 };
 
-// Xử lý đăng xuất
-const logout = (req, res, next) => {
-    req.logout(function(err) {
-        if (err) return next(err);
-        req.session.destroy((err) => {
-            if (err) {
-                console.error('Error destroying session during logout:', err);
-                return next(err);
-            }
-            res.clearCookie('connect.sid'); // Xóa cookie session
-            res.redirect('/login?message=' + encodeURIComponent('Bạn đã đăng xuất thành công.'));
-        });
-    });
-};
-
 module.exports = {
     renderLogin,
     login,
     googleAuth,
     googleCallback,
-    logout
 };

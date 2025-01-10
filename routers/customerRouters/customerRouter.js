@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
           INNER JOIN "categories" c ON p.category_id = c.id
       `);
       // Render trang chính với danh mục và sản phẩm
-      res.render('customerViews/categoriesAndProducts', { categories, products });
+      res.render('customerViews/categoriesAndProducts', { categories, products , message: req.query.message });
   } catch (err) {
       console.error('Lỗi khi tải danh mục và sản phẩm:', err);
       res.status(500).send('Lỗi khi tải dữ liệu trang chủ');

@@ -1,19 +1,19 @@
 const logout = (req, res, next) => {
   if (!req.isAuthenticated()) {
-    // Nếu người dùng chưa đăng nhập, thông báo chưa login
+    // Người dùng chưa đăng nhập
     return res.redirect('/login?message=Bạn chưa login')
   }
 
   req.logout((err) => {
     if (err) {
-      return next(err)
+      return next(err); // Xử lý lỗi nếu logout thất bại
     }
 
     req.session.destroy((err) => {
       if (err) {
-        return next(err)
+        return next(err); // Xử lý lỗi nếu hủy session thất bại
       }
-      // Sau khi logout thành công, chuyển đến trang login và hiển thị thông báo thành công
+      // Thành công, chuyển hướng về trang chủ với thông báo
       return res.redirect('/?message=Bạn đã logout thành công')
     })
   })
