@@ -14,7 +14,7 @@ const logout = (req, res, next) => {
         return next(err)
       }
       // Sau khi logout thành công, chuyển đến trang login và hiển thị thông báo thành công
-      return res.redirect('/login?message=Bạn đã logout thành công')
+      return res.redirect('/?message=Bạn đã logout thành công')
     })
   })
 }

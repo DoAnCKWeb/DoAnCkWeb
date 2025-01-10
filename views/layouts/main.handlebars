@@ -32,7 +32,7 @@
                 </li>
             </ul>
         </div>
-        {{else}}
+        {{else if (eq role 'user')}}
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -48,6 +48,31 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/logout">Logout</a>
                 </li>
+                <li class="nav-item">
+                    <a href="/cart" class="nav-link">
+                        <i class="fa fa-shopping-cart"></i> Giỏ hàng
+                        <span id="cart-count">0</span>
+                    </a>
+                </li>
+        
+            </ul>
+        </div>
+        {{else}}
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/register">Register</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/login">Login</a>
+                </li>
+                {{!-- <li class="nav-item">
+                    <a class="nav-link" href="/logout">Logout</a>
+                </li> --}}
                 <li class="nav-item">
                     <a href="/cart" class="nav-link">
                         <i class="fa fa-shopping-cart"></i> Giỏ hàng

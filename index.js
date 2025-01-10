@@ -74,7 +74,7 @@ app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
 // Định nghĩa Routers
-const homeRouter = require('./routers/homeRouters');
+//const homeRouter = require('./routers/homeRouters');
 const registerRouter = require('./routers/registerRouters');
 const loginRouter = require('./routers/loginRouters');
 const logoutRouter = require('./routers/logoutRouter');
@@ -83,7 +83,7 @@ const customerRouter = require('./routers/customerRouters/customerRouter');
 const cartRouter = require('./routers/customerRouters/cartRouter');
 
 // Sử dụng Routers
-app.use(homeRouter);
+//app.use(homeRouter);
 app.use(registerRouter);
 app.use(loginRouter);
 app.use(logoutRouter);

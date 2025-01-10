@@ -1,14 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const { db } = require('../../models/connectDatabase');
-
-// Middleware kiểm tra người dùng đã đăng nhập
-function isAuthenticated(req, res, next) {
-  if (req.session && req.session.user_id) {
-    return next();
-  }
-  return res.status(401).json({ message: 'Vui lòng đăng nhập để thực hiện thao tác này.' });
-}
 // Route chính (trang chủ)
 router.get('/', async (req, res) => {
   try {
@@ -18,7 +10,6 @@ router.get('/', async (req, res) => {
           FROM "products" p
           INNER JOIN "categories" c ON p.category_id = c.id
       `);
-
       // Render trang chính với danh mục và sản phẩm
       res.render('customerViews/categoriesAndProducts', { categories, products });
   } catch (err) {
@@ -28,7 +19,7 @@ router.get('/', async (req, res) => {
 });
 
 // Lấy danh sách danh mục và sản phẩm
-router.get('/categories', async (req, res) => {
+router.get('/user', async (req, res) => {
   try {
       const categories = await db.any('SELECT * FROM "categories"');
       const products = await db.any(`
@@ -36,11 +27,15 @@ router.get('/categories', async (req, res) => {
           FROM "products" p
           INNER JOIN "categories" c ON p.category_id = c.id
       `);
-
+    if (!req.isAuthenticated()) {
+    return res.redirect('/login'); 
+  }
       // Thêm kiểm tra nếu chưa đăng nhập
-      const isLoggedIn = !!req.session.user_id; // true nếu đã đăng nhập
+    const isLoggedIn = !!req.session.user_id; // true nếu đã đăng nhập
+    const role = req.session.role;
 
-      res.render('customerViews/categoriesAndProducts', { categories, products, isLoggedIn });
+
+      res.render('customerViews/categoriesAndProducts', { categories, products, isLoggedIn,role });
   } catch (err) {
       console.error('Lỗi khi tải danh mục và sản phẩm:', err);
       res.status(500).send('Lỗi khi tải danh mục và sản phẩm');
@@ -49,7 +44,7 @@ router.get('/categories', async (req, res) => {
 
 
 // Lấy sản phẩm theo danh mục
-router.get('/categories/:id/products', async (req, res) => {
+router.get('/user/:id/products', async (req, res) => {
   const categoryId = req.params.id;
   try {
       const products = await db.any('SELECT * FROM products WHERE category_id = $1', [categoryId]);
