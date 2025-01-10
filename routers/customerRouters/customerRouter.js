@@ -21,6 +21,34 @@ router.get('/', async (req, res) => {
 // Lấy danh sách danh mục và sản phẩm
 router.get('/user', async (req, res) => {
   try {
+     const role = req.session.role;
+
+      // Lấy tất cả dữ liệu từ bảng "temporary_cart"
+      const getTemporary = await db.query('SELECT * FROM "temporary_cart"');
+      const temporaryData = getTemporary 
+      //console.log("Tam: ",temporaryData);
+
+        // Thêm từng bản ghi vào bảng "cart"
+      for (const temp of temporaryData) {
+            const user_id_ = req.session.user_id;
+          // Thêm dữ liệu vào bảng "cart"
+          const cartResult = await db.query(
+            'INSERT INTO "cart" (user_id, session_id) VALUES ($1, $2) RETURNING id',
+            [user_id_, temp.session_id]
+          );
+      const cardd = await db.query('SELECT id FROM cart WHERE user_id=$1 ORDER BY id DESC LIMIT 1', [user_id_]);
+
+        //console.log("card: ", cardd);  // In ra toàn bộ đối tượng cardd
+        //console.log("cardd: ", cardd[0].id); //
+        const card_id = parseInt(cardd[0].id);
+          // Thêm sản phẩm từ temporary_cart vào "cart_items"
+          await db.query(
+            'INSERT INTO "cart_items" (cart_id, product_id, quantity, price) VALUES ($1, $2, $3, $4)',
+            [card_id, temp.product_id, temp.quantity, temp.price]
+          );
+      }
+        const deleteTemporate =db.query('DELETE FROM "temporary_cart"');
+
       const categories = await db.any('SELECT * FROM "categories"');
       const products = await db.any(`
           SELECT p.*, c.name AS category_name 
@@ -32,7 +60,6 @@ router.get('/user', async (req, res) => {
   }
       // Thêm kiểm tra nếu chưa đăng nhập
     const isLoggedIn = !!req.session.user_id; // true nếu đã đăng nhập
-    const role = req.session.role;
 
 
       res.render('customerViews/categoriesAndProducts', { categories, products, isLoggedIn,role });
