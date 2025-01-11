@@ -65,11 +65,31 @@ app.engine('handlebars', engine({
     eq: function (a, b) {
       return a === b;
     },
+    range: function (start, end) {
+      const range = [];
+      for (let i = start; i <= end; i++) {
+        range.push(i);
+      }
+      return range;
+    },
+    add: function (a, b) {
+      return a + b;
+    },
+    subtract: function (a, b) {
+      return a - b;
+    },
+    gt: function (a, b) {
+      return a > b;
+    },
+    lt: function (a, b) {
+      return a < b;
+    },
     json: function (context) {
       return JSON.stringify(context);
     }
   }
 }));
+
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
