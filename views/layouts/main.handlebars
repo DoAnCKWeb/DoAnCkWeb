@@ -16,9 +16,9 @@
 </head>
 
 <body>
-   
+
     <nav class="navbar navbar-expand-lg navbar-light bg-light w-100">
-        <a class="navbar-brand" href="/{{role}}" style="margin-left:10px">Home</a>
+        <a class="navbar-brand bg-primary text-white" href="/{{role}}" style="margin-left:10px; padding: 10px 15px; border-radius: 5px;">🏠︎Home</a>
         {{#if (eq role 'admin')}}
         <div class="navbar-nav">
             <ul class="nav">
@@ -40,6 +40,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
+<<<<<<< HEAD
                 <li class="nav-item">
                     <a class="nav-link" href="/register">Register</a>
                 </li>
@@ -48,14 +49,30 @@
                 </li> --}}
                 <li class="nav-item">
                     <a class="nav-link" href="/logout">Logout</a>
+=======
+                <a class="nav-link" href="tel:+849090909">
+                    ☎️Hostline 0909.0909<br>
+                </a>
+                <!-- Mục Tài khoản với dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        🚹Tài khoản
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="/register">Đăng ký</a></li>
+                        <li><a class="dropdown-item" href="/login">Đăng nhập</a></li>
+                        <li><a class="dropdown-item" href="/logout">Đăng xuất</a></li>
+                    </ul>
+>>>>>>> c551264f649feccccedb2d591e22dbf6f46594e5
                 </li>
                 <li class="nav-item">
                     <a href="/cart" class="nav-link">
-                        <i class="fa fa-shopping-cart"></i> Giỏ hàng
+                        <i class="fa fa-shopping-cart"></i>🛒 Giỏ hàng
                         <span id="cart-count">0</span>
                     </a>
                 </li>
-        
+
             </ul>
         </div>
         {{else}}
@@ -80,12 +97,12 @@
                         <span id="cart-count">0</span>
                     </a>
                 </li>
-    
+
             </ul>
         </div>
         {{/if}}
     </nav>
-    
+
     {{#if (eq role 'admin')}}
     <div class="container-fluid">
         <div class="row">
@@ -110,7 +127,7 @@
                     </li>
                 </ul>
             </div>
-    
+
             <!-- Nội dung bên phải -->
             <div class="col-md-9">
                 <div class="p-4">
@@ -131,7 +148,8 @@
                 <div class="col-lg-6 col-md-12 mb-4 mb-md-0">
                     <h5 class="text-uppercase">Về chúng tôi</h5>
                     <p>
-                        Chúng tôi cung cấp các sản phẩm công nghệ chất lượng cao với dịch vụ chăm sóc khách hàng hàng đầu.
+                        Chúng tôi cung cấp các sản phẩm công nghệ chất lượng cao với dịch vụ chăm sóc khách hàng hàng
+                        đầu.
                     </p>
                 </div>
                 <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
@@ -171,74 +189,74 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             var currentUrl = window.location.pathname;
             var links = document.querySelectorAll('.nav-link');
-            links.forEach(function(link) {
+            links.forEach(function (link) {
                 if (link.getAttribute('href') === currentUrl) {
                     link.classList.add('active');
                 }
             });
         });
         async function addToCart(productId, quantity) {
-        try {
-            const response = await fetch('/cart/add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ product_id: productId, quantity }),
-            });
+            try {
+                const response = await fetch('/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ product_id: productId, quantity }),
+                });
 
-            const data = await response.json();
-            if (response.ok) {
-                alert(data.message);
-                await updateCartCount(); // Cập nhật số lượng giỏ hàng
-            } else {
-                alert(data.message);
+                const data = await response.json();
+                if (response.ok) {
+                    alert(data.message);
+                    await updateCartCount(); // Cập nhật số lượng giỏ hàng
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error('Lỗi:', error);
+                alert('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.');
             }
-        } catch (error) {
-            console.error('Lỗi:', error);
-            alert('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.');
         }
-    }
-    async function removeFromCart(productId) {
-    try {
-        const response = await fetch('/cart/remove', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ product_id: productId }),
-        });
+        async function removeFromCart(productId) {
+            try {
+                const response = await fetch('/cart/remove', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ product_id: productId }),
+                });
 
-        const data = await response.json();
-        if (response.ok) {
-            alert(data.message);
-            // Reload lại giỏ hàng nếu cần
-            location.reload();
-        } else {
-            alert(data.message);
+                const data = await response.json();
+                if (response.ok) {
+                    alert(data.message);
+                    // Reload lại giỏ hàng nếu cần
+                    location.reload();
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error('Lỗi khi xóa sản phẩm:', error);
+                alert('Có lỗi xảy ra khi xóa sản phẩm khỏi giỏ hàng.');
+            }
         }
-    } catch (error) {
-        console.error('Lỗi khi xóa sản phẩm:', error);
-        alert('Có lỗi xảy ra khi xóa sản phẩm khỏi giỏ hàng.');
-    }
-}
 
 
 
         async function updateCartCount() {
-    try {
-        const response = await fetch('/cart/items-count');
-        const data = await response.json();
-        document.getElementById('cart-count').innerText = data.totalItems || 0;
-    } catch (error) {
-        console.error('Lỗi khi tải số lượng giỏ hàng:', error);
-    }
-}
+            try {
+                const response = await fetch('/cart/items-count');
+                const data = await response.json();
+                document.getElementById('cart-count').innerText = data.totalItems || 0;
+            } catch (error) {
+                console.error('Lỗi khi tải số lượng giỏ hàng:', error);
+            }
+        }
 
-document.addEventListener('DOMContentLoaded', updateCartCount);
+        document.addEventListener('DOMContentLoaded', updateCartCount);
 
     </script>
 </body>
