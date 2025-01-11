@@ -130,7 +130,8 @@ router.get('/cart', async (req, res) => {
 
       // Lấy sản phẩm từ giỏ hàng
       items = await db.any(
-        `SELECT ci.id, p.product_name, ci.quantity, ci.price, (ci.quantity * ci.price) AS sum_price
+        `SELECT ci.id, p.product_name, p.storage_capacity, p.image, ci.quantity, ci.price, 
+                (ci.quantity * ci.price) AS sum_price
          FROM cart_items ci
          JOIN products p ON ci.product_id = p.product_id
          JOIN cart c ON ci.cart_id = c.id
@@ -142,13 +143,13 @@ router.get('/cart', async (req, res) => {
 
       // Lấy sản phẩm từ giỏ hàng tạm thời
       items = await db.any(
-        `SELECT tc.id, p.product_id, p.product_name, tc.quantity, tc.price, 
+        `SELECT tc.id, p.product_id, p.product_name, p.storage_capacity, p.image, tc.quantity, tc.price, 
                 (tc.quantity * tc.price) AS sum_price
          FROM temporary_cart tc
          JOIN products p ON tc.product_id = p.product_id
          WHERE tc.session_id = $1`,
         [session_id]
-      );
+      );      
     }
 
     // Tính tổng tiền
