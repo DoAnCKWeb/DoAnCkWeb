@@ -25,16 +25,19 @@
   <h1 class="text-start mb-4">Danh mục sản phẩm</h1>
 
   <!-- Menu ngang với danh mục sản phẩm và các mục sản phẩm hiển thị cùng dòng -->
-  <div class="d-flex flex-wrap">
+  <div class="d-flex flex-wrap border p-3 rounded shadow-lg bg-light">
     <ul class="nav me-4">
       {{#each categories}}
-      <li class="nav-item">
-        <a class="nav-link" href="/user/{{id}}/products" style="font-size: 1.5rem; font-weight: bold;">{{name}}</a>
+      <li class="nav-item mx-2 mb-2">
+        <a class="nav-link p-3 bg-white rounded border custom-border-color text-center text-dark fw-bold"
+          href="/user/{{id}}/products"
+          style="font-size: 1.5rem; transition: all 0.3s ease; padding-left: 20px; padding-right: 20px;">
+          {{name}}
+        </a>
       </li>
       {{/each}}
     </ul>
   </div>
-
 
   <!-- Hiển thị sản phẩm -->
   <h1 class="text-start mb-4">Tất cả sản phẩm</h1>
