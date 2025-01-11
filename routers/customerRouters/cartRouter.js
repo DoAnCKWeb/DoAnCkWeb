@@ -13,35 +13,21 @@ router.post('/cart/add', async (req, res) => {
           return res.status(400).json({ message: 'product_id và quantity là bắt buộc.' });
       }
 
-      if (req.session?.user_id) {
-          // Đã đăng nhập: Thêm vào `cart_items`
-          const user_id = req.session.user_id;
-          let cart = await db.oneOrNone('SELECT * FROM cart WHERE user_id = $1', [user_id]);
+    if (req.session?.user_id) {
+      // Người dùng đã đăng nhập - Thêm vào `cart_items`
+    // Thêm vào bảng cart
+      await db.query('INSERT INTO cart (user_id, session_id) VALUES ($1, $2)', [req.session.user_id, req.sessionID]);
 
-          if (!cart) {
-              cart = await db.one(
-                  'INSERT INTO cart (user_id, session_id) VALUES ($1, $2) RETURNING id',
-                  [user_id, req.sessionID]
-              );
-          }
+      // Lấy id của cart vừa thêm vào
+      const cart_id_ = await db.query('SELECT id FROM cart WHERE user_id = $1 ORDER BY id DESC LIMIT 1', [req.session.user_id]);
+      const cart_id = parseInt(cart_id_[0].id); // Lấy id của cart
 
-          const existingItem = await db.oneOrNone(
-              'SELECT * FROM cart_items WHERE cart_id = $1 AND product_id = $2',
-              [cart.id, product_id]
-          );
+      // Lấy giá trị price của sản phẩm
+      const price = await db.query('SELECT price FROM products WHERE product_id = $1', [product_id]);
 
-          if (existingItem) {
-              await db.none(
-                  'UPDATE cart_items SET quantity = quantity + $1 WHERE id = $2',
-                  [quantity, existingItem.id]
-              );
-          } else {
-              const product = await db.one('SELECT * FROM products WHERE product_id = $1', [product_id]);
-              await db.none(
-                  'INSERT INTO cart_items (cart_id, product_id, quantity, price) VALUES ($1, $2, $3, $4)',
-                  [cart.id, product_id, quantity, product.price]
-              );
-          }
+      // Thêm vào bảng cart_items
+      await db.query('INSERT INTO cart_items (cart_id, product_id, quantity, price) VALUES ($1, $2, $3, $4)', [cart_id, product_id, quantity, price[0].price]);
+
       } else {
           // Chưa đăng nhập: Thêm vào `temporary_cart`
           const session_id = req.sessionID;
@@ -77,12 +63,15 @@ router.get('/cart/items-count', async (req, res) => {
     if (req.session?.user_id) {
       // Người dùng đã đăng nhập: Tính số lượng sản phẩm từ cart_items
       const user_id = req.session.user_id;
-      const totalItems = await db.oneOrNone(
-        `SELECT COALESCE(SUM(quantity), 0) AS total 
-         FROM cart_items 
-         WHERE cart_id = (SELECT id FROM cart WHERE user_id = $1)`,
-        [user_id]
-      );
+const totalItems = await db.oneOrNone(
+  `SELECT COALESCE(SUM(quantity), 0) AS total
+   FROM "cart_items"
+   WHERE "cart_id" IN (SELECT "id" FROM "cart" WHERE "user_id" = $1)`,
+  [user_id]
+);
+
+console.log('Total Items:', totalItems ? totalItems.total : 0);
+
 
       return res.json({ totalItems: totalItems?.total || 0 });
     } else {
@@ -109,44 +98,54 @@ router.get('/cart/items-count', async (req, res) => {
 // Hiển thị giỏ hàng
 router.get('/cart', async (req, res) => {
   try {
-      if (req.session?.user_id) {
-          // Đã đăng nhập: Lấy giỏ hàng từ `cart_items`
-          const user_id = req.session.user_id;
-          const cart = await db.oneOrNone('SELECT * FROM cart WHERE user_id = $1', [user_id]);
+    if (req.session?.user_id) {
+     
+        const role = req.session.role;
+            // Đã đăng nhập: Lấy giỏ hàng từ `cart_items`
+            const user_id = req.session.user_id;
+            const cart = await db.query('SELECT * FROM cart WHERE user_id = $1', [user_id]);
 
-          if (!cart) {
-              return res.render('customerViews/cart', { items: [], total: 0 });
-          }
+            if (!cart) {
+                return res.render('customerViews/cart', { items: [], total: 0 });
+            }
 
-          const items = await db.any(
-              `SELECT ci.id, p.product_name, ci.quantity, ci.price, 
-                      (ci.quantity * ci.price) AS total
-               FROM cart_items ci
-               JOIN products p ON ci.product_id = p.product_id
-               WHERE ci.cart_id = $1`,
-              [cart.id]
+            const items = await db.any(
+            `SELECT p.product_id, p.product_name, SUM(ci.quantity) as quantity , 
+                    SUM(ci.quantity * ci.price) AS sum_price ,p.price,COALESCE(SUM(quantity), 0) AS total_quantity
+            FROM cart_items ci
+            JOIN products p ON ci.product_id = p.product_id
+            JOIN cart c ON c.id = ci.cart_id
+            WHERE c.user_id = $1
+            GROUP BY p.product_id, p.product_name`,
+            [user_id]
           );
 
-          const total = items.reduce((sum, item) => sum + (parseFloat(item.total) || 0), 0);
-          return res.render('customerViews/cart', { items, total });
-      } else {
-          // Chưa đăng nhập: Lấy giỏ hàng từ `temporary_cart`
-          //console.log('Session ID during get cart:', req.sessionID);
+        //console.log(items);
+        
+
+        //console.log(req.sessionID);
+          const total = items.reduce((sum, item) => sum + (parseFloat(item.sum_price) || 0), 0);
+          console.log('Total:', total);
+          return res.render('customerViews/cart', { items, total, role });
+    } else {
           const session_id = req.sessionID;
-          //console.log('Lấy giỏ hàng tạm thời với session_id:', session_id);
 
-          const items = await db.any(
-              `SELECT tc.id, p.product_name, tc.quantity, tc.price, 
-                      (tc.quantity * tc.price) AS total
-               FROM temporary_cart tc
-               JOIN products p ON tc.product_id = p.product_id
-               WHERE tc.session_id = $1`,
-              [session_id]
-          );
-          //console.log('Sản phẩm trong giỏ hàng tạm:', items);
+    // Sửa lại câu truy vấn với GROUP BY đúng
+        const items = await db.any(
+          `SELECT p.product_name, tc.quantity, tc.price, 
+                  SUM(tc.quantity * tc.price) AS sum_price,
+                  (tc.quantity * tc.price) AS total
+          FROM temporary_cart tc
+          JOIN products p ON tc.product_id = p.product_id
+          WHERE tc.session_id = $1
+          GROUP BY p.product_name, tc.quantity, tc.price`, // Thêm GROUP BY cho p.product_name, tc.quantity, tc.price
+          [session_id]
+        );
 
-          const total = items.reduce((sum, item) => sum + (parseFloat(item.total) || 0), 0);
-          return res.render('customerViews/cart', { items, total });
+    const total = items.reduce((sum, item) => sum + (parseFloat(item.total) || 0), 0);
+
+    return res.render('customerViews/cart', { items, total });
+
       }
   } catch (err) {
       console.error('Lỗi khi hiển thị giỏ hàng:', err);
