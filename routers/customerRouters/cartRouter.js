@@ -199,8 +199,6 @@ router.post('/cart/remove', async (req, res) => {
 
         [id, req.session.user_id]
       );
-      await db.
-
     } else {
       // Người dùng chưa đăng nhập
       await db.none(
