@@ -3,39 +3,39 @@
 
   {{#if items}}
     {{#if items.length}}
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Sản phẩm</th>
-                    <th>Số lượng</th>
-                    <th>Giá</th>
-                    <th>Tổng cộng</th>
-                    <th>Hành động</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#each items}}
-                <tr>
-                    <td>{{product_name}}</td>
-                    <td>{{quantity}}</td>
-                    <td>{{formatCurrency price}}</td>
-                    <td>{{formatCurrency sum_price}}</td>
-                    <td>
-                        <button class="btn btn-danger btn-sm" data-id="{{id}}">Xóa</button>
-                    </td>
-                </tr>
-                {{/each}}
-            </tbody>
-        </table>
-        <div class="text-end">
-            <h3>Tổng cộng: {{formatCurrency total}}</h3>
-        </div>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Sản phẩm</th>
+            <th>Số lượng</th>
+            <th>Giá</th>
+            <th>Tổng cộng</th>
+            <th>Hành động</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each items}}
+          <tr data-id="{{id}}">
+            <td>{{product_name}}</td>
+            <td>{{quantity}}</td>
+            <td>{{formatCurrency price}}</td>
+            <td class="item-total">{{formatCurrency sum_price}}</td>
+            <td>
+              <button class="btn btn-danger btn-sm remove-item-btn" data-id="{{id}}">Xóa</button>
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      <div class="text-end">
+        <h3>Tổng cộng: <span id="total-price">{{formatCurrency total}}</span></h3>
+      </div>
     {{else}}
-        <p class="text-center text-muted">Giỏ hàng của bạn đang trống.</p>
+      <p class="text-center text-muted">Giỏ hàng của bạn đang trống.</p>
     {{/if}}
-{{else}}
+  {{else}}
     <p class="text-center text-muted">Giỏ hàng của bạn đang trống.</p>
-{{/if}}
+  {{/if}}
 
   <div class="text-center mt-4">
     <a href="/{{role}}" class="btn btn-primary">Tiếp tục mua sắm</a>
@@ -49,7 +49,6 @@
     removeButtons.forEach(button => {
       button.addEventListener('click', async (event) => {
         const id = event.target.getAttribute('data-id');
-        console.log('ID cần xóa:', id);
 
         if (!id) {
           alert('Không tìm thấy ID sản phẩm để xóa.');
@@ -68,26 +67,39 @@
           const result = await response.json();
 
           if (response.ok) {
-            alert(result.message);
+            // Xóa sản phẩm khỏi bảng
             event.target.closest('tr').remove();
+
+            // Cập nhật lại tổng giá
             updateTotalPrice();
+
+            // Cập nhật số lượng sản phẩm trong nút giỏ hàng
+            updateCartCount();
           } else {
             alert(result.message);
           }
         } catch (error) {
           console.error('Lỗi khi xóa sản phẩm:', error);
-          alert('Có lỗi xảy ra khi xóa sản phẩm.');
         }
       });
     });
 
     function updateTotalPrice() {
       let total = 0;
-      document.querySelectorAll('tbody tr').forEach(row => {
-        const price = parseInt(row.querySelector('td:nth-child(4)').innerText.replace(/\D/g, ''), 10);
-        total += price;
+      document.querySelectorAll('.item-total').forEach(cell => {
+        total += parseFloat(cell.innerText.replace(/\D/g, '') || 0);
       });
-      document.querySelector('.total-price').innerText = `${total.toLocaleString()} VND`;
+      document.querySelector('#total-price').innerText = `${total.toLocaleString()} VND`;
+    }
+
+    async function updateCartCount() {
+      try {
+        const response = await fetch('/cart/items-count');
+        const data = await response.json();
+        document.getElementById('cart-count').innerText = data.totalItems || 0;
+      } catch (error) {
+        console.error('Lỗi khi tải số lượng giỏ hàng:', error);
+      }
     }
   });
 </script>
