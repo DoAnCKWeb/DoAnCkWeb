@@ -1,10 +1,10 @@
-const { db}=require('../models/connectDatabase')
+//const { db}=require('../models/connectDatabase')
 const logout = (req, res, next) => {
   if (!req.isAuthenticated()) {
     // Người dùng chưa đăng nhập
     return res.redirect('/login?message=Bạn chưa login')
   }
-   const deleteTemporate =db.query('DELETE FROM "temporary_cart"');
+   //const deleteTemporate =db.query('DELETE FROM "temporary_cart"');
 
   req.logout((err) => {
     if (err) {
