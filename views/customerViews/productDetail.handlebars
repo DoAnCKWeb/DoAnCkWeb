@@ -1,16 +1,39 @@
 <div class="container my-5">
-  <div class="card">
-    <div class="card-header text-center">
-      <h2>{{product.product_name}}</h2>
+  <div class="row">
+    <!-- Cột hình ảnh sản phẩm -->
+    <div class="col-md-6">
+      <div class="card">
+        <img src="{{product.image}}" class="img-fluid mb-4" alt="{{product.product_name}}"
+          style="max-height: 380px; object-fit: contain;">
+      </div>
     </div>
-    <div class="card-body text-center">
-      <img src="{{product.image}}" class="img-fluid mb-4" alt="{{product.product_name}}" style="max-height: 300px; object-fit: contain;">
-      <p><strong>Giá:</strong> {{product.price}} VND</p>
-      <p><strong>Bộ nhớ:</strong> {{product.storage_capacity}}</p>
-      <p><strong>Hệ điều hành:</strong> {{product.operating_system}}</p>
-      <p><strong>Màn hình:</strong> {{product.screen_size}}</p>
-      <p><strong>Năm phát hành:</strong> {{product.release_year}}</p>
-      <a href="/user/{{product.category_id}}/products" class="btn btn-primary">Quay lại sản phẩm</a>
+
+    <!-- Cột thông tin sản phẩm -->
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header text-center">
+          <h2 style="background-color: red; color: white; padding: 10px; border-radius: 5px;">
+            {{product.product_name}} - {{product.storage_capacity}}
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <!-- Khung bo cho giá tiền -->
+            <div class="border p-3 rounded shadow-sm">
+              <h3 class="text-danger"><strong>{{product.price}} VND</strong></h3>
+            </div>
+            <span class="badge bg-success">{{product.category_name}}</span>
+          </div>
+          <p><strong>Bộ nhớ:</strong> {{product.storage_capacity}}</p>
+          <p><strong>Hệ điều hành:</strong> {{product.operating_system}}</p>
+          <p><strong>Màn hình:</strong> {{product.screen_size}}</p>
+          <p><strong>Năm phát hành:</strong> {{product.release_year}}</p>
+          <div class="d-flex justify-content-between align-items-center">
+            <a href="/user/{{product.category_id}}/products" class="btn btn-secondary">Quay lại sản phẩm</a>
+            <button class="btn btn-primary">Thêm vào giỏ hàng</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
