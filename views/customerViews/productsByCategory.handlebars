@@ -1,10 +1,13 @@
 <div class="container my-5">
-  <h1 class="text-center mb-4">Sản phẩm trong danh mục: {{category.name}}</h1>
+  <h1 class="text-center mb-4">{{category.name}}</h1>
   <div class="row">
     {{#each products}}
     <div class="col-md-3 mb-4">
       <div class="card h-100">
-        <img src="{{image}}" class="card-img-top" alt="{{product_name}}" style="height: 200px; object-fit: cover;">
+        <!-- Đảm bảo hình vừa khung và giữ tỷ lệ -->
+        <div class="card-img-top" style="height: 200px; background: #f8f9fa; display: flex; justify-content: center; align-items: center; overflow: hidden;">
+          <img src="{{image}}" alt="{{product_name}}" style="width: 100%; height: auto;">
+        </div>
         <div class="card-body text-center">
           <h5 class="card-title">{{product_name}}</h5>
           <p class="card-text">Giá: {{price}} VND</p>

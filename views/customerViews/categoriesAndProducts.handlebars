@@ -21,20 +21,20 @@
   </div>
 
 
-  <!-- Hiển thị danh mục -->
-  <h1 class="text-center mb-4">Danh mục sản phẩm</h1>
-  <div class="row mb-4">
-    {{#each categories}}
-    <div class="col-md-4 mb-4">
-      <div class="card text-center">
-        <div class="card-body">
-          <h5 class="card-title">{{name}}</h5>
-          <a href="/user/{{id}}/products" class="btn btn-primary">Xem sản phẩm</a>
-        </div>
-      </div>
-    </div>
-    {{/each}}
+  <!-- Hiển thị danh mục sản phẩm -->
+  <h1 class="text-start mb-4">Danh mục sản phẩm</h1>
+
+  <!-- Menu ngang với danh mục sản phẩm và các mục sản phẩm hiển thị cùng dòng -->
+  <div class="d-flex flex-wrap">
+    <ul class="nav me-4">
+      {{#each categories}}
+      <li class="nav-item">
+        <a class="nav-link" href="/user/{{id}}/products" style="font-size: 1.5rem; font-weight: bold;">{{name}}</a>
+      </li>
+      {{/each}}
+    </ul>
   </div>
+
 
   <!-- Hiển thị sản phẩm -->
   <h1 class="text-center mb-4">Tất cả sản phẩm</h1>

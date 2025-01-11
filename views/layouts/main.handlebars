@@ -8,17 +8,40 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        .active {
-            background-color: #007bff !important;
+        .navbar {
+            background-color: #dc3545;
+            /* Đỏ */
+        }
+
+        .navbar .nav-link {
             color: white !important;
+        }
+
+        body {
+            background-color: white;
+        }
+
+        .active {
+            background-color: #c82323 !important;
+            color: white !important;
+        }
+    </style>
+    <style>
+        h1 {
+            border: 2px solid #da1616;
+            padding: 10px;
+            border-radius: 5px;
+            color: #fcfafb;
+            background-color: #dc1627;
         }
     </style>
 </head>
 
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light w-100">
-        <a class="navbar-brand bg-primary text-white" href="/{{role}}" style="margin-left:10px; padding: 10px 15px; border-radius: 5px;">🏠︎Home</a>
+    <nav class="navbar navbar-expand-lg navbar-light w-100">
+        <a class="navbar-brand bg-primary text-white" href="/{{role}}"
+            style="margin-left:10px; padding: 10px 15px; border-radius: 5px;">🏠︎Home</a>
         {{#if (eq role 'admin')}}
         <div class="navbar-nav">
             <ul class="nav">
@@ -131,43 +154,61 @@
     </main>
     {{/if}}
 
-    <footer class="bg-light text-center text-lg-start mt-4">
+    <footer class="text-center text-lg-start mt-4" style="background-color: #ADD8E6;">
         <div class="container p-4">
             <div class="row">
                 <div class="col-lg-6 col-md-12 mb-4 mb-md-0">
                     <h5 class="text-uppercase">Về chúng tôi</h5>
-                    <p>
-                        Chúng tôi cung cấp các sản phẩm công nghệ chất lượng cao với dịch vụ chăm sóc khách hàng hàng
-                        đầu.
+                    <p style="text-align: justify;">
+                        Chúng tôi tự hào mang đến những sản phẩm công nghệ tiên tiến,
+                        chất lượng cao,cùng với dịch vụ chăm sóc khách hàng tận tâm
+                        nhất, luôn sẵn sàng đáp ứng mọi nhu cầu của khách
+                        hàng, giúp nâng cao trải nghiệm mua sắm và mang lại sự hài lòng
+                        tuyệt đối.
                     </p>
+
                 </div>
                 <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
                     <h5 class="text-uppercase">Liên hệ</h5>
                     <ul class="list-unstyled mb-0">
                         <li>
-                            <a href="#" class="text-dark">Facebook</a>
+                            <a href="#" class="text-dark">
+                                <i class="bi bi-facebook me-2"></i> Facebook
+                            </a>
                         </li>
                         <li>
-                            <a href="#" class="text-dark">Zalo</a>
+                            <a href="#" class="text-dark">
+                                <i class="bi bi-chat-dots me-2"></i> Zalo
+                            </a>
                         </li>
                         <li>
-                            <a href="#" class="text-dark">Email: support@example.com</a>
+                            <a href="#" class="text-dark">
+                                <i class="bi bi-envelope me-2"></i> Email: support@example.com
+                            </a>
                         </li>
                     </ul>
+
                 </div>
                 <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
                     <h5 class="text-uppercase">Chính sách</h5>
                     <ul class="list-unstyled">
                         <li>
-                            <a href="#" class="text-dark">Bảo hành</a>
+                            <a href="#" class="text-dark">
+                                <i class="bi bi-shield-lock me-2"></i> Bảo hành
+                            </a>
                         </li>
                         <li>
-                            <a href="#" class="text-dark">Vận chuyển</a>
+                            <a href="#" class="text-dark">
+                                <i class="bi bi-truck me-2"></i> Vận chuyển
+                            </a>
                         </li>
                         <li>
-                            <a href="#" class="text-dark">Đổi trả</a>
+                            <a href="#" class="text-dark">
+                                <i class="bi bi-arrow-repeat me-2"></i> Đổi trả
+                            </a>
                         </li>
                     </ul>
+
                 </div>
             </div>
         </div>
@@ -175,6 +216,9 @@
             © 2024 CellphoneS Clone
         </div>
     </footer>
+
+
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -205,48 +249,18 @@
                     alert(data.message);
                 }
             } catch (error) {
-                console.error('Lỗi:', error);
-                alert('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.');
+                alert('Lỗi khi thêm vào giỏ hàng!');
             }
         }
-        async function removeFromCart(productId) {
-            try {
-                const response = await fetch('/cart/remove', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ product_id: productId }),
-                });
-
-                const data = await response.json();
-                if (response.ok) {
-                    alert(data.message);
-                    // Reload lại giỏ hàng nếu cần
-                    location.reload();
-                } else {
-                    alert(data.message);
-                }
-            } catch (error) {
-                console.error('Lỗi khi xóa sản phẩm:', error);
-                alert('Có lỗi xảy ra khi xóa sản phẩm khỏi giỏ hàng.');
-            }
-        }
-
-
 
         async function updateCartCount() {
-            try {
-                const response = await fetch('/cart/items-count');
-                const data = await response.json();
-                document.getElementById('cart-count').innerText = data.totalItems || 0;
-            } catch (error) {
-                console.error('Lỗi khi tải số lượng giỏ hàng:', error);
-            }
+            const response = await fetch('/cart/count');
+            const data = await response.json();
+            document.getElementById('cart-count').textContent = data.count;
         }
 
-        document.addEventListener('DOMContentLoaded', updateCartCount);
-
+        // Load số lượng giỏ hàng khi trang được tải
+        updateCartCount();
     </script>
 </body>
 
