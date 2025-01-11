@@ -119,7 +119,7 @@ console.log('Total Items:', totalItems ? totalItems.total : 0);
     res.status(500).json({ message: 'Lỗi khi lấy số lượng sản phẩm.' });
   }
 });
-
+//Hiển thị giỏ hàng
 router.get('/cart', async (req, res) => {
   try {
     let items = [];
@@ -129,15 +129,32 @@ router.get('/cart', async (req, res) => {
       const user_id = req.session.user_id;
 
       // Lấy sản phẩm từ giỏ hàng
-      items = await db.any(
-        `SELECT ci.id, p.product_name, p.storage_capacity, p.image, ci.quantity, ci.price, 
-                (ci.quantity * ci.price) AS sum_price
-         FROM cart_items ci
-         JOIN products p ON ci.product_id = p.product_id
-         JOIN cart c ON ci.cart_id = c.id
-         WHERE c.user_id = $1`,
-        [user_id]
-      );
+      // items = await db.any(
+      //   `SELECT ci.id, p.product_name, p.storage_capacity, p.image, ci.quantity, ci.price, 
+      //           (ci.quantity * ci.price) AS sum_price
+      //    FROM cart_items ci
+      //    JOIN products p ON ci.product_id = p.product_id
+      //    JOIN cart c ON ci.cart_id = c.id
+      //    WHERE c.user_id = $1`,
+      //   [user_id]
+      // );
+    items = await db.any(
+  `SELECT 
+       ci.product_id AS id, 
+       p.product_name, 
+       p.storage_capacity, 
+       p.image, 
+       SUM(ci.quantity) AS quantity, 
+       ci.price, 
+       SUM(ci.quantity * ci.price) AS sum_price
+   FROM cart_items ci
+   JOIN products p ON ci.product_id = p.product_id
+   JOIN cart c ON ci.cart_id = c.id
+   WHERE c.user_id = $1
+   GROUP BY ci.product_id, p.product_name, p.storage_capacity, p.image, ci.price`,
+  [user_id]
+);
+
     } else {
       const session_id = req.sessionID;
 
@@ -154,8 +171,11 @@ router.get('/cart', async (req, res) => {
 
     // Tính tổng tiền
     total = items.reduce((sum, item) => sum + parseFloat(item.sum_price || 0), 0);
+    const role = req.session.role;
+    console.log(items);
+    console.log(total);
 
-    res.render('customerViews/cart', { items, total });
+    res.render('customerViews/cart', { items, total,role });
   } catch (error) {
     console.error('Lỗi khi hiển thị giỏ hàng:', error);
     res.status(500).send('Lỗi khi hiển thị giỏ hàng.');
@@ -165,6 +185,7 @@ router.get('/cart', async (req, res) => {
 // Xóa sản phẩm khỏi giỏ hàng
 router.post('/cart/remove', async (req, res) => {
   const { id } = req.body;
+  console.log(id);
 
   try {
     if (!id) {
@@ -174,9 +195,12 @@ router.post('/cart/remove', async (req, res) => {
     if (req.session?.user_id) {
       // Người dùng đã đăng nhập
       await db.none(
-        'DELETE FROM cart_items WHERE id = $1 AND cart_id IN (SELECT id FROM cart WHERE user_id = $2)',
+        'DELETE FROM cart_items WHERE product_id = $1 AND cart_id IN (SELECT id FROM cart WHERE user_id = $2)',
+
         [id, req.session.user_id]
       );
+      await db.
+
     } else {
       // Người dùng chưa đăng nhập
       await db.none(
