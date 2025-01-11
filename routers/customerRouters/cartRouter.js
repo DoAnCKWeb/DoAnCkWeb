@@ -165,6 +165,7 @@ router.get('/cart', async (req, res) => {
 router.post('/cart/remove', async (req, res) => {
   const { id } = req.body;
 
+  console.log(id);
   try {
     if (!id) {
       return res.status(400).json({ message: 'ID là bắt buộc.' });
