@@ -65,7 +65,7 @@
     <ul class="pagination">
       {{#if (gt currentPage 1)}}
       <li class="page-item">
-        <a class="page-link" href="/?page={{subtract currentPage 1}}" aria-label="Previous">
+        <a class="page-link" href="{{#if isLoggedIn}}/user?page={{subtract currentPage 1}}{{else}}/?page={{subtract currentPage 1}}{{/if}}" aria-label="Previous">
           <span aria-hidden="true">&laquo;</span>
         </a>
       </li>
@@ -73,13 +73,13 @@
 
       {{#each (range 1 totalPages)}}
       <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
-        <a class="page-link" href="/?page={{this}}">{{this}}</a>
+        <a class="page-link" href="{{#if ../isLoggedIn}}/user?page={{this}}{{else}}/?page={{this}}{{/if}}">{{this}}</a>
       </li>
       {{/each}}
 
       {{#if (lt currentPage totalPages)}}
       <li class="page-item">
-        <a class="page-link" href="/?page={{add currentPage 1}}" aria-label="Next">
+        <a class="page-link" href="{{#if isLoggedIn}}/user?page={{add currentPage 1}}{{else}}/?page={{add currentPage 1}}{{/if}}" aria-label="Next">
           <span aria-hidden="true">&raquo;</span>
         </a>
       </li>

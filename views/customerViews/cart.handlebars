@@ -1,48 +1,60 @@
 <div class="container my-5">
   <h1 class="text-center mb-4">Giỏ hàng của bạn</h1>
 
-  {{#if items}}
-    {{#if items.length}}
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Hình ảnh sản phẩm</th>
-            <th>Sản phẩm</th>
-            <th>Dung lượng sản phẩm</th>
-            <th>Số lượng</th>
-            <th>Giá</th>
-            <th>Tổng cộng</th>
-            <th>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          {{#each items}}
-          <tr data-id="{{id}}">
-            <td><img src="{{this.image}}" alt="{{this.product_name}}" width="100"></td>
-            <td>{{product_name}}</td>
-            <td>{{this.storage_capacity}}</td>
-            <td>{{quantity}}</td>
-            <td>{{formatCurrency price}}</td>
-            <td class="item-total">{{formatCurrency sum_price}}</td>
-            <td>
-              <button class="btn btn-danger btn-sm remove-item-btn" data-id="{{id}}">Xóa</button>
-            </td>
-          </tr>
-          {{/each}}
-        </tbody>
-      </table>
-      <div class="text-end">
-        <h3>Tổng cộng: <span id="total-price">{{formatCurrency total}}</span></h3>
-      </div>
-    {{else}}
-      <p class="text-center text-muted">Giỏ hàng của bạn đang trống.</p>
-    {{/if}}
-  {{else}}
-    <p class="text-center text-muted">Giỏ hàng của bạn đang trống.</p>
-  {{/if}}
+  <div class="row">
+    <!-- Danh sách sản phẩm (bên trái) -->
+    <div class="col-lg-8">
+      {{#if items}}
+        {{#if items.length}}
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Hình ảnh</th>
+                <th>Sản phẩm</th>
+                <th>Dung lượng</th>
+                <th>Số lượng</th>
+                <th>Giá</th>
+                <th>Tổng</th>
+                <th>Hành động</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each items}}
+              <tr data-id="{{id}}">
+                <td><img src="{{this.image}}" alt="{{this.product_name}}" width="100"></td>
+                <td>{{product_name}}</td>
+                <td>{{this.storage_capacity}}</td>
+                <td>{{quantity}}</td>
+                <td>{{formatCurrency price}}</td>
+                <td class="item-total">{{formatCurrency sum_price}}</td>
+                <td>
+                  <button class="btn btn-danger btn-sm remove-item-btn" data-id="{{id}}">Xóa</button>
+                </td>
+              </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        {{else}}
+          <p class="text-center text-muted">Giỏ hàng của bạn đang trống.</p>
+        {{/if}}
+      {{else}}
+        <p class="text-center text-muted">Giỏ hàng của bạn đang trống.</p>
+      {{/if}}
+    </div>
 
-  <div class="text-center mt-4">
-    <a href="/{{role}}" class="btn btn-primary">Tiếp tục mua sắm</a>
+    <!-- Tổng số tiền (bên phải) -->
+    <div class="col-lg-4">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">Tổng cộng</h4>
+          <h3 class="text-end" id="total-price">{{formatCurrency total}}</h3>
+          <hr>
+          <div class="text-center mt-4">
+            <a href="/{{role}}" class="btn btn-primary btn-block">Tiếp tục mua sắm</a>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
