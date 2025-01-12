@@ -42,8 +42,8 @@ router.post('/cart/add', async (req, res) => {
           'UPDATE cart_items SET quantity = quantity + $1 WHERE id = $2',
           [quantity, existingItem.id]
         );
-        return res.redirect(`/${role}`)
-        //return res.json({ success: true, message: 'Số lượng sản phẩm đã được cập nhật.' });
+        //return res.redirect(`/${role}`)
+        return res.json({ success: true, message: 'Số lượng sản phẩm đã được cập nhật.' });
       } else {
         // Nếu sản phẩm chưa tồn tại, thêm mới
         const product = await db.one('SELECT price FROM products WHERE product_id = $1', [product_id]);
@@ -51,9 +51,9 @@ router.post('/cart/add', async (req, res) => {
           'INSERT INTO cart_items (cart_id, product_id, quantity, price) VALUES ($1, $2, $3, $4)',
           [cart_id, product_id, quantity, product.price]
         );
-        //return res.redirect(`${role}`)
+        return res.redirect(`${role}`)
 
-        return res.json({ success: true, message: 'Sản phẩm đã được thêm vào giỏ hàng.' });
+        //return res.json({ success: true, message: 'Sản phẩm đã được thêm vào giỏ hàng.' });
       }
     } else {
         // Xử lý cho người dùng chưa đăng nhập
@@ -69,18 +69,18 @@ router.post('/cart/add', async (req, res) => {
             'UPDATE temporary_cart SET quantity = quantity + $1 WHERE id = $2',
             [quantity, existingItem.id]
           );
-          return res.redirect(`/${role}`)
+          //return res.redirect(`/${role}`)
 
-        //return res.json({ success: true, message: 'Số lượng sản phẩm đã được cập nhật.' });
+        return res.json({ success: true, message: 'Số lượng sản phẩm đã được cập nhật.' });
          } else {
         const product = await db.one('SELECT price FROM products WHERE product_id = $1', [product_id]);
         await db.none(
           'INSERT INTO temporary_cart (session_id, product_id, quantity, price) VALUES ($1, $2, $3, $4)',
           [session_id, product_id, quantity, product.price]
         );
-        return res.redirect('/');
+        //return res.redirect('/');
 
-        //return res.json({ success: true, message: 'Sản phẩm đã được thêm vào giỏ hàng.' });
+        return res.json({ success: true, message: 'Sản phẩm đã được thêm vào giỏ hàng.' });
       }
     }
   } catch (error) {
