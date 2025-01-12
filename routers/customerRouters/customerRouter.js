@@ -4,7 +4,7 @@ const { db } = require('../../models/connectDatabase');
 
 router.get('/', async (req, res) => {
   try {
-             const role = req.session.role;
+    const role = req.session.role;
 
     
     const categories = await db.any('SELECT * FROM "categories" ORDER BY id ASC');

@@ -13,12 +13,14 @@
           <p class="card-text">Giá: {{price}} VND</p>
           
             <a href="/product/{{product_id}}" class="btn btn-success">Xem chi tiết</a>
-            <form action="/cart/add" method="POST">
+            {{!-- <form action="/cart/add" method="POST">
               <input type="hidden" name="product_id" value="{{product_id}}">
               <input type="hidden" name="quantity" value="1">
               <button type="submit" class="btn btn-primary mt-2">Thêm vào giỏ hàng</button>
             </form>
-          
+           --}}
+            <button onclick="addToCart({{product_id}}, 1)" class="btn btn-primary">Thêm vào giỏ hàng</button>
+
             
          
         </div>
@@ -27,6 +29,6 @@
     {{/each}}
   </div>
   <div class="text-center mt-4">
-    <a href="/user" class="btn btn-secondary">Quay lại danh mục</a>
+    <a href="/{{role}}" class="btn btn-secondary">Quay lại danh mục</a>
   </div>
 </div>

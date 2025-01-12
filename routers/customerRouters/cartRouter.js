@@ -5,6 +5,7 @@ const { db } = require('../../models/connectDatabase');
 // Thêm sản phẩm vào giỏ hàng
 router.post('/cart/add', async (req, res) => {
   const { product_id, quantity } = req.body;
+  const role=req.query.role;
 
   try {
     if (!product_id || !quantity) {
@@ -41,7 +42,8 @@ router.post('/cart/add', async (req, res) => {
           'UPDATE cart_items SET quantity = quantity + $1 WHERE id = $2',
           [quantity, existingItem.id]
         );
-        return res.json({ success: true, message: 'Số lượng sản phẩm đã được cập nhật.' });
+        return res.redirect(`/${role}`)
+        //return res.json({ success: true, message: 'Số lượng sản phẩm đã được cập nhật.' });
       } else {
         // Nếu sản phẩm chưa tồn tại, thêm mới
         const product = await db.one('SELECT price FROM products WHERE product_id = $1', [product_id]);
@@ -49,30 +51,36 @@ router.post('/cart/add', async (req, res) => {
           'INSERT INTO cart_items (cart_id, product_id, quantity, price) VALUES ($1, $2, $3, $4)',
           [cart_id, product_id, quantity, product.price]
         );
+        //return res.redirect(`${role}`)
+
         return res.json({ success: true, message: 'Sản phẩm đã được thêm vào giỏ hàng.' });
       }
     } else {
-      // Xử lý cho người dùng chưa đăng nhập
-      const session_id = req.sessionID;
+        // Xử lý cho người dùng chưa đăng nhập
+        const session_id = req.sessionID;
 
-      const existingItem = await db.oneOrNone(
-        'SELECT id FROM temporary_cart WHERE session_id = $1 AND product_id = $2',
-        [session_id, product_id]
-      );
-
-      if (existingItem) {
-        await db.none(
-          'UPDATE temporary_cart SET quantity = quantity + $1 WHERE id = $2',
-          [quantity, existingItem.id]
+        const existingItem = await db.oneOrNone(
+          'SELECT id FROM temporary_cart WHERE session_id = $1 AND product_id = $2',
+          [session_id, product_id]
         );
-        return res.json({ success: true, message: 'Số lượng sản phẩm đã được cập nhật.' });
-      } else {
+
+        if (existingItem) {
+          await db.none(
+            'UPDATE temporary_cart SET quantity = quantity + $1 WHERE id = $2',
+            [quantity, existingItem.id]
+          );
+          return res.redirect(`/${role}`)
+
+        //return res.json({ success: true, message: 'Số lượng sản phẩm đã được cập nhật.' });
+         } else {
         const product = await db.one('SELECT price FROM products WHERE product_id = $1', [product_id]);
         await db.none(
           'INSERT INTO temporary_cart (session_id, product_id, quantity, price) VALUES ($1, $2, $3, $4)',
           [session_id, product_id, quantity, product.price]
         );
-        return res.json({ success: true, message: 'Sản phẩm đã được thêm vào giỏ hàng.' });
+        return res.redirect('/');
+
+        //return res.json({ success: true, message: 'Sản phẩm đã được thêm vào giỏ hàng.' });
       }
     }
   } catch (error) {
