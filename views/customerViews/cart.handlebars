@@ -90,7 +90,9 @@
             updateTotalPrice();
 
             // Cập nhật số lượng sản phẩm trong nút giỏ hàng
-            updateCartCount();
+            if (result.success) {
+              document.getElementById('cart-count').textContent = result.totalItems || 0;
+            }
           } else {
             alert(result.message);
           }
@@ -112,7 +114,7 @@
       try {
         const response = await fetch('/cart/items-count');
         const data = await response.json();
-        document.getElementById('cart-count').innerText = data.totalItems || 0;
+        document.getElementById('cart-count').textContent = data.count || 0;
       } catch (error) {
         console.error('Lỗi khi tải số lượng giỏ hàng:', error);
       }

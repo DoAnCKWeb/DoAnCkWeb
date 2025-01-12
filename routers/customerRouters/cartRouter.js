@@ -89,7 +89,6 @@ router.get('/cart/items-count', async (req, res) => {
 
     if (req.session?.user_id) {
       const user_id = req.session.user_id;
-
       const result = await db.oneOrNone(
         `SELECT COALESCE(SUM(quantity), 0) AS total
          FROM cart_items
@@ -99,7 +98,6 @@ router.get('/cart/items-count', async (req, res) => {
       totalItems = result?.total || 0;
     } else {
       const session_id = req.sessionID;
-
       const result = await db.oneOrNone(
         `SELECT COALESCE(SUM(quantity), 0) AS total
          FROM temporary_cart
@@ -115,6 +113,7 @@ router.get('/cart/items-count', async (req, res) => {
     res.status(500).json({ success: false, message: 'Lỗi khi lấy số lượng sản phẩm.' });
   }
 });
+
 
 
 // Hiển thị giỏ hàng (phân trang)
@@ -191,33 +190,54 @@ router.get('/cart', async (req, res) => {
 // Xóa sản phẩm khỏi giỏ hàng
 router.post('/cart/remove', async (req, res) => {
   const { id } = req.body;
-  console.log(id);
+
   try {
     if (!id) {
-      return res.status(400).json({ message: 'ID là bắt buộc.' });
+      return res.status(400).json({ success: false, message: 'ID là bắt buộc.' });
     }
 
     if (req.session?.user_id) {
       // Người dùng đã đăng nhập
       await db.none(
         'DELETE FROM cart_items WHERE product_id = $1 AND cart_id IN (SELECT id FROM cart WHERE user_id = $2)',
-
         [id, req.session.user_id]
       );
     } else {
       // Người dùng chưa đăng nhập
       await db.none(
-        'DELETE FROM temporary_cart WHERE id = $1 AND session_id = $2',
+        'DELETE FROM temporary_cart WHERE product_id = $1 AND session_id = $2',
         [id, req.sessionID]
       );
     }
 
-    res.json({ message: 'Sản phẩm đã được xóa khỏi giỏ hàng.' });
+    // Sau khi xóa sản phẩm, trả về số lượng giỏ hàng cập nhật
+    let totalItems = 0;
+
+    if (req.session?.user_id) {
+      const user_id = req.session.user_id;
+      const result = await db.oneOrNone(
+        `SELECT COALESCE(SUM(quantity), 0) AS total
+         FROM cart_items
+         WHERE cart_id IN (SELECT id FROM cart WHERE user_id = $1)`,
+        [user_id]
+      );
+      totalItems = result?.total || 0;
+    } else {
+      const session_id = req.sessionID;
+      const result = await db.oneOrNone(
+        `SELECT COALESCE(SUM(quantity), 0) AS total
+         FROM temporary_cart
+         WHERE session_id = $1`,
+        [session_id]
+      );
+      totalItems = result?.total || 0;
+    }
+
+    res.json({ success: true, message: 'Sản phẩm đã được xóa khỏi giỏ hàng.', totalItems });
   } catch (error) {
     console.error('Lỗi khi xóa sản phẩm khỏi giỏ hàng:', error);
-    res.status(500).json({ message: 'Lỗi khi xóa sản phẩm khỏi giỏ hàng.' });
+    res.status(500).json({ success: false, message: 'Lỗi khi xóa sản phẩm khỏi giỏ hàng.' });
   }
 });
-
 
 module.exports = router;
