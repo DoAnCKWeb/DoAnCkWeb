@@ -30,6 +30,8 @@
                 <td>
                   <button class="btn btn-danger btn-sm remove-item-btn" data-id="{{id}}">Xóa</button>
                 </td>
+                <td>
+                   <input type="checkbox" id="circleRadio" class="form-check-input btn btn-primary rounded-circle p-3" ></td>
               </tr>
               {{/each}}
             </tbody>
@@ -47,10 +49,11 @@
       <div class="card">
         <div class="card-body">
           <h4 class="card-title">Tổng cộng</h4>
-          <h3 class="text-end" id="total-price">{{formatCurrency total}}</h3>
+          <h3 class="text-end" id="total-price">0</h3>
           <hr>
           <div class="text-center mt-4">
             <a href="/{{role}}" class="btn btn-primary btn-block">Tiếp tục mua sắm</a>
+            <a id="btn-payment" class="btn btn-danger disabled" href="/payment">Thanh toán</a>
           </div>
         </div>
       </div>
@@ -107,5 +110,43 @@
       });
       document.querySelector('#total-price').innerText = `${total.toLocaleString()} VND`;
     }
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    const paymentButton = document.getElementById('btn-payment');
+    const totalPriceElement = document.getElementById('total-price');
+
+    // Hàm cập nhật tổng giá
+    function updateTotalPrice() {
+      let total = 0;
+
+      // Lặp qua tất cả các checkbox
+      checkboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+          const row = checkbox.closest('tr'); // Lấy hàng chứa checkbox
+          const itemTotal = row.querySelector('.item-total'); // Lấy giá của sản phẩm
+          if (itemTotal) {
+            const price = parseFloat(itemTotal.innerText.replace(/\D/g, '') || 0); // Loại bỏ các ký tự không phải số
+            total += price;
+          }
+        }
+      });
+
+      // Cập nhật tổng giá
+      totalPriceElement.innerText = `${total.toLocaleString()} VND`;
+
+      // Kích hoạt hoặc vô hiệu hóa nút "Thanh toán"
+      if (total > 0) {
+        paymentButton.classList.remove('disabled'); // Kích hoạt nút
+      } else {
+        paymentButton.classList.add('disabled'); // Vô hiệu hóa nút
+      }
+    }
+
+    // Gắn sự kiện thay đổi cho từng checkbox
+    checkboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', updateTotalPrice);
+    });
+
+    // Cập nhật trạng thái ban đầu
+    updateTotalPrice();
   });
 </script>
