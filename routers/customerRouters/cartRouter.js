@@ -4,6 +4,7 @@ const { db } = require('../../models/connectDatabase');
 
 router.post('/cart/add', async (req, res) => {
   const { product_id, quantity } = req.body;
+  const role=req.query.role;
 
   try {
     if (!product_id || !quantity) {
@@ -48,8 +49,8 @@ router.post('/cart/add', async (req, res) => {
           [cart_id, product_id, quantity, product.price]
         );
       }
-
-      return res.json({ success: true, message: 'Sản phẩm đã được thêm vào giỏ hàng.' });
+res.redirect(`/${role}`);
+      //return res.json({ success: true, message: 'Sản phẩm đã được thêm vào giỏ hàng.' });
     } else {
       // Chưa đăng nhập, sử dụng giỏ hàng tạm thời
       const session_id = req.sessionID;
@@ -71,8 +72,7 @@ router.post('/cart/add', async (req, res) => {
           [session_id, product_id, quantity, product.price]
         );
       }
-
-      return res.json({ success: true, message: 'Sản phẩm đã được thêm vào giỏ hàng.' });
+         res.redirect(`/${role}`);      //return res.json({ success: true, message: 'Sản phẩm đã được thêm vào giỏ hàng.' });
     }
   } catch (error) {
     console.error('Lỗi khi thêm sản phẩm vào giỏ hàng:', error);
@@ -125,6 +125,7 @@ router.get('/cart', async (req, res) => {
     let total = 0;
     const { page = 1, limit = 8 } = req.query; // Mặc định mỗi trang hiển thị 8 sản phẩm
     const offset = (page - 1) * limit;
+    const role = req.session.role;
 
     if (req.session?.user_id) {
       const user_id = req.session.user_id;
@@ -181,7 +182,7 @@ router.get('/cart', async (req, res) => {
     );
     const totalPages = Math.ceil(totalItems.count / limit);
 
-    res.render('customerViews/cart', { items, total, totalPages, currentPage: parseInt(page, 10) });
+    res.render('customerViews/cart', { items, total, totalPages, currentPage: parseInt(page, 10),role });
   } catch (error) {
     console.error('Lỗi khi hiển thị giỏ hàng:', error);
     res.status(500).send('Lỗi khi hiển thị giỏ hàng.');

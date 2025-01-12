@@ -4,6 +4,7 @@ const { db } = require('../../models/connectDatabase');
 
 router.get('/', async (req, res) => {
   try {
+    
     const categories = await db.any('SELECT * FROM "categories" ORDER BY id ASC');
     const { page = 1, limit = 8 } = req.query;
     const offset = (page - 1) * limit;
