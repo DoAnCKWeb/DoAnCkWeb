@@ -4,7 +4,7 @@ const { db } = require('../../models/connectDatabase');
 
 router.post('/cart/add', async (req, res) => {
   const { product_id, quantity } = req.body;
-  const role=req.query.role;
+  //const role=req.query.role;
 
   try {
     if (!product_id || !quantity) {
@@ -49,7 +49,7 @@ router.post('/cart/add', async (req, res) => {
           [cart_id, product_id, quantity, product.price]
         );
       }
-res.redirect(`/${role}`);
+//res.redirect(`/${role}`);
       //return res.json({ success: true, message: 'Sản phẩm đã được thêm vào giỏ hàng.' });
     } else {
       // Chưa đăng nhập, sử dụng giỏ hàng tạm thời
@@ -72,7 +72,8 @@ res.redirect(`/${role}`);
           [session_id, product_id, quantity, product.price]
         );
       }
-         res.redirect(`/${role}`);      //return res.json({ success: true, message: 'Sản phẩm đã được thêm vào giỏ hàng.' });
+//res.redirect(`/${role}`);    
+    res.json({ message: 'Sản phẩm đã được thêm vào giỏ hàng.' });
     }
   } catch (error) {
     console.error('Lỗi khi thêm sản phẩm vào giỏ hàng:', error);
@@ -192,8 +193,6 @@ router.get('/cart', async (req, res) => {
 // Xóa sản phẩm khỏi giỏ hàng
 router.post('/cart/remove', async (req, res) => {
   const { id } = req.body;
-  console.log(id);
-
   console.log(id);
   try {
     if (!id) {
