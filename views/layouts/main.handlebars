@@ -232,40 +232,38 @@
             });
         });
         function addToCart(product_id, quantity) {
-  fetch('/cart/add', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ product_id, quantity })
-  })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        alert(data.message);
-        updateCartCount(); // Gọi API cập nhật số lượng giỏ hàng
-      } else {
-        alert('Lỗi: ' + data.message);
-      }
+    fetch('/cart/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ product_id, quantity }),
     })
-    .catch(err => {
-      console.error('Lỗi:', err);
-      alert('Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.');
-    });
-}
-
-
-       async function updateCartCount() {
-  try {
-    const response = await fetch('/cart/items-count');
-    const data = await response.json();
-    document.getElementById('cart-count').textContent = data.count || 0;
-  } catch (error) {
-    console.error('Lỗi khi cập nhật số lượng giỏ hàng:', error);
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          alert(data.message);
+          updateCartCount();
+        } else {
+          alert('Lỗi: ' + data.message);
+        }
+      })
+      .catch((err) => {
+        console.error('Lỗi:', err);
+        alert('Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.');
+      });
   }
-}
 
+  async function updateCartCount() {
+    try {
+      const response = await fetch('/cart/items-count');
+      const data = await response.json();
+      document.getElementById('cart-count').textContent = data.count || 0;
+    } catch (error) {
+      console.error('Lỗi khi cập nhật số lượng giỏ hàng:', error);
+    }
+  }
 
-        // Load số lượng giỏ hàng khi trang được tải
-        updateCartCount();
+  // Load số lượng giỏ hàng khi trang được tải
+  updateCartCount();
     </script>
 </body>
 

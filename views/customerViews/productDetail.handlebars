@@ -64,11 +64,58 @@
           </div>
 
           <div class="d-flex justify-content-between align-items-center">
-            <a href="/user/{{product.category_id}}/products" class="btn btn-secondary">Quay lại sản phẩm</a>
-            <button class="btn btn-primary">Thêm vào giỏ hàng</button>
+            <a href="/{{role}}" class="btn btn-secondary">Quay lại sản phẩm</a>
+            <button id="add-to-cart-btn" class="btn btn-primary">Thêm vào giỏ hàng</button>
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const addToCartButton = document.getElementById('add-to-cart-btn');
+
+    // Lấy thông tin sản phẩm từ đối tượng `product`
+    const productId = {{product.product_id}};
+    const productQuantity = 1; // Mặc định thêm 1 sản phẩm
+
+    // Thêm sự kiện click cho nút "Thêm vào giỏ hàng"
+    addToCartButton.addEventListener('click', async function () {
+      try {
+        const response = await fetch('/cart/add', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ product_id: productId, quantity: productQuantity }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          alert('Sản phẩm đã được thêm vào giỏ hàng!');
+          // Cập nhật số lượng giỏ hàng (nếu cần)
+          updateCartCount();
+        } else {
+          alert(`Lỗi: ${result.message}`);
+        }
+      } catch (error) {
+        console.error('Lỗi khi thêm sản phẩm vào giỏ hàng:', error);
+        alert('Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.');
+      }
+    });
+
+    // Hàm cập nhật số lượng sản phẩm trong giỏ hàng
+    async function updateCartCount() {
+      try {
+        const response = await fetch('/cart/items-count');
+        const data = await response.json();
+        document.getElementById('cart-count').textContent = data.count || 0;
+      } catch (error) {
+        console.error('Lỗi khi cập nhật số lượng giỏ hàng:', error);
+      }
+    }
+  });
+</script>

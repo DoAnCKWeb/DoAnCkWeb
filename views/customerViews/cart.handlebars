@@ -77,12 +77,12 @@
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ id }),
+            body: JSON.stringify({ id }), // Gửi `id` của sản phẩm
           });
 
           const result = await response.json();
 
-          if (response.ok) {
+          if (response.ok && result.success) {
             // Xóa sản phẩm khỏi bảng
             event.target.closest('tr').remove();
 
@@ -90,7 +90,7 @@
             updateTotalPrice();
 
             // Cập nhật số lượng sản phẩm trong nút giỏ hàng
-            updateCartCount();
+            document.getElementById('cart-count').textContent = result.totalItems || 0;
           } else {
             alert(result.message);
           }
@@ -106,16 +106,6 @@
         total += parseFloat(cell.innerText.replace(/\D/g, '') || 0);
       });
       document.querySelector('#total-price').innerText = `${total.toLocaleString()} VND`;
-    }
-
-    async function updateCartCount() {
-      try {
-        const response = await fetch('/cart/items-count');
-        const data = await response.json();
-        document.getElementById('cart-count').innerText = data.totalItems || 0;
-      } catch (error) {
-        console.error('Lỗi khi tải số lượng giỏ hàng:', error);
-      }
     }
   });
 </script>

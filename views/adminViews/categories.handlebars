@@ -5,14 +5,14 @@
         margin-top: -40px;
     }
 
-.d-flex {
-    display: flex;
+    .d-flex {
+        display: flex;
     justify-content: center; /* Căn giữa các nút trong hàng */
     gap: 10px; /* Khoảng cách giữa các nút */
-}
+    }
 
-.btn-equal {
-    color: white;
+    .btn-equal {
+        color: white;
     width: 85px; /* Chiều rộng bằng nhau */
     height: 30px; /* Chiều cao bằng nhau */
     display: flex; /* Dùng Flexbox để căn chỉnh chữ */
@@ -22,19 +22,20 @@
     font-size: 14px; /* Đảm bảo kích thước chữ đồng đều */
     padding: 0; /* Loại bỏ padding mặc định để tránh lệch */
     box-sizing: border-box; /* Đảm bảo kích thước không bị ảnh hưởng bởi padding hoặc border */
-}
-.nav-tabs .nav-link {
-    width: 100px;
+    }
+
+    .nav-tabs .nav-link {
+        width: 100px;
     color: #dc3545; /* Màu chữ danger (đỏ) */
     font-weight: bold; /* Chữ đậm */
     border: none; /* Loại bỏ viền mặc định */
-}
+    }
 
-.nav-tabs .nav-link.active {
+    .nav-tabs .nav-link.active {
     color: #dc3545; /* Giữ màu chữ khi tab được chọn */
     background-color: transparent; /* Nền trong suốt */
     border-bottom: 3px solid #dc3545; /* Đường kẻ dưới chân đậm */
-}
+    }
 
 </style>
 
@@ -97,7 +98,7 @@
                     {{#each this.products}}
                     <div class="col mb-">
                         <div class="card h-100">
-                            <img src="{{this.image}}" class="card-img-top" alt="Product Image" style="height: 300px; width: 300px;">
+                            <img src="{{this.image}}" class="card-img-top" alt="Product Image" style="padding: 10px; height: 300px; width: 250px;">
                             <div class="card-body">
                                 <h5 class="card-title">{{this.product_name}} ({{this.storage_capacity}})</h5>
                                 {{!-- <p class="card-text"><strong>Giá:</strong> {{this.price}} VND</p> --}}
