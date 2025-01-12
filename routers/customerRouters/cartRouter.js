@@ -172,6 +172,7 @@ router.get('/cart', async (req, res) => {
 
     // Tính tổng tiền
     total = items.reduce((sum, item) => sum + parseFloat(item.sum_price || 0), 0);
+    
 
     res.render('customerViews/cart', { items, total, role });
   } catch (error) {
