@@ -4,10 +4,10 @@ const pgp = require('pg-promise')({
 
 const dbConfig = {
     user: 'postgres',
-    password: '123456',
+    password: 'Mquan_11a2',
     host: 'localhost',
     port: 5432,
-    database: 'webofffical',
+    database: 'postgres',
 };
 
 
