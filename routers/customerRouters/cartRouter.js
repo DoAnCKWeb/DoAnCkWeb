@@ -2,13 +2,13 @@ const express = require('express');
 const router = express.Router();
 const { db } = require('../../models/connectDatabase');
 
+// Thêm sản phẩm vào giỏ hàng
 router.post('/cart/add', async (req, res) => {
   const { product_id, quantity } = req.body;
-  //const role=req.query.role;
 
   try {
     if (!product_id || !quantity) {
-      return res.status(400).json({ message: 'product_id và quantity là bắt buộc.' });
+      return res.status(400).json({ success: false, message: 'product_id và quantity là bắt buộc.' });
     }
 
     if (req.session?.user_id) {
@@ -41,6 +41,7 @@ router.post('/cart/add', async (req, res) => {
           'UPDATE cart_items SET quantity = quantity + $1 WHERE id = $2',
           [quantity, existingItem.id]
         );
+        return res.json({ success: true, message: 'Số lượng sản phẩm đã được cập nhật.' });
       } else {
         // Nếu sản phẩm chưa tồn tại, thêm mới
         const product = await db.one('SELECT price FROM products WHERE product_id = $1', [product_id]);
@@ -48,11 +49,10 @@ router.post('/cart/add', async (req, res) => {
           'INSERT INTO cart_items (cart_id, product_id, quantity, price) VALUES ($1, $2, $3, $4)',
           [cart_id, product_id, quantity, product.price]
         );
+        return res.json({ success: true, message: 'Sản phẩm đã được thêm vào giỏ hàng.' });
       }
-//res.redirect(`/${role}`);
-      //return res.json({ success: true, message: 'Sản phẩm đã được thêm vào giỏ hàng.' });
     } else {
-      // Chưa đăng nhập, sử dụng giỏ hàng tạm thời
+      // Xử lý cho người dùng chưa đăng nhập
       const session_id = req.sessionID;
 
       const existingItem = await db.oneOrNone(
@@ -65,15 +65,15 @@ router.post('/cart/add', async (req, res) => {
           'UPDATE temporary_cart SET quantity = quantity + $1 WHERE id = $2',
           [quantity, existingItem.id]
         );
+        return res.json({ success: true, message: 'Số lượng sản phẩm đã được cập nhật.' });
       } else {
         const product = await db.one('SELECT price FROM products WHERE product_id = $1', [product_id]);
         await db.none(
           'INSERT INTO temporary_cart (session_id, product_id, quantity, price) VALUES ($1, $2, $3, $4)',
           [session_id, product_id, quantity, product.price]
         );
+        return res.json({ success: true, message: 'Sản phẩm đã được thêm vào giỏ hàng.' });
       }
-//res.redirect(`/${role}`);    
-    res.json({ message: 'Sản phẩm đã được thêm vào giỏ hàng.' });
     }
   } catch (error) {
     console.error('Lỗi khi thêm sản phẩm vào giỏ hàng:', error);
@@ -88,7 +88,6 @@ router.get('/cart/items-count', async (req, res) => {
     let totalItems = 0;
 
     if (req.session?.user_id) {
-      // Người dùng đã đăng nhập
       const user_id = req.session.user_id;
 
       const result = await db.oneOrNone(
@@ -99,7 +98,6 @@ router.get('/cart/items-count', async (req, res) => {
       );
       totalItems = result?.total || 0;
     } else {
-      // Người dùng chưa đăng nhập
       const session_id = req.sessionID;
 
       const result = await db.oneOrNone(
