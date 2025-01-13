@@ -6,4 +6,7 @@ router.get('/', (req, res) => {
   // Kiểm tra nếu người dùng là admin
   res.render('layouts/main')
 })
-module.exports = router
+//Xử lí thanh toán
+const {paymentHandle} = require('../controllers/paymentControllers')
+router.post('/payment/process', paymentHandle)
+module.exports = router;
