@@ -152,7 +152,19 @@
   function filterProducts(categoryId, page) {
     currentCategory = categoryId; // Cập nhật danh mục hiện tại
 
-  
+    // Xóa lớp `selected-category` khỏi tất cả các nút
+  document.querySelectorAll('.nav-link').forEach(button => {
+    button.classList.remove('selected-category');
+  });
+
+  // Thêm lớp `selected-category` vào nút hiện tại
+  const selectedButton = Array.from(document.querySelectorAll('.nav-link')).find(
+    button => button.getAttribute('onclick')?.includes(`filterProducts('${categoryId}',`)
+  );
+  if (selectedButton) {
+    selectedButton.classList.add('selected-category');
+  }
+
 
     // Lấy các giá trị từ bộ lọc
     const minPrice = document.getElementById('min-price').value || '';
@@ -257,7 +269,7 @@
 
 <style>
   .selected-category {
-    background-color: #0c3a6e !important; /* Màu cam nổi bật */
+    background-color: #0c3a6e !important;
     color: white !important;
   }
 </style>

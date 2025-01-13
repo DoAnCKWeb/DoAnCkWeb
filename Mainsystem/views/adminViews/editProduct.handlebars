@@ -1,9 +1,5 @@
-<header class="bg-success text-white text-center py-4">
-    <h1>Chỉnh sửa Sản phẩm</h1>
-</header>
-
-<main class="container my-5">
-    <h2 class="text-primary">Chỉnh sửa Sản phẩm {{product.product_name}}</h2>
+<main class="container my-">
+    <h2 class="text-primary" style="margin-bottom: 30px;">Chỉnh sửa Sản phẩm {{product.product_name}}</h2>
 
     <!-- Form chỉnh sửa sản phẩm -->
     <form action="/admin/categories/editProduct/{{product.product_id}}" method="POST" class="row g-3">
@@ -50,7 +46,7 @@
 
         <!-- Nút cập nhật -->
         <div class="col-md-12">
-            <button type="submit" class="btn btn-warning w-100">Cập nhật sản phẩm</button>
+            <button type="submit" class="btn btn-success w-100">Cập nhật sản phẩm</button>
         </div>
     </form>
 </main>

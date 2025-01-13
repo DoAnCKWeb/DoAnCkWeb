@@ -1,23 +1,25 @@
-<header class="bg-primary text-white text-center py-4">
-    <h1>Chi tiết Sản phẩm</h1>
-</header>
+<main class="container my-4">
+    <h2 class="text-primary text-center mb-4">Chi tiết sản phẩm</h2>
 
-<main class="container my-5">
-    <h2 class="text-primary">{{product.product_name}}</h2>
     <div class="row">
         <div class="col-md-6">
-            <img src="{{product.image}}" class="img-fluid" alt="{{product.product_name}}">
+            <div class="border p-3 rounded shadow-sm">
+                <img src="{{product.image}}" class="img-fluid rounded" alt="{{product.product_name}}">
+            </div>
         </div>
-        <div class="col-md-6 d-flex flex-column justify-content-between">
-            <div>
-                <p><strong>Giá:</strong> {{product.price}} VND</p>
-                <p><strong>Dung lượng lưu trữ:</strong> {{product.storage_capacity}}</p>
-                <p><strong>Hệ điều hành:</strong> {{product.operating_system}}</p>
-                <p><strong>Kích thước màn hình:</strong> {{product.screen_size}}</p>
-                <p><strong>Trọng lượng:</strong> {{product.weight}} g</p>
-                <p><strong>Năm phát hành:</strong> {{product.release_year}}</p>
+        <div class="col-md-6">
+            <div class="border p-4 rounded shadow-sm d-flex flex-column justify-content-between" style="background-color: #f9f9f9;">
+                <div>
+                    <p><strong>Tên:</strong> {{product.product_name}}</p>
+                    <p><strong>Giá:</strong> {{product.price}} VND</p>
+                    <p><strong>Dung lượng lưu trữ:</strong> {{product.storage_capacity}}</p>
+                    <p><strong>Hệ điều hành:</strong> {{product.operating_system}}</p>
+                    <p><strong>Kích thước màn hình:</strong> {{product.screen_size}}</p>
+                    <p><strong>Trọng lượng:</strong> {{product.weight}} g</p>
+                    <p><strong>Năm phát hành:</strong> {{product.release_year}}</p>
+                </div>
+                <a href="/admin/categories" class="btn btn-primary mt-4">Quay lại</a>
             </div>
         </div>
     </div>
-    {{!-- <a href="/admin/categories" class="btn btn-secondary mt-4">Quay lại</a> --}}
 </main>
