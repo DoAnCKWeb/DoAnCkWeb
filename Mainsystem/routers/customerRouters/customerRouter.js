@@ -36,6 +36,7 @@ router.get('/', async (req, res) => {
   }
 });
 
+
 // Lấy danh sách danh mục và sản phẩm
 router.get('/user', async (req, res) => {
   try {
@@ -145,52 +146,51 @@ router.get('/user/:id/products', async (req, res) => {
   }
 });
 
-function chunkArray(array, size) {
-  const chunks = [];
-  for (let i = 0; i < array.length; i += size) {
-    chunks.push(array.slice(i, i + size));
-  }
-  return chunks;
-}
-
-// Lấy chi tiết sản phẩm cùng sản phẩm liên quan
+// Lấy chi tiết sản phẩm
 router.get('/product/:id', async (req, res) => {
   const productId = req.params.id;
+
   try {
     // Lấy thông tin sản phẩm hiện tại
     const product = await db.oneOrNone(
-      `SELECT p.*, c.name AS category_name 
-       FROM "products" p 
-       INNER JOIN "categories" c ON p.category_id = c.id 
-       WHERE p.product_id = $1`, 
+      `SELECT p.*, c.name AS category_name
+       FROM "products" p
+       INNER JOIN "categories" c ON p.category_id = c.id
+       WHERE p.product_id = $1`,
       [productId]
     );
 
-    // Lấy danh sách sản phẩm liên quan (cùng danh mục, giới hạn 8 sản phẩm, trừ sản phẩm hiện tại)
+    if (!product) {
+      return res.status(404).send('Sản phẩm không tồn tại');
+    }
+
+    // Lấy sản phẩm liên quan (cùng category_id nhưng khác product_id)
     const relatedProducts = await db.any(
-      `SELECT p.*, c.name AS category_name 
+      `SELECT p.*, c.name AS category_name
        FROM "products" p
        INNER JOIN "categories" c ON p.category_id = c.id
        WHERE p.category_id = $1 AND p.product_id != $2
-       LIMIT 8`,
+       LIMIT 8`, // Giới hạn 8 sản phẩm liên quan
       [product.category_id, productId]
     );
 
-    // Chia sản phẩm liên quan thành từng nhóm 4
-    const relatedProductsChunks = chunkArray(relatedProducts, 4);
-
-    const role = req.session.role;
-
-    if (product) {
-      res.render('customerViews/productDetail', { product, relatedProductsChunks, role });
-    } else {
-      res.status(404).send('Sản phẩm không tồn tại');
+    // Chia sản phẩm liên quan thành các "chunks" (mỗi chunk là 4 sản phẩm)
+    const relatedProductsChunks = [];
+    for (let i = 0; i < relatedProducts.length; i += 4) {
+      relatedProductsChunks.push(relatedProducts.slice(i, i + 4));
     }
+
+    // Render view và truyền dữ liệu
+    res.render('customerViews/productDetail', {
+      product,
+      relatedProductsChunks,
+    });
   } catch (err) {
-    console.error(err);
+    console.error('Lỗi khi lấy sản phẩm:', err);
     res.status(500).send('Lỗi khi lấy chi tiết sản phẩm');
   }
 });
+
 
 // Tìm kiếm sản phẩm
 router.get('/search', async (req, res) => {
@@ -208,5 +208,57 @@ router.get('/search', async (req, res) => {
     res.status(500).send('Lỗi khi tìm kiếm sản phẩm');
   }
 });
+
+router.get('/products', async (req, res) => {
+  const { category = 'all', page = 1, limit = 8 } = req.query;
+  const offset = (page - 1) * limit;
+
+  try {
+    let products;
+    let totalProducts;
+
+    if (category === 'all') {
+      // Nếu danh mục là "Tất cả"
+      products = await db.any(
+        `SELECT p.*, c.name AS category_name
+         FROM "products" p
+         INNER JOIN "categories" c ON p.category_id = c.id
+         ORDER BY p.product_id ASC
+         LIMIT $1 OFFSET $2`,
+        [limit, offset]
+      );
+      totalProducts = await db.one('SELECT COUNT(*) FROM "products"', [], a => +a.count);
+    } else {
+      // Nếu danh mục cụ thể
+      products = await db.any(
+        `SELECT p.*, c.name AS category_name
+         FROM "products" p
+         INNER JOIN "categories" c ON p.category_id = c.id
+         WHERE p.category_id = $1
+         ORDER BY p.product_id ASC
+         LIMIT $2 OFFSET $3`,
+        [category, limit, offset]
+      );
+      totalProducts = await db.one(
+        'SELECT COUNT(*) FROM "products" WHERE category_id = $1',
+        [category],
+        a => +a.count
+      );
+    }
+
+    const totalPages = Math.ceil(totalProducts / limit);
+
+    res.json({
+      products,
+      currentPage: parseInt(page, 10),
+      totalPages
+    });
+  } catch (err) {
+    console.error('Lỗi khi lấy sản phẩm:', err);
+    res.status(500).send('Lỗi khi lấy sản phẩm');
+  }
+});
+
+
 
 module.exports = router;

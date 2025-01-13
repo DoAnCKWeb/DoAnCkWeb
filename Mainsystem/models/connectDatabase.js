@@ -7,7 +7,7 @@ const dbConfig = {
     password: 'Mquan_11a2',
     host: 'localhost',
     port: 5432,
-    database: 'webofffical',
+    database: 'postgres',
 };
 
 
