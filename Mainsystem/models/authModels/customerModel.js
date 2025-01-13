@@ -159,16 +159,41 @@ exports.productDetail = async (req, res) => {
 };
 
 exports.searchProduct = async (req, res) => {
-  const query = req.query.q;
-  const role = req.session.role;
-
-  const products = await db.any(
-    `SELECT * FROM "products" WHERE LOWER("product_name") LIKE LOWER($1) ORDER BY product_id ASC`,
-    [`%${query}%`]
-  );
-
-  res.render('customerViews/searchResults', { products, query, role });
-};
+    const query = req.query.q;
+    const role = req.session.role;
+    const { page = 1, limit = 8 } = req.query; // Mặc định mỗi trang 6 sản phẩm
+    const offset = (page - 1) * limit;
+  
+    // Lấy sản phẩm phù hợp với tìm kiếm và áp dụng phân trang
+    const products = await db.any(
+      `SELECT * FROM "products" 
+       WHERE LOWER("product_name") LIKE LOWER($1) 
+       ORDER BY product_id ASC 
+       LIMIT $2 OFFSET $3`,
+      [`%${query}%`, limit, offset]
+    );
+  
+    // Tính tổng số sản phẩm khớp với từ khóa tìm kiếm
+    const totalProducts = await db.one(
+      `SELECT COUNT(*) 
+       FROM "products" 
+       WHERE LOWER("product_name") LIKE LOWER($1)`,
+      [`%${query}%`],
+      (a) => +a.count
+    );
+  
+    const totalPages = Math.ceil(totalProducts / limit);
+  
+    // Render kết quả tìm kiếm
+    res.render('customerViews/searchResults', {
+      products,
+      query,
+      role,
+      currentPage: parseInt(page, 10),
+      totalPages,
+    });
+  };
+  
 
 exports.filterProducts = async (req, res) => {
   const { category = 'all', page = 1, limit = 6, minPrice, maxPrice, storage, priceSort, releaseYear, os } = req.query;

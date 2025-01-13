@@ -40,15 +40,17 @@ exports.productDetail = async (req, res) => {
   }
 };
 
+
 // Tìm kiếm sản phẩm
 exports.searchProduct = async (req, res) => {
-  try {
-    await customerModel.searchProduct(req, res);
-  } catch (err) {
-    console.error('Lỗi khi tìm kiếm sản phẩm:', err);
-    res.status(500).send('Lỗi khi tìm kiếm sản phẩm');
-  }
-};
+    try {
+      await customerModel.searchProduct(req, res);
+    } catch (err) {
+      console.error('Lỗi khi tìm kiếm sản phẩm:', err);
+      res.status(500).send('Lỗi khi tìm kiếm sản phẩm');
+    }
+  };
+  
 
 // Lọc & Phân trang sản phẩm
 exports.filterProducts = async (req, res) => {

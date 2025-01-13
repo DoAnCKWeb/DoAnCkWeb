@@ -6,7 +6,6 @@
     {{#each products}}
     <div class="col-md-3 mb-4">
       <div class="card h-100 text-center">
-        {{!-- <img src="{{image}}" class="card-img-top" alt="{{product_name}}" style="height: 200px; object-fit: cover;"> --}}
         <img src="{{image}}" alt="{{product_name}}" style="width: 100%; height: auto;">
 
         <div class="card-body">
@@ -17,6 +16,35 @@
       </div>
     </div>
     {{/each}}
+  </div>
+
+  <!-- Phân trang -->
+  <div class="d-flex justify-content-center mt-4">
+    <nav aria-label="Page navigation">
+      <ul class="pagination">
+        {{#if (gt currentPage 1)}}
+        <li class="page-item">
+          <a class="page-link" href="/search?q={{query}}&page={{subtract currentPage 1}}" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        {{/if}}
+
+        {{#each (range 1 totalPages)}}
+        <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
+          <a class="page-link" href="/search?q={{../query}}&page={{this}}">{{this}}</a>
+        </li>
+        {{/each}}
+
+        {{#if (lt currentPage totalPages)}}
+        <li class="page-item">
+          <a class="page-link" href="/search?q={{query}}&page={{add currentPage 1}}" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+        {{/if}}
+      </ul>
+    </nav>
   </div>
   {{else}}
   <p class="text-center text-danger">Không tìm thấy sản phẩm nào</p>
