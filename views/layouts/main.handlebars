@@ -65,7 +65,8 @@
             <ul class="navbar-nav ms-auto">
                 <!-- Form tìm kiếm -->
                 <form class="d-flex me-3" method="GET" action="/search" onsubmit="return validateSearch()">
-                    <input class="form-control me-2" type="text" name="q" id="searchInput" placeholder="Tìm kiếm..." value="{{query}}">
+                    <input class="form-control me-2" type="text" name="q" id="searchInput" placeholder="Tìm kiếm..."
+                        value="{{query}}">
                     <button class="btn btn-outline-light" type="submit">
                         <i class="bi bi-search"></i>
                     </button>
@@ -78,8 +79,8 @@
                 </li>
                 <!-- Mục Tài khoản với dropdown -->
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-                        aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
                         🚹Tài khoản
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -105,7 +106,8 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <form class="d-flex me-3" method="GET" action="/search" onsubmit="return validateSearch()">
-                    <input class="form-control me-2" type="text" name="q" id="searchInput" placeholder="Tìm kiếm..." value="{{query}}">
+                    <input class="form-control me-2" type="text" name="q" id="searchInput" placeholder="Tìm kiếm..."
+                        value="{{query}}">
                     <button class="btn btn-outline-light" type="submit">
                         <i class="bi bi-search"></i>
                     </button>
@@ -258,39 +260,39 @@
         }
 
         function addToCart(product_id, quantity) {
-    fetch('/cart/add', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ product_id, quantity }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          alert(data.message);
-          updateCartCount();
-        } else {
-          alert('Lỗi: ' + data.message);
+            fetch('/cart/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ product_id, quantity }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.success) {
+                        alert(data.message);
+                        updateCartCount();
+                    } else {
+                        alert('Lỗi: ' + data.message);
+                    }
+                })
+                .catch((err) => {
+                    console.error('Lỗi:', err);
+                    alert('Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.');
+                    //alert('Lỗi iiiiiiiiiiiiii');
+                });
         }
-      })
-      .catch((err) => {
-        console.error('Lỗi:', err);
-        alert('Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.');
-        //alert('Lỗi iiiiiiiiiiiiii');
-      });
-  }
 
-  async function updateCartCount() {
-    try {
-      const response = await fetch('/cart/items-count');
-      const data = await response.json();
-      document.getElementById('cart-count').textContent = data.count || 0;
-    } catch (error) {
-      console.error('Lỗi khi cập nhật số lượng giỏ hàng:', error);
-    }
-  }
+        async function updateCartCount() {
+            try {
+                const response = await fetch('/cart/items-count');
+                const data = await response.json();
+                document.getElementById('cart-count').textContent = data.count || 0;
+            } catch (error) {
+                console.error('Lỗi khi cập nhật số lượng giỏ hàng:', error);
+            }
+        }
 
-  // Load số lượng giỏ hàng khi trang được tải
-  updateCartCount();
+        // Load số lượng giỏ hàng khi trang được tải
+        updateCartCount();
     </script>
 </body>
 

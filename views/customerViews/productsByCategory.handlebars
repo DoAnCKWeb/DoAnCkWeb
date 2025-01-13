@@ -5,30 +5,60 @@
     <div class="col-md-3 mb-4">
       <div class="card h-100">
         <!-- Đảm bảo hình vừa khung và giữ tỷ lệ -->
-        <div class="card-img-top" style="height: 200px; background: #f8f9fa; display: flex; justify-content: center; align-items: center; overflow: hidden;">
+        <div class="card-img-top"
+          style="height: 250px; width: 250px; text-align: center; margin: 0 auto; display: block;">
           <img src="{{image}}" alt="{{product_name}}" style="width: 100%; height: auto;">
-          
+
         </div>
         <div class="card-body text-center">
           <h5 class="card-title">{{product_name}}</h5>
           <p class="card-text">Giá: {{ formatCurrency price}}</p>
-          
-            <a href="/product/{{product_id}}" class="btn btn-success" >Xem chi tiết</a>
-            {{!-- <form action="/cart/add" method="POST">
-              <input type="hidden" name="product_id" value="{{product_id}}">
-              <input type="hidden" name="quantity" value="1">
-              <button type="submit" class="btn btn-primary mt-2">Thêm vào giỏ hàng</button>
-            </form>
-           --}}
-            <button onclick="addToCart({{product_id}}, 1)" class="btn btn-primary" style="margin-top:10px">Thêm vào giỏ hàng</button>
 
-            
-         
+          <a href="/product/{{product_id}}" class="btn btn-success">Xem chi tiết</a>
+          {{!-- <form action="/cart/add" method="POST">
+            <input type="hidden" name="product_id" value="{{product_id}}">
+            <input type="hidden" name="quantity" value="1">
+            <button type="submit" class="btn btn-primary mt-2">Thêm vào giỏ hàng</button>
+          </form>
+          --}}
+          <button onclick="addToCart({{product_id}}, 1)" class="btn btn-primary" style="margin-top:10px">Thêm vào giỏ
+            hàng</button>
+
+
+
         </div>
       </div>
     </div>
     {{/each}}
   </div>
+  <!-- Phân trang -->
+  <div>
+    {{#if totalPages}}
+    <nav class="mt-4">
+      <ul class="pagination justify-content-center">
+        {{#if (gt currentPage 1)}}
+        <li class="page-item">
+          <a class="page-link" href="?page={{subtract currentPage 1}}&category={{category}}">&laquo;</a>
+        </li>
+        {{/if}}
+
+        {{#each (range 1 totalPages)}}
+        <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
+          <a class="page-link" href="?page={{this}}&category={{../category}}">{{this}}</a>
+        </li>
+        {{/each}}
+
+        {{#if (lt currentPage totalPages)}}
+        <li class="page-item">
+          <a class="page-link" href="?page={{add currentPage 1}}&category={{category}}">&raquo;</a>
+        </li>
+        {{/if}}
+      </ul>
+    </nav>
+    {{/if}}
+  </div>
+
+
   <div class="text-center mt-4">
     <a href="/{{role}}" class="btn btn-secondary">Quay lại danh mục</a>
   </div>

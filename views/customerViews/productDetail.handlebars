@@ -28,6 +28,41 @@
           <p><strong>Hệ điều hành:</strong> {{product.operating_system}}</p>
           <p><strong>Màn hình:</strong> {{product.screen_size}}</p>
           <p><strong>Năm phát hành:</strong> {{product.release_year}}</p>
+
+          <!-- Phân trang -->
+          <div class="d-flex justify-content-center mt-4">
+            <nav aria-label="Page navigation">
+              <ul class="pagination">
+                {{#if (gt currentPage 1)}}
+                <li class="page-item">
+                  <a class="page-link"
+                    href="{{#if isLoggedIn}}/user?page={{subtract currentPage 1}}{{else}}/?page={{subtract currentPage 1}}{{/if}}"
+                    aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+                {{/if}}
+
+                {{#each (range 1 totalPages)}}
+                <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
+                  <a class="page-link"
+                    href="{{#if ../isLoggedIn}}/user?page={{this}}{{else}}/?page={{this}}{{/if}}">{{this}}</a>
+                </li>
+                {{/each}}
+
+                {{#if (lt currentPage totalPages)}}
+                <li class="page-item">
+                  <a class="page-link"
+                    href="{{#if isLoggedIn}}/user?page={{add currentPage 1}}{{else}}/?page={{add currentPage 1}}{{/if}}"
+                    aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+                {{/if}}
+              </ul>
+            </nav>
+          </div>
+
           <div class="d-flex justify-content-between align-items-center">
             <a href="/{{role}}" class="btn btn-secondary">Quay lại sản phẩm</a>
             <button id="add-to-cart-btn" class="btn btn-primary">Thêm vào giỏ hàng</button>
