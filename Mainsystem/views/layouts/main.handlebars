@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bai01</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .navbar {
+            background-color: #dc3545;
+            /* Đỏ */
+        }
+
+        .navbar .nav-link {
+            color: white !important;
+        }
+
+        body {
+            background-color: white;
+        }
+
+        .active {
+            background-color: #c82323 !important;
+            color: white !important;
+        }
+    </style>
+    <style>
+        h1 {
+            border: 2px solid #da1616;
+            padding: 10px;
+            border-radius: 5px;
+            color: #fcfafb;
+            background-color: #dc1627;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light w-100">
+        <a class="navbar-brand bg-primary text-white" href="/{{role}}"
+            style="margin-left:10px; padding: 10px 15px; border-radius: 5px;">🏠︎Home</a>
+        {{#if (eq role 'admin')}}
+        <div class="navbar-nav">
+            <ul class="nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="/register">Register</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/login">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/logout">Logout</a>
+                </li>
+            </ul>
+        </div>
+        {{else if (eq role 'user')}}
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <!-- Form tìm kiếm -->
+                <form class="d-flex me-3" method="GET" action="/search" onsubmit="return validateSearch()">
+                    <input class="form-control me-2" type="text" name="q" id="searchInput" placeholder="Tìm kiếm..."
+                        value="{{query}}">
+                    <button class="btn btn-outline-light" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="tel:+849090909">
+                        ☎️Hostline 0909.0909<br>
+                    </a>
+                </li>
+                <!-- Mục Tài khoản với dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        🚹Tài khoản
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="/register">Đăng ký</a></li>
+                        <li><a class="dropdown-item" href="/login">Đăng nhập</a></li>
+                        <li><a class="dropdown-item" href="/logout">Đăng xuất</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a href="/cart" class="nav-link">
+                        <i class="fa fa-shopping-cart"></i>🛒 Giỏ hàng
+                        <span id="cart-count">0</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        {{else}}
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <form class="d-flex me-3" method="GET" action="/search" onsubmit="return validateSearch()">
+                    <input class="form-control me-2" type="text" name="q" id="searchInput" placeholder="Tìm kiếm..."
+                        value="{{query}}">
+                    <button class="btn btn-outline-light" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+                <li class="nav-item">
+                    <a class="nav-link" href="/register">Register</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/login">Login</a>
+                </li>
+                {{!-- <li class="nav-item">
+                    <a class="nav-link" href="/logout">Logout</a>
+                </li> --}}
+                <li class="nav-item">
+                    <a href="/cart" class="nav-link">
+                        <i class="fa fa-shopping-cart"></i> Giỏ hàng
+                        <span id="cart-count">0</span>
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+        {{/if}}
+    </nav>
+
+    {{#if (eq role 'admin')}}
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar bên trái -->
+            <div class="col-md-3 bg-light vh-100 d-flex flex-column p-3">
+                <h4 class="text-center py-3 border-bottom">Quản lý hệ thống</h4>
+                <ul class="nav flex-column" id="sidebar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark py-2" href="/admin/accounts">
+                            <i class="bi bi-person-circle me-2"></i> Quản lý tài khoản
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark py-2" href="/admin/categories">
+                            <i class="bi bi-list-ul me-2"></i> Quản lý danh mục & sản phẩm
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark py-2" href="/admin/statistics">
+                            <i class="bi bi-bar-chart me-2"></i> Thống kê doanh thu
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Nội dung bên phải -->
+            <div class="col-md-9">
+                <div class="p-4">
+                    {{{body}}}
+                </div>
+            </div>
+        </div>
+    </div>
+    {{else}}
+    <main>
+        {{{body}}}
+    </main>
+    {{/if}}
+
+    <footer class="text-center text-lg-start mt-4" style="background-color: #ADD8E6;">
+        <div class="container p-4">
+            <div class="row">
+                <div class="col-lg-6 col-md-12 mb-4 mb-md-0">
+                    <h5 class="text-uppercase">Về chúng tôi</h5>
+                    <p style="text-align: justify;">
+                        Chúng tôi tự hào mang đến những sản phẩm công nghệ tiên tiến,
+                        chất lượng cao,cùng với dịch vụ chăm sóc khách hàng tận tâm
+                        nhất, luôn sẵn sàng đáp ứng mọi nhu cầu của khách
+                        hàng, giúp nâng cao trải nghiệm mua sắm và mang lại sự hài lòng
+                        tuyệt đối.
+                    </p>
+
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+                    <h5 class="text-uppercase">Liên hệ</h5>
+                    <ul class="list-unstyled mb-0">
+                        <li>
+                            <a href="#" class="text-dark">
+                                <i class="bi bi-facebook me-2"></i> Facebook
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-dark">
+                                <i class="bi bi-chat-dots me-2"></i> Zalo
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-dark">
+                                <i class="bi bi-envelope me-2"></i> Email: support@example.com
+                            </a>
+                        </li>
+                    </ul>
+
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+                    <h5 class="text-uppercase">Chính sách</h5>
+                    <ul class="list-unstyled">
+                        <li>
+                            <a href="#" class="text-dark">
+                                <i class="bi bi-shield-lock me-2"></i> Bảo hành
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-dark">
+                                <i class="bi bi-truck me-2"></i> Vận chuyển
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-dark">
+                                <i class="bi bi-arrow-repeat me-2"></i> Đổi trả
+                            </a>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+        <div class="text-center p-3 bg-dark text-white">
+            © 2024 Web Clone
+        </div>
+    </footer>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var currentUrl = window.location.pathname;
+            var links = document.querySelectorAll('.nav-link');
+            links.forEach(function (link) {
+                if (link.getAttribute('href') === currentUrl) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        function validateSearch() {
+            const searchInput = document.getElementById('searchInput').value.trim();
+            if (!searchInput) {
+                alert('Vui lòng nhập từ khóa để tìm kiếm.');
+                return false; // Ngăn form gửi đi
+            }
+            return true; // Cho phép form gửi đi
+        }
+
+        function addToCart(product_id, quantity) {
+            fetch('/cart/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ product_id, quantity }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.success) {
+                        alert(data.message);
+                        updateCartCount();
+                    } else {
+                        alert('Lỗi: ' + data.message);
+                    }
+                })
+                .catch((err) => {
+                    console.error('Lỗi:', err);
+                    alert('Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.');
+                    //alert('Lỗi iiiiiiiiiiiiii');
+                });
+        }
+
+        async function updateCartCount() {
+            try {
+                const response = await fetch('/cart/items-count');
+                const data = await response.json();
+                document.getElementById('cart-count').textContent = data.count || 0;
+            } catch (error) {
+                console.error('Lỗi khi cập nhật số lượng giỏ hàng:', error);
+            }
+        }
+
+        // Load số lượng giỏ hàng khi trang được tải
+        updateCartCount();
+    </script>
+</body>
+
+</html>
