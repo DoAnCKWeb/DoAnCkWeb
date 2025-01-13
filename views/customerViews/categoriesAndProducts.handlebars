@@ -48,7 +48,7 @@
         <img src="{{image}}" class="card-img-top" alt="{{product_name}}" style="height: 200px; width: 250px; text-align: center; margin: 0 auto; display: block;">
         <div class="card-body">
           <h5 class="card-title">{{product_name}}</h5>
-          <p class="card-text">Giá: {{price}} VND</p>
+          <p class="card-text">Giá: {{ formatCurrency price}}</p>
           <a href="/product/{{product_id}}" class="btn btn-success">Xem chi tiết</a>
           <p class="text-muted">Danh mục: {{category_name}}</p>
           <button onclick="addToCart({{product_id}}, 1)" class="btn btn-primary">Thêm vào giỏ hàng</button>
