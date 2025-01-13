@@ -252,6 +252,5 @@ exports.processPayment = async (req, res) => {
     return res.redirect('/cart?message=Thanh toán thành công');
   } else {
     // Thanh toán thất bại
-    return res.redirect('/cart?message=Có lỗi xảy ra khi xử lý thanh toán.');
-  }
+res.redirect(`/cart?message=${encodeURIComponent(response.data.message)}`);  }
 };
