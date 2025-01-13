@@ -53,100 +53,140 @@
           <hr>
           <div class="text-center mt-4">
             <a href="/{{role}}" class="btn btn-primary btn-block">Tiếp tục mua sắm</a>
-            <a id="btn-payment" class="btn btn-danger disabled" href="/payment">Thanh toán</a>
+            <button id="btn-payment" class="btn btn-danger disabled">Thanh toán</button>
           </div>
         </div>
       </div>
     </div>
   </div>
+  <!-- Biểu mẫu thông tin thanh toán -->
+  <div id="payment-form" class="mt-5" style="display: none;">
+    <h3 class="text-center mb-4">Thông tin thanh toán</h3>
+    <form id="paymentForm">
+      <div class="mb-3">
+        <label for="name" class="form-label">Họ và tên</label>
+        <input type="text" id="name" name="name" class="form-control" placeholder="Nhập họ và tên" required>
+      </div>
+      <div class="mb-3">
+        <label for="address" class="form-label">Địa chỉ</label>
+        <textarea id="address" name="address" class="form-control" placeholder="Nhập địa chỉ" rows="3"
+          required></textarea>
+      </div>
+      <div class="mb-3">
+        <label for="payment-method" class="form-label">Phương thức thanh toán</label>
+        <select id="payment-method" name="payment_method" class="form-select" required>
+          <option value="receive-at-store">Nhận tại nơi</option>
+          <option value="delivery">Giao hàng</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-success w-100">Xác nhận thanh toán</button>
+    </form>
+  </div>
+
 </div>
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    const removeButtons = document.querySelectorAll('.remove-item-btn');
+      const removeButtons = document.querySelectorAll('.remove-item-btn');
+      const checkboxesContainer = document.querySelector('table tbody'); // Bao trùm checkbox
+      const paymentButton = document.getElementById('btn-payment');
+      const totalPriceElement = document.getElementById('total-price');
+      const paymentForm = document.getElementById('paymentForm');
+      // Hàm cập nhật tổng giá
+      function updateTotalPrice() {
+        let total = 0;
 
-    removeButtons.forEach(button => {
-      button.addEventListener('click', async (event) => {
-        const id = event.target.getAttribute('data-id');
-
-        if (!id) {
-          alert('Không tìm thấy ID sản phẩm để xóa.');
-          return;
-        }
-
-        try {
-          const response = await fetch('/cart/remove', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ id }), // Gửi `id` của sản phẩm
-          });
-
-          const result = await response.json();
-
-          if (response.ok && result.success) {
-            // Xóa sản phẩm khỏi bảng
-            event.target.closest('tr').remove();
-
-            // Cập nhật lại tổng giá
-            updateTotalPrice();
-
-            // Cập nhật số lượng sản phẩm trong nút giỏ hàng
-            document.getElementById('cart-count').textContent = result.totalItems || 0;
-          } else {
-            alert(result.message);
-          }
-        } catch (error) {
-          console.error('Lỗi khi xóa sản phẩm:', error);
-        }
-      });
-    });
-
-    function updateTotalPrice() {
-      let total = 0;
-      document.querySelectorAll('.item-total').forEach(cell => {
-        total += parseFloat(cell.innerText.replace(/\D/g, '') || 0);
-      });
-      document.querySelector('#total-price').innerText = `${total.toLocaleString()} VND`;
-    }
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-    const paymentButton = document.getElementById('btn-payment');
-    const totalPriceElement = document.getElementById('total-price');
-
-    // Hàm cập nhật tổng giá
-    function updateTotalPrice() {
-      let total = 0;
-
-      // Lặp qua tất cả các checkbox
-      checkboxes.forEach(checkbox => {
-        if (checkbox.checked) {
+        // Lặp qua tất cả các checkbox được chọn
+        document.querySelectorAll('input[type="checkbox"]:checked').forEach((checkbox) => {
           const row = checkbox.closest('tr'); // Lấy hàng chứa checkbox
           const itemTotal = row.querySelector('.item-total'); // Lấy giá của sản phẩm
           if (itemTotal) {
             const price = parseFloat(itemTotal.innerText.replace(/\D/g, '') || 0); // Loại bỏ các ký tự không phải số
             total += price;
           }
+        });
+
+        // Cập nhật tổng giá
+        totalPriceElement.innerText = `${total.toLocaleString()} VND`;
+
+        // Kích hoạt hoặc vô hiệu hóa nút "Thanh toán"
+        paymentButton.classList.toggle('disabled', total <= 0);
+      }
+
+      // Gắn sự kiện thay đổi cho checkbox (dùng event delegation)
+      checkboxesContainer.addEventListener('change', (event) => {
+        if (event.target.type === 'checkbox') {
+          updateTotalPrice();
         }
       });
 
-      // Cập nhật tổng giá
-      totalPriceElement.innerText = `${total.toLocaleString()} VND`;
+      paymentButton.addEventListener('click', function () {
+      if (!paymentButton.classList.contains('disabled')) {
+        // Lấy danh sách product_id từ các checkbox đã chọn
+        const selectedIds = Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map((checkbox) =>
+          checkbox.closest('tr').getAttribute('data-id')
+        );
 
-      // Kích hoạt hoặc vô hiệu hóa nút "Thanh toán"
-      if (total > 0) {
-        paymentButton.classList.remove('disabled'); // Kích hoạt nút
-      } else {
-        paymentButton.classList.add('disabled'); // Vô hiệu hóa nút
+        if (selectedIds.length > 0) {
+          console.log(selectedIds);
+
+          // Cập nhật action của form với danh sách product_id
+          paymentForm.setAttribute('action', `/payment/${selectedIds.join(',')}`);
+          console.log(paymentForm);
+          paymentForm.setAttribute('method', 'POST');  // Đảm bảo phương thức là POST
+
+          // Hiển thị form thanh toán
+          document.getElementById('payment-form').style.display = 'block';
+          paymentButton.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán.');
+        }
       }
-    }
-
-    // Gắn sự kiện thay đổi cho từng checkbox
-    checkboxes.forEach(checkbox => {
-      checkbox.addEventListener('change', updateTotalPrice);
     });
 
-    // Cập nhật trạng thái ban đầu
-    updateTotalPrice();
-  });
+
+
+      // Xử lý xóa sản phẩm
+      removeButtons.forEach((button) => {
+        button.addEventListener('click', async (event) => {
+          const id = event.target.getAttribute('data-id');
+
+          if (!id) {
+            alert('Không tìm thấy ID sản phẩm để xóa.');
+            return;
+          }
+
+          try {
+            const response = await fetch('/cart/remove', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ id }), // Gửi `id` của sản phẩm
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+              // Xóa sản phẩm khỏi bảng
+              event.target.closest('tr').remove();
+
+              // Cập nhật lại tổng giá
+              updateTotalPrice();
+
+              // Cập nhật số lượng sản phẩm trong nút giỏ hàng
+              document.getElementById('cart-count').textContent = result.totalItems || 0;
+            } else {
+              alert(result.message || 'Lỗi không xác định.');
+            }
+          } catch (error) {
+            console.error('Lỗi khi xóa sản phẩm:', error);
+            alert('Có lỗi xảy ra khi kết nối máy chủ.');
+          }
+        });
+      });
+
+      // Cập nhật trạng thái ban đầu
+      updateTotalPrice();
+    });
 </script>
