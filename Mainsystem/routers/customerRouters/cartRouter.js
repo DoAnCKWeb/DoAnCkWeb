@@ -123,8 +123,6 @@ router.get('/cart/items-count', async (req, res) => {
   }
 });
 
-
-
 // Hiển thị giỏ hàng (phân trang)
 router.get('/cart', async (req, res) => {
   try {
@@ -178,8 +176,7 @@ router.get('/cart', async (req, res) => {
     //console.log(user);
     const message = req.query.message;
 
-
-    res.render('customerViews/cart', { items, total, role,user,message });
+    res.render('customerViews/cart', { items, total, role,user,message});
   } catch (error) {
     console.error('Lỗi khi hiển thị giỏ hàng:', error);
     res.status(500).send('Lỗi khi hiển thị giỏ hàng.');

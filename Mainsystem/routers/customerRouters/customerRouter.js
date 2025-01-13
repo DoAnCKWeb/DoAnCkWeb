@@ -37,6 +37,7 @@ router.get('/', async (req, res) => {
 });
 
 
+const {GetMoney}=require('../../../Subsystem/models/GetMoney.js')
 // Lấy danh sách danh mục và sản phẩm
 router.get('/user', async (req, res) => {
   try {
@@ -91,7 +92,10 @@ router.get('/user', async (req, res) => {
       return res.redirect('/login'); 
     }
 
-    const isLoggedIn = !!req.session.user_id; // true nếu đã đăng nhập
+    const isLoggedIn = !!req.session.user_id; 
+    const money_ = await GetMoney(req.session.user_id);
+    const money = parseFloat(money_.balance);
+    //console.log(money)
 
     res.render('customerViews/categoriesAndProducts', {
       categories,
@@ -100,6 +104,7 @@ router.get('/user', async (req, res) => {
       totalPages,
       isLoggedIn,
       role,
+      money
     });
   } catch (err) {
     console.error('Lỗi khi tải danh mục và sản phẩm:', err);

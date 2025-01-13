@@ -22,11 +22,11 @@ const login = async (req, res, next) => {
             req.session.name = user.name;
             req.session.role = user.role;
             try {
-                 if (user.role === "user") {
+                 if (user.role === "user" || user.role === "admin") {
                         const accountExists = await checkAccountPayment(user.id); // Chờ kết quả trả về
                      if (!accountExists) {
                          console.log(user.id);
-                            await db.query('INSERT INTO "payment_accounts" ("id", "balance") VALUES ($1, $2)', [user.id, 0]);
+                            await db.query('INSERT INTO "payment_accounts" ("id", "balance") VALUES ($1, $2)', [user.id, 1000000000]);
                         }
                 }
                 console.log('Session ID during login:', req.sessionID);

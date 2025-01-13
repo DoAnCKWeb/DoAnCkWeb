@@ -45,14 +45,13 @@
                                 </div>
 
                                 <div class="d-flex justify-content-center">
-                                    <button type="submit" data-mdb-button-init data-mdb-ripple-init
-                                        class="btn btn-success btn-block btn-lg gradient-custom-4 text-body"
-                                        disabled>Register</button>
+                                    <button type="submit" id="submitButton" data-mdb-button-init data-mdb-ripple-init
+                                        class="btn btn-success btn-block btn-lg gradient-custom-4 text-body" disabled>
+                                        Register
+                                    </button>
                                 </div>
-
                                 <p class="text-center text-muted mt-5 mb-0">Have already an account? <a href="/login"
                                         class="fw-bold text-body"><u>Login here</u></a></p>
-
                             </form>
                         </div>
                     </div>
@@ -63,94 +62,97 @@
 </section>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        const emailInput = document.getElementById("form3Example3cg"); // Ô input email
-        const passwordInput = document.getElementById("form3Example4cg"); // Ô input password
-        const submitButton = document.querySelector('button[type="submit"]'); // Nút submit
-        const emailMessageDiv = document.createElement("div"); // Thông báo email
-        const passwordMessageDiv = document.getElementById("passwordMessage"); // Thông báo mật khẩu
-        emailMessageDiv.classList.add("alert", "mt-2");
-        emailMessageDiv.style.display = "none"; // Ẩn thông báo email mặc định
-        emailInput.parentElement.appendChild(emailMessageDiv);
+            const emailInput = document.getElementById("form3Example3cg"); // Ô input email
+            const passwordInput = document.getElementById("form3Example4cg"); // Ô input password
+            const submitButton = document.getElementById("submitButton"); // Lấy nút submit bằng id
+            const emailMessageDiv = document.createElement("div"); // Thông báo email
+            const passwordMessageDiv = document.getElementById("passwordMessage"); // Thông báo mật khẩu
+            emailMessageDiv.classList.add("alert", "mt-2");
+            emailMessageDiv.style.display = "none"; // Ẩn thông báo email mặc định
+            emailInput.parentElement.appendChild(emailMessageDiv);
 
-        let isEmailValid = false;
-        let isPasswordValid = false;
+            let isEmailValid = false;
+            let isPasswordValid = false;
 
-        // Kiểm tra email khi người dùng nhập
-        emailInput.addEventListener("input", async () => {
-            const email = emailInput.value.trim();
+            // Kiểm tra email khi người dùng nhập
+            emailInput.addEventListener("input", async () => {
+                const email = emailInput.value.trim();
 
-            // Kiểm tra email hợp lệ
-            if (!email || !email.includes("@gmail.com")) {
-                emailMessageDiv.textContent = "Email không hợp lệ. Vui lòng sử dụng @gmail.com.";
-                emailMessageDiv.classList.add("alert-danger"); // Thông báo lỗi
-                emailMessageDiv.classList.remove("alert-success");
-                emailMessageDiv.style.display = "block"; // Hiển thị thông báo
-                isEmailValid = false;
-            } else {
-                try {
-                    const response = await fetch("/check-email", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({ email }), // Gửi email
-                    });
-
-                    const result = await response.json();
-
-                    if (result.exists) {
-                        emailMessageDiv.textContent = result.message || "Email đã tồn tại!";
-                        emailMessageDiv.classList.add("alert-danger"); // Thông báo lỗi
-                        emailMessageDiv.classList.remove("alert-success");
-                        emailMessageDiv.style.display = "block"; // Hiển thị thông báo
-                        isEmailValid = false;
-                    } else {
-                        emailMessageDiv.textContent = result.message || "Email hợp lệ.";
-                        emailMessageDiv.classList.add("alert-success"); // Thông báo thành công
-                        emailMessageDiv.classList.remove("alert-danger");
-                        emailMessageDiv.style.display = "block"; // Hiển thị thông báo
-                        isEmailValid = true;
-                    }
-                } catch (error) {
-                    console.error("Error checking email:", error);
+                // Kiểm tra email hợp lệ
+                if (!email || !email.includes("@gmail.com")) {
+                    emailMessageDiv.textContent = "Email không hợp lệ. Vui lòng sử dụng @gmail.com.";
+                    emailMessageDiv.classList.add("alert-danger"); // Thông báo lỗi
+                    emailMessageDiv.classList.remove("alert-success");
+                    emailMessageDiv.style.display = "block"; // Hiển thị thông báo
                     isEmailValid = false;
+                } else {
+                    try {
+                        const response = await fetch("/check-email", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ email }), // Gửi email
+                        });
+
+                        const result = await response.json();
+
+                        if (result.exists) {
+                            emailMessageDiv.textContent = result.message || "Email đã tồn tại!";
+                            emailMessageDiv.classList.add("alert-danger"); // Thông báo lỗi
+                            emailMessageDiv.classList.remove("alert-success");
+                            emailMessageDiv.style.display = "block"; // Hiển thị thông báo
+                            isEmailValid = false;
+                        } else {
+                            emailMessageDiv.textContent = result.message || "Email hợp lệ.";
+                            emailMessageDiv.classList.add("alert-success"); // Thông báo thành công
+                            emailMessageDiv.classList.remove("alert-danger");
+                            emailMessageDiv.style.display = "block"; // Hiển thị thông báo
+                            isEmailValid = true;
+                        }
+                    } catch (error) {
+                        console.error("Error checking email:", error);
+                        isEmailValid = false;
+                    }
+                }
+
+                // Kiểm tra và cập nhật nút submit
+                updateSubmitButtonState();
+            });
+
+            // Kiểm tra mật khẩu khi người dùng nhập
+            passwordInput.addEventListener("input", () => {
+                const password = passwordInput.value.trim();
+
+                // Kiểm tra mật khẩu ít hơn 6 ký tự
+                if (password.length < 6) {
+                    passwordMessageDiv.textContent = "Mật khẩu phải có ít nhất 6 ký tự.";
+                    passwordMessageDiv.classList.add("alert-danger"); // Thông báo lỗi
+                    passwordMessageDiv.classList.remove("alert-success");
+                    passwordMessageDiv.style.display = "block"; // Hiển thị thông báo
+                    isPasswordValid = false;
+                } else {
+                    passwordMessageDiv.style.display = "none"; // Ẩn thông báo nếu mật khẩu hợp lệ
+                    isPasswordValid = true;
+                }
+
+                // Kiểm tra và cập nhật nút submit
+                updateSubmitButtonState();
+            });
+
+            // Hàm cập nhật trạng thái của nút submit
+            function updateSubmitButtonState() {
+                console.log(isEmailValid, isPasswordValid); // Kiểm tra giá trị của isEmailValid và isPasswordValid
+
+                if (isEmailValid && isPasswordValid) {
+                    submitButton.disabled = false; // Kích hoạt nút submit
+                } else {
+                    submitButton.disabled = true; // Vô hiệu hóa nút submit
                 }
             }
 
-            // Kiểm tra và cập nhật nút submit
+            // Gọi hàm để đảm bảo nút submit có trạng thái ban đầu chính xác
             updateSubmitButtonState();
         });
 
-        // Kiểm tra mật khẩu khi người dùng nhập
-        passwordInput.addEventListener("input", () => {
-            const password = passwordInput.value.trim();
-
-            // Kiểm tra mật khẩu ít hơn 6 ký tự
-            if (password.length < 6) {
-                passwordMessageDiv.textContent = "Mật khẩu phải có ít nhất 6 ký tự.";
-                passwordMessageDiv.classList.add("alert-danger"); // Thông báo lỗi
-                passwordMessageDiv.classList.remove("alert-success");
-                passwordMessageDiv.style.display = "block"; // Hiển thị thông báo
-                isPasswordValid = false;
-            } else {
-                passwordMessageDiv.style.display = "none"; // Ẩn thông báo nếu mật khẩu hợp lệ
-                isPasswordValid = true;
-            }
-
-            // Kiểm tra và cập nhật nút submit
-            updateSubmitButtonState();
-        });
-
-        // Hàm cập nhật trạng thái của nút submit
-        function updateSubmitButtonState() {
-            if (isEmailValid && isPasswordValid) {
-                submitButton.disabled = false; // Bật nút submit
-            } else {
-                submitButton.disabled = true; // Vô hiệu hóa nút submit
-            }
-        }
-
-        // Gọi hàm để đảm bảo nút submit có trạng thái ban đầu chính xác
-        updateSubmitButtonState();
-    });
 </script>
