@@ -1,3 +1,22 @@
+{{#if successMessage}}
+<div class="alert alert-success" role="alert">
+  {{successMessage}}
+</div>
+{{/if}}
+
+{{#if errorMessage}}
+<div class="alert alert-danger" role="alert">
+  {{errorMessage}}
+</div>
+{{/if}}
+
+
+{{#if message}}
+<div class="alert alert-danger" role="alert">
+  {{message}}
+</div>
+{{/if}}
+
 <div class="container my-5">
   <h1 class="text-center mb-4">Giỏ hàng của bạn</h1>
 
@@ -24,7 +43,7 @@
                 <td><img src="{{this.image}}" alt="{{this.product_name}}" width="100"></td>
                 <td>{{product_name}}</td>
                 <td>{{this.storage_capacity}}</td>
-                <td>{{quantity}}</td>
+                <td id="item-quantity">{{quantity}}</td>
                 <td>{{formatCurrency price}}</td>
                 <td class="item-total">{{formatCurrency sum_price}}</td>
                 <td>
@@ -63,22 +82,19 @@
   <div id="payment-form" class="mt-5" style="display: none;">
     <h3 class="text-center mb-4">Thông tin thanh toán</h3>
     <form id="paymentForm">
+      {{#if user}}
       <div class="mb-3">
         <label for="name" class="form-label">Họ và tên</label>
-        <input type="text" id="name" name="name" class="form-control" placeholder="Nhập họ và tên" required>
+        <p class="form-control" id="name">{{user.name}}</p>
       </div>
+      {{/if}}
+
       <div class="mb-3">
-        <label for="address" class="form-label">Địa chỉ</label>
-        <textarea id="address" name="address" class="form-control" placeholder="Nhập địa chỉ" rows="3"
-          required></textarea>
-      </div>
-      <div class="mb-3">
-        <label for="payment-method" class="form-label">Phương thức thanh toán</label>
-        <select id="payment-method" name="payment_method" class="form-select" required>
-          <option value="receive-at-store">Nhận tại nơi</option>
-          <option value="delivery">Giao hàng</option>
-        </select>
-      </div>
+        <div class="d-flex align-items-center">
+          <p class="mb-0">Tổng tiền cần thanh toán : </p>
+          <p id="total" class="mb-0 ms-2"></p>
+        </div>
+
       <button type="submit" class="btn btn-success w-100">Xác nhận thanh toán</button>
     </form>
   </div>
@@ -92,6 +108,7 @@
       const paymentButton = document.getElementById('btn-payment');
       const totalPriceElement = document.getElementById('total-price');
       const paymentForm = document.getElementById('paymentForm');
+      const total_payment = document.getElementById('total');
       // Hàm cập nhật tổng giá
       function updateTotalPrice() {
         let total = 0;
@@ -108,6 +125,7 @@
 
         // Cập nhật tổng giá
         totalPriceElement.innerText = `${total.toLocaleString()} VND`;
+        total_payment.innerText= `${total.toLocaleString()} VND`;
 
         // Kích hoạt hoặc vô hiệu hóa nút "Thanh toán"
         paymentButton.classList.toggle('disabled', total <= 0);
@@ -122,18 +140,21 @@
 
       paymentButton.addEventListener('click', function () {
       if (!paymentButton.classList.contains('disabled')) {
-        // Lấy danh sách product_id từ các checkbox đã chọn
-        const selectedIds = Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map((checkbox) =>
-          checkbox.closest('tr').getAttribute('data-id')
-        );
+        // Lấy danh sách sản phẩm được chọn với định dạng id:số lượng
+        const selectedProducts = Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map((checkbox) => {
+          const row = checkbox.closest('tr'); // Lấy hàng chứa checkbox
+          const productId = row.getAttribute('data-id'); // Lấy id sản phẩm
+          const quantityElement = row.querySelector('#item-quantity'); // Lấy phần tử chứa số lượng
+          const quantity = quantityElement ? parseInt(quantityElement.innerText, 10) || 1 : 1; // Lấy số lượng, mặc định là 1
+          return `${productId}:${quantity}`; // Định dạng id:số lượng
+        });
 
-        if (selectedIds.length > 0) {
-          console.log(selectedIds);
+        if (selectedProducts.length > 0) {
+          console.log(selectedProducts);
 
-          // Cập nhật action của form với danh sách product_id
-          paymentForm.setAttribute('action', `/payment/${selectedIds.join(',')}`);
-          console.log(paymentForm);
-          paymentForm.setAttribute('method', 'POST');  // Đảm bảo phương thức là POST
+          // Cập nhật action của form với danh sách id:số lượng
+          paymentForm.setAttribute('action', `/payment/${selectedProducts.join(',')}`);
+          paymentForm.setAttribute('method', 'POST'); // Đảm bảo phương thức là POST
 
           // Hiển thị form thanh toán
           document.getElementById('payment-form').style.display = 'block';
