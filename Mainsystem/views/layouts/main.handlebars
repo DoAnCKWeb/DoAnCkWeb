@@ -10,6 +10,10 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
     <style>
+        body {
+            height: 100%;
+        }
+
         .navbar {
             background-color: #dc3545;
             /* Đỏ */
@@ -24,7 +28,7 @@
             height: 100%;
         }
 
-        .active {
+        .actived {
             background-color: #c82323 !important;
             color: white !important;
         }
@@ -35,7 +39,6 @@
             padding: 10px;
             border-radius: 5px;
             color: #fcfafb;
-            background-color: #dc1627;
         }
     </style>
 </head>
@@ -141,7 +144,7 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar bên trái -->
-            <div class="col-md-3 bg-light vh-100 d-flex flex-column p-3">
+            <div class="col-md-3 bg-light vh-100  flex-column p-3">
                 <h4 class="text-center py-3 border-bottom">Quản lý hệ thống</h4>
                 <ul class="nav flex-column" id="sidebar-nav">
                     <li class="nav-item">
@@ -249,7 +252,7 @@
             var links = document.querySelectorAll('.nav-link');
             links.forEach(function (link) {
                 if (link.getAttribute('href') === currentUrl) {
-                    link.classList.add('active');
+                    link.classList.add('actived');
                 }
             });
         });

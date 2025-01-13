@@ -6,80 +6,93 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Statistics</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     <style>
-        
         body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-}
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+        }
 
-.stat-container {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); /* Chia đều thành 4 cột */
-    gap: 20px; /* Khoảng cách giữa các ô */
-    padding: 20px;
-    margin: 0 auto; /* Căn giữa toàn bộ */
-    max-width: 1200px; /* Giới hạn chiều rộng */
-}
+        .stat-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            /* Chia đều thành 4 cột */
+            gap: 20px;
+            /* Khoảng cách giữa các ô */
+            padding: 20px;
+            margin: 0 auto;
+            /* Căn giữa toàn bộ */
+            max-width: 1200px;
+            /* Giới hạn chiều rộng */
+        }
 
-.stat-box {
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
+        .stat-box {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
 
-.stat-box h2 {
-    font-size: 20px;
-    margin-bottom: 10px;
-}
+        .stat-box h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
 
-.stat-box p {
-    font-size: 18px;
-    font-weight: bold;
-    color: #007bff;
-}
+        .stat-box p {
+            font-size: 18px;
+            font-weight: bold;
+            color: #007bff;
+        }
 
 
-.container {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 20px; /* Khoảng cách giữa các ô */
-    padding: 20px;
-    margin: 0 auto; /* Căn giữa toàn bộ */
-    max-width: 1200px; /* Giới hạn chiều rộng */
-}
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+            /* Khoảng cách giữa các ô */
+            padding: 20px;
+            margin: 0 auto;
+            /* Căn giữa toàn bộ */
+            max-width: 1200px;
+            /* Giới hạn chiều rộng */
+        }
 
-.chart-container {
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
+        .chart-container {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
 
-.chart-container canvas {
-    width: 100%; /* Chiều rộng của canvas chiếm toàn bộ container */
-    height: 200px; /* Đặt chiều cao tối đa cho canvas */
-}
-
+        .chart-container canvas {
+            width: 100%;
+            /* Chiều rộng của canvas chiếm toàn bộ container */
+            height: 200px;
+            /* Đặt chiều cao tối đa cho canvas */
+        }
     </style>
 </head>
 
+
 <body>
+    <h2 class="mb-4">Quản lý doanh thu</h2>
+
     <!-- Bộ lọc ngày -->
     <div style="text-align: center; margin: 20px; font-family: Arial, sans-serif;">
         <label for="startDate" style="font-size: 16px; margin-right: 10px;">Từ ngày:</label>
-        <input type="date" id="startDate" style="padding: 8px 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px;" />
+        <input type="date" id="startDate"
+            style="padding: 8px 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px;" />
 
         <label for="endDate" style="font-size: 16px; margin-left: 20px; margin-right: 10px;">Đến ngày:</label>
-        <input type="date" id="endDate" style="padding: 8px 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px;" />
+        <input type="date" id="endDate"
+            style="padding: 8px 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px;" />
 
-        <button id="filterBtn" style="margin-left: 20px; padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 5px; font-size: 14px; cursor: pointer;">
+        <button id="filterBtn"
+            style="margin-left: 20px; padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 5px; font-size: 14px; cursor: pointer;">
             Lọc
         </button>
     </div>
@@ -90,7 +103,7 @@
             <p>{{formatCurrency totalRevenue}}</p>
         </div>
         <div class="stat-box">
-            <h2>Tổng sản phẩm bán ra</h2>   
+            <h2>Tổng sản phẩm bán ra</h2>
             <p>{{totalProductsSold}}</p>
         </div>
         <div class="stat-box">
@@ -119,7 +132,7 @@
 
     </div>
     {{!-- <a href="/admin" class="btn btn-secondary mt-4">Quay lại</a> --}}
-    
+
 
     <script>
         const today = new Date().toISOString().split('T')[0];
@@ -128,7 +141,7 @@
         document.getElementById('startDate').value = today;
         document.getElementById('endDate').value = today;
 
-            document.getElementById('filterBtn').addEventListener('click', function () {
+        document.getElementById('filterBtn').addEventListener('click', function () {
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
 
@@ -149,7 +162,7 @@
         const topProducts = {{{ topProducts }}}; // e.g., [{category_name: "iPhone", product_name: "iPhone 14", total_revenue: 150000}, ...]
 
         // Định nghĩa màu sắc cho từng danh mục
-    const categoryColors = {
+        const categoryColors = {
             'Iphone': 'rgba(0, 123, 255, 0.6)',        // Xanh dương
             'Samsung': 'rgba(40, 167, 69, 0.6)',      // Xanh lá
             'Xiaomi': 'rgba(255, 87, 51, 0.6)',       // Cam đỏ
@@ -308,7 +321,6 @@
             legendContainer.appendChild(legendItem);
         });
     </script>
-
 </body>
 
 </html>
