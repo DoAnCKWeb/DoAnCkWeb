@@ -8,7 +8,7 @@ function verifyToken (token) {
   try {
     // Giải mã token và trả về payload (dữ liệu của token)
     const decoded = jwt.verify(token, SECRET_KEY)
-    console.log('Token hợp lệ:', decoded)
+    //console.log('Token hợp lệ:', decoded)
     return decoded; // Trả về thông tin người dùng và sản phẩm từ token
   } catch (error) {
     console.error('Token không hợp lệ:', error.message)
