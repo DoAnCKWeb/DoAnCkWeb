@@ -12,19 +12,19 @@
         <ul class="nav me-4 justify-content-center w-100">
           <!-- Nút hiển thị tất cả -->
           <li class="nav-item mx-4 my-2">
-            <a class="nav-link px-4 py-2 bg-danger text-white text-center rounded-pill" href="#"
+            <button class="nav-link px-4 py-2 bg-danger text-white text-center rounded-pill border-0" 
               onclick="filterProducts('all', 1)">
               Tất cả
-            </a>
+            </button>
           </li>
 
           <!-- Danh mục -->
           {{#each categories}}
           <li class="nav-item mx-4 my-2">
-            <a class="nav-link px-4 py-2 bg-danger text-white text-center rounded-pill" href="#"
-              onclick="filterProducts({{id}}, 1)">
+            <button class="nav-link px-4 py-2 bg-danger text-white text-center rounded-pill border-0" 
+              onclick="filterProducts('{{id}}', 1)">
               {{name}}
-            </a>
+            </button>
           </li>
           {{/each}}
         </ul>
@@ -100,7 +100,7 @@
               <h5 class="card-title">{{product_name}}</h5>
               <p class="card-text">Giá: {{formatCurrency price}}</p>
               <a href="/product/{{product_id}}" class="btn btn-success w-100 mb-2">Xem chi tiết</a>
-              <button onclick="addToCart({{product_id}}, 1)" class="btn btn-primary w-100">Thêm vào giỏ hàng</button>
+              <button onclick="addToCart('{{product_id}}', 1)" class="btn btn-primary w-100">Thêm vào giỏ hàng</button>
             </div>
           </div>
         </div>
@@ -114,21 +114,21 @@
             <!-- Phần trước -->
             {{#if (gt currentPage 1)}}
             <li class="page-item">
-              <a class="page-link" href="#" onclick="changePage({{subtract currentPage 1}})">&laquo;</a>
+              <button class="page-link border-0" onclick="changePage({{subtract currentPage 1}})">&laquo;</button>
             </li>
             {{/if}}
 
             <!-- Hiển thị các trang -->
             {{#each (range 1 totalPages)}}
             <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
-              <a class="page-link" href="#" onclick="changePage({{this}})">{{this}}</a>
+              <button class="page-link border-0" onclick="changePage({{this}})">{{this}}</button>
             </li>
             {{/each}}
 
             <!-- Phần sau -->
             {{#if (lt currentPage totalPages)}}
             <li class="page-item">
-              <a class="page-link" href="#" onclick="changePage({{add currentPage 1}})">&raquo;</a>
+              <button class="page-link border-0" onclick="changePage({{add currentPage 1}})">&raquo;</button>
             </li>
             {{/if}}
           </ul>
@@ -189,8 +189,8 @@
                 <div class="card-body">
                   <h5 class="card-title">${product.product_name}</h5>
                   <p class="card-text">Giá: ${formatCurrency(product.price)}</p>
-                  <a href="/product/{{product_id}}" class="btn btn-success w-100 mb-2">Xem chi tiết</a>
-                  <button onclick="addToCart({{product_id}}, 1)" class="btn btn-primary w-100">Thêm vào giỏ hàng</button>
+                  <a href="/product/${product.product_id}" class="btn btn-success w-100 mb-2">Xem chi tiết</a>
+                  <button onclick="addToCart('${product.product_id}', 1)" class="btn btn-primary w-100">Thêm vào giỏ hàng</button>
                 </div>
               </div>
             </div>
@@ -200,44 +200,44 @@
         // Cập nhật phân trang với dấu "..."
         paginationContainer.innerHTML = '';
         if (data.currentPage > 1) {
-          paginationContainer.innerHTML += `<li class="page-item"><a class="page-link" href="#" onclick="filterProducts('${categoryId}', ${data.currentPage - 1})">&laquo;</a></li>`;
+          paginationContainer.innerHTML += `<li class="page-item"><button class="page-link border-0" onclick="filterProducts('${categoryId}', ${data.currentPage - 1})">&laquo;</button></li>`;
         }
 
         if (data.totalPages <= 5) {
           // Nếu tổng số trang <= 5, hiển thị tất cả các trang
           for (let i = 1; i <= data.totalPages; i++) {
-            paginationContainer.innerHTML += `<li class="page-item ${i === data.currentPage ? 'active' : ''}"><a class="page-link" href="#" onclick="filterProducts('${categoryId}', ${i})">${i}</a></li>`;
+            paginationContainer.innerHTML += `<li class="page-item ${i === data.currentPage ? 'active' : ''}"><button class="page-link border-0" onclick="filterProducts('${categoryId}', ${i})">${i}</button></li>`;
           }
         } else {
           // Nếu tổng số trang > 5, chỉ hiển thị các trang xung quanh trang hiện tại
           if (data.currentPage <= 3) {
             // Nếu trang hiện tại <= 3, hiển thị trang 1, 2, 3, ... và trang cuối
             for (let i = 1; i <= 3; i++) {
-              paginationContainer.innerHTML += `<li class="page-item ${i === data.currentPage ? 'active' : ''}"><a class="page-link" href="#" onclick="filterProducts('${categoryId}', ${i})">${i}</a></li>`;
+              paginationContainer.innerHTML += `<li class="page-item ${i === data.currentPage ? 'active' : ''}"><button class="page-link border-0" onclick="filterProducts('${categoryId}', ${i})">${i}</button></li>`;
             }
-            paginationContainer.innerHTML += `<li class="page-item"><a class="page-link" href="#">...</a></li>`;
-            paginationContainer.innerHTML += `<li class="page-item"><a class="page-link" href="#" onclick="filterProducts('${categoryId}', ${data.totalPages})">${data.totalPages}</a></li>`;
+            paginationContainer.innerHTML += `<li class="page-item"><button class="page-link border-0">...</button></li>`;
+            paginationContainer.innerHTML += `<li class="page-item"><button class="page-link border-0" onclick="filterProducts('${categoryId}', ${data.totalPages})">${data.totalPages}</button></li>`;
           } else if (data.currentPage >= data.totalPages - 2) {
             // Nếu trang hiện tại gần cuối, hiển thị các trang cuối cùng
-            paginationContainer.innerHTML += `<li class="page-item"><a class="page-link" href="#" onclick="filterProducts('${categoryId}', 1)">1</a></li>`;
-            paginationContainer.innerHTML += `<li class="page-item"><a class="page-link" href="#">...</a></li>`;
+            paginationContainer.innerHTML += `<li class="page-item"><button class="page-link border-0" onclick="filterProducts('${categoryId}', 1)">1</button></li>`;
+            paginationContainer.innerHTML += `<li class="page-item"><button class="page-link border-0">...</button></li>`;
             for (let i = data.totalPages - 2; i <= data.totalPages; i++) {
-              paginationContainer.innerHTML += `<li class="page-item ${i === data.currentPage ? 'active' : ''}"><a class="page-link" href="#" onclick="filterProducts('${categoryId}', ${i})">${i}</a></li>`;
+              paginationContainer.innerHTML += `<li class="page-item ${i === data.currentPage ? 'active' : ''}"><button class="page-link border-0" onclick="filterProducts('${categoryId}', ${i})">${i}</button></li>`;
             }
           } else {
             // Nếu trang hiện tại ở giữa, hiển thị các trang xung quanh
-            paginationContainer.innerHTML += `<li class="page-item"><a class="page-link" href="#" onclick="filterProducts('${categoryId}', 1)">1</a></li>`;
-            paginationContainer.innerHTML += `<li class="page-item"><a class="page-link" href="#">...</a></li>`;
+            paginationContainer.innerHTML += `<li class="page-item"><button class="page-link border-0" onclick="filterProducts('${categoryId}', 1)">1</button></li>`;
+            paginationContainer.innerHTML += `<li class="page-item"><button class="page-link border-0">...</button></li>`;
             for (let i = data.currentPage - 1; i <= data.currentPage + 1; i++) {
-              paginationContainer.innerHTML += `<li class="page-item ${i === data.currentPage ? 'active' : ''}"><a class="page-link" href="#" onclick="filterProducts('${categoryId}', ${i})">${i}</a></li>`;
+              paginationContainer.innerHTML += `<li class="page-item ${i === data.currentPage ? 'active' : ''}"><button class="page-link border-0" onclick="filterProducts('${categoryId}', ${i})">${i}</button></li>`;
             }
-            paginationContainer.innerHTML += `<li class="page-item"><a class="page-link" href="#">...</a></li>`;
-            paginationContainer.innerHTML += `<li class="page-item"><a class="page-link" href="#" onclick="filterProducts('${categoryId}', ${data.totalPages})">${data.totalPages}</a></li>`;
+            paginationContainer.innerHTML += `<li class="page-item"><button class="page-link border-0">...</button></li>`;
+            paginationContainer.innerHTML += `<li class="page-item"><button class="page-link border-0" onclick="filterProducts('${categoryId}', ${data.totalPages})">${data.totalPages}</button></li>`;
           }
         }
 
         if (data.currentPage < data.totalPages) {
-          paginationContainer.innerHTML += `<li class="page-item"><a class="page-link" href="#" onclick="filterProducts('${categoryId}', ${data.currentPage + 1})">&raquo;</a></li>`;
+          paginationContainer.innerHTML += `<li class="page-item"><button class="page-link border-0" onclick="filterProducts('${categoryId}', ${data.currentPage + 1})">&raquo;</button></li>`;
         }
       });
   }
