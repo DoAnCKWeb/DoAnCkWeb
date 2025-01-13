@@ -5,6 +5,7 @@ const passport = require('passport')
 const session = require('express-session')
 // const pgSession = require('connect-pg-simple')(session); // Thư viện lưu session vào PostgreSQL
 const https = require('https')
+const flash = require('connect-flash');
 const fileUpload = require('express-fileupload')
 const { Server } = require('socket.io')
 const cors = require('cors')
@@ -21,6 +22,7 @@ const app = express()
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(fileUpload())
+app.use(flash());
 app.use(cors({
   origin: 'https://localhost:5000', // Đảm bảo phù hợp với domain của bạn
   credentials: true, // Cho phép gửi cookie qua domain khác

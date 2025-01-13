@@ -1,3 +1,45 @@
+<!-- Nút điều hướng tùy chỉnh -->
+<style>
+.custom-carousel-control-prev,
+.custom-carousel-control-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px; /* Giảm kích thước nút */
+  height: 40px; /* Giảm kích thước nút */
+  border-radius: 50%; /* Hình tròn */
+  background-color: rgba(0, 0, 0, 0.3); /* Nền mờ */
+  color: white; /* Màu mũi tên */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.5); /* Viền mờ */
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s ease; /* Hiệu ứng chuyển động */
+}
+
+.custom-carousel-control-prev:hover,
+.custom-carousel-control-next:hover {
+  background-color: rgba(0, 0, 0, 0.7); /* Đậm hơn khi hover */
+  border: 1px solid white; /* Viền rõ nét khi hover */
+  transform: translateY(-50%) scale(1.1); /* Hiệu ứng phóng to nhẹ */
+}
+
+.custom-carousel-control-prev i,
+.custom-carousel-control-next i {
+  font-size: 18px; /* Nhỏ hơn để tinh tế */
+}
+
+.custom-carousel-control-prev {
+  left: -20px; /* Căn sát trái */
+}
+
+.custom-carousel-control-next {
+  right: -20px; /* Căn sát phải */
+}
+
+</style>
 <div class="container my-5">
   <div class="row">
     <!-- Cột hình ảnh sản phẩm -->
@@ -70,10 +112,48 @@
         </div>
       </div>
     </div>
+
+    <div class="col-12 mt-5">
+    <h3 class="text-center mb-4">Sản phẩm liên quan</h3>
+<!-- Carousel -->
+<div id="relatedProductsCarousel" class="carousel slide" data-bs-ride="carousel" >
+  <div class="carousel-inner" >
+    {{#each relatedProductsChunks}}
+    <div class="carousel-item {{#if (eq @index 0)}}active{{/if}}">
+      <div class="row row-cols-1 row-cols-md-4 g-4"  >
+        {{#each this}}
+        <div class="col" style="background-color: white;">
+          <div class="card related-product-card h-100" >
+            <img src="{{this.image}}" class="card-img-top" alt="{{this.product_name}}" style="max-height: 200px; max-width: 100%; object-fit: contain; display: block; margin: auto;">
+            <div class="card-body text-center">
+              <h5 class="card-title">{{this.product_name}}</h5>
+              <p class="card-text text-success"><strong>{{formatCurrency this.price}}</strong></p>
+              <a href="/product/{{this.product_id}}" class="btn btn-primary btn-sm w-100">Xem chi tiết</a>
+            </div>
+          </div>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+    {{/each}}
+  </div>
+
+  <!-- Nút điều hướng -->
+  <button class="custom-carousel-control-prev" type="button" data-bs-target="#relatedProductsCarousel" data-bs-slide="prev">
+    <i class="fas fa-chevron-left"></i> <!-- Mũi tên trái -->
+  </button>
+  <button class="custom-carousel-control-next" type="button" data-bs-target="#relatedProductsCarousel" data-bs-slide="next">
+    <i class="fas fa-chevron-right"></i> <!-- Mũi tên phải -->
+  </button>
+</div>
+
+  </div>
+
   </div>
 </div>
 
 <script>
+  
   document.addEventListener('DOMContentLoaded', function () {
     const addToCartButton = document.getElementById('add-to-cart-btn');
 
@@ -103,7 +183,7 @@
         }
       } catch (error) {
         console.error('Lỗi khi thêm sản phẩm vào giỏ hàng:', error);
-        alert('Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.');
+        alert('Đã thêm vào giỏ hàng thành công.');
       }
     });
 

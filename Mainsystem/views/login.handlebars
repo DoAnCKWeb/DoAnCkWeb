@@ -4,6 +4,12 @@
 </div>
 {{/if}}
 
+{{#if messages.error}}
+  <div class="alert alert-danger" role="alert">
+    {{messages.error}}
+  </div>
+{{/if}}
+
 <section class="vh-100">
     <div class="container py-5 h-100">
         <div class="row d-flex align-items-center justify-content-center h-100">

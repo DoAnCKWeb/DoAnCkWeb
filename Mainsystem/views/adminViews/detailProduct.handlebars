@@ -17,19 +17,6 @@
                 <p><strong>Trọng lượng:</strong> {{product.weight}} g</p>
                 <p><strong>Năm phát hành:</strong> {{product.release_year}}</p>
             </div>
-            
-            <!-- Hiển thị màu sắc -->
-            <h3 class="mt-4">Màu sắc</h3>
-            <div class="d-flex flex-row flex-wrap gap-3 justify-content-start mt-4">
-                {{#each product.colors}}
-                <div class="card border rounded shadow-sm" style="width: 8rem; height: auto; text-align: center;">
-                    <div class="card-body">
-                        <h6 class="card-title text-dark fw-bold">{{this.color_name}}</h6>
-                        <p class="text-muted small">Số lượng: {{this.stock}}</p>
-                    </div>
-                </div>
-                {{/each}}
-            </div>
         </div>
     </div>
     {{!-- <a href="/admin/categories" class="btn btn-secondary mt-4">Quay lại</a> --}}

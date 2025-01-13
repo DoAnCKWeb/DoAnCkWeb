@@ -10,6 +10,11 @@
 </div>
 {{/if}}
 
+{{#if messages.error}}
+  <div class="alert alert-danger" role="alert">
+    {{messages.error}}
+  </div>
+{{/if}}
 
 {{#if message}}
 <div class="alert alert-danger" role="alert">
@@ -63,42 +68,44 @@
       {{/if}}
     </div>
 
-    <!-- Tổng số tiền (bên phải) -->
     <div class="col-lg-4">
       <div class="card">
         <div class="card-body">
           <h4 class="card-title">Tổng cộng</h4>
-          <h3 class="text-end" id="total-price">0</h3>
+          <h3 class="text-end" id="total-price"></h3>
           <hr>
           <div class="text-center mt-4">
             <a href="/{{role}}" class="btn btn-primary btn-block">Tiếp tục mua sắm</a>
-            <button id="btn-payment" class="btn btn-danger disabled">Thanh toán</button>
+            <button id="btn-payment" class="btn btn-danger">Thanh toán</button>
           </div>
+
+          <!-- Biểu mẫu thông tin thanh toán (ẩn ban đầu) -->
+          <div id="payment-form" class="mt-4" style="display: none; padding-top: 20px;">
+            <h3 class="text-center mb-4">Thông tin thanh toán</h3>
+            <form id="paymentForm">
+              {{#if user}}
+              <div class="mb-3">
+                <label for="name" class="form-label">Họ và tên</label>
+                <p class="form-control" id="name">{{user.name}}</p>
+              </div>
+              {{/if}}
+
+              <div class="mb-3">
+                <div class="d-flex align-items-center">
+                  <p class="mb-0">Tổng tiền cần thanh toán : </p>
+                  <p id="total" class="mb-0 ms-2">{{formatCurrency totalPrice}}</p>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-success w-100">Xác nhận thanh toán</button>
+            </form>
+          </div>
+
         </div>
       </div>
     </div>
   </div>
-  <!-- Biểu mẫu thông tin thanh toán -->
-  <div id="payment-form" class="mt-5" style="display: none;">
-    <h3 class="text-center mb-4">Thông tin thanh toán</h3>
-    <form id="paymentForm">
-      {{#if user}}
-      <div class="mb-3">
-        <label for="name" class="form-label">Họ và tên</label>
-        <p class="form-control" id="name">{{user.name}}</p>
-      </div>
-      {{/if}}
-
-      <div class="mb-3">
-        <div class="d-flex align-items-center">
-          <p class="mb-0">Tổng tiền cần thanh toán : </p>
-          <p id="total" class="mb-0 ms-2"></p>
-        </div>
-
-      <button type="submit" class="btn btn-success w-100">Xác nhận thanh toán</button>
-    </form>
-  </div>
-
+</div>
 </div>
 
 <script>
@@ -158,7 +165,7 @@
 
           // Hiển thị form thanh toán
           document.getElementById('payment-form').style.display = 'block';
-          paymentButton.scrollIntoView({ behavior: 'smooth' });
+          {{!-- paymentButton.scrollIntoView({ behavior: 'smooth' }); --}}
         } else {
           alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán.');
         }
