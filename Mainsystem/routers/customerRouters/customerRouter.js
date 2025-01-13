@@ -8,7 +8,7 @@ router.get('/', async (req, res) => {
 
     
     const categories = await db.any('SELECT * FROM "categories" ORDER BY id ASC');
-    const { page = 1, limit = 8 } = req.query;
+    const { page = 1, limit = 6 } = req.query;
     const offset = (page - 1) * limit;
 
     const totalProducts = await db.one('SELECT COUNT(*) FROM "products"', [], a => +a.count);
@@ -68,7 +68,7 @@ router.get('/user', async (req, res) => {
       }
       const deleteTemporate =db.query('DELETE FROM "temporary_cart"');
 
-    const { page = 1, limit = 8 } = req.query; // Mặc định mỗi trang 8 sản phẩm
+    const { page = 1, limit = 6 } = req.query; // Mặc định mỗi trang 8 sản phẩm
     const offset = (page - 1) * limit;
 
     const categories = await db.any('SELECT * FROM "categories" ORDER BY id ASC');
@@ -111,7 +111,7 @@ router.get('/user', async (req, res) => {
 // Lấy sản phẩm theo danh mục
 router.get('/user/:id/products', async (req, res) => {
   const categoryId = req.params.id;
-  const { page = 1, limit = 8 } = req.query; // Mặc định mỗi trang 8 sản phẩm
+  const { page = 1, limit = 6 } = req.query; // Mặc định mỗi trang 8 sản phẩm
   const offset = (page - 1) * limit;
 
   try {
@@ -210,44 +210,109 @@ router.get('/search', async (req, res) => {
 });
 
 router.get('/products', async (req, res) => {
-  const { category = 'all', page = 1, limit = 8 } = req.query;
+  const { category = 'all', page = 1, limit = 6, minPrice, maxPrice, storage, priceSort, releaseYear, os } = req.query;
   const offset = (page - 1) * limit;
 
-  try {
-    let products;
-    let totalProducts;
+  // Bắt đầu xây dựng câu lệnh SQL cho việc lấy sản phẩm
+  let query = `SELECT p.*, c.name AS category_name
+               FROM "products" p
+               INNER JOIN "categories" c ON p.category_id = c.id
+               WHERE 1 = 1`;  // Điều kiện mặc định cho tất cả các bộ lọc
+  let params = [];
 
-    if (category === 'all') {
-      // Nếu danh mục là "Tất cả"
-      products = await db.any(
-        `SELECT p.*, c.name AS category_name
-         FROM "products" p
-         INNER JOIN "categories" c ON p.category_id = c.id
-         ORDER BY p.product_id ASC
-         LIMIT $1 OFFSET $2`,
-        [limit, offset]
-      );
-      totalProducts = await db.one('SELECT COUNT(*) FROM "products"', [], a => +a.count);
-    } else {
-      // Nếu danh mục cụ thể
-      products = await db.any(
-        `SELECT p.*, c.name AS category_name
-         FROM "products" p
-         INNER JOIN "categories" c ON p.category_id = c.id
-         WHERE p.category_id = $1
-         ORDER BY p.product_id ASC
-         LIMIT $2 OFFSET $3`,
-        [category, limit, offset]
-      );
-      totalProducts = await db.one(
-        'SELECT COUNT(*) FROM "products" WHERE category_id = $1',
-        [category],
-        a => +a.count
-      );
+  // Lọc theo danh mục
+  if (category !== 'all') {
+    query += ' AND p.category_id = $' + (params.length + 1);
+    params.push(category);
+  }
+
+  // Lọc theo giá
+  if (minPrice) {
+    query += ' AND p.price >= $' + (params.length + 1);
+    params.push(minPrice);
+  }
+
+  if (maxPrice) {
+    query += ' AND p.price <= $' + (params.length + 1);
+    params.push(maxPrice);
+  }
+
+  // Lọc theo dung lượng
+  if (storage) {
+    query += ' AND p.storage_capacity = $' + (params.length + 1);
+    params.push(storage);
+  }
+
+  // Lọc theo năm sản xuất
+  if (releaseYear) {
+    query += ' AND p.release_year = $' + (params.length + 1);
+    params.push(releaseYear);
+  }
+
+  // Lọc theo hệ điều hành
+  if (os) {
+    query += ' AND p.operating_system = $' + (params.length + 1);
+    params.push(os);
+  }
+
+  // Lọc theo giá (sắp xếp từ cao đến thấp hoặc thấp đến cao)
+  if (priceSort) {
+    if (priceSort === 'asc') {
+      query += ' ORDER BY p.price ASC';
+    } else if (priceSort === 'desc') {
+      query += ' ORDER BY p.price DESC';
+    }
+  } else {
+    query += ' ORDER BY p.product_id ASC'; // Mặc định sắp xếp theo ID
+  }
+
+  // Phân trang
+  query += ' LIMIT $' + (params.length + 1) + ' OFFSET $' + (params.length + 2);
+  params.push(limit, offset);
+
+  try {
+    // Lấy các sản phẩm theo bộ lọc
+    const products = await db.any(query, params);
+
+    // Lấy tổng số sản phẩm theo các bộ lọc (chú ý là không tính phân trang ở đây)
+    let countQuery = 'SELECT COUNT(*) FROM "products" p WHERE 1 = 1';
+    
+    // Áp dụng các điều kiện lọc giống như truy vấn sản phẩm
+    if (category !== 'all') {
+      countQuery += ' AND p.category_id = $' + (params.length + 1);
+      params.push(category);
     }
 
+    if (minPrice) {
+      countQuery += ' AND p.price >= $' + (params.length + 1);
+      params.push(minPrice);
+    }
+
+    if (maxPrice) {
+      countQuery += ' AND p.price <= $' + (params.length + 1);
+      params.push(maxPrice);
+    }
+
+    if (storage) {
+      countQuery += ' AND p.storage_capacity = $' + (params.length + 1);
+      params.push(storage);
+    }
+
+    if (releaseYear) {
+      countQuery += ' AND p.release_year = $' + (params.length + 1);
+      params.push(releaseYear);
+    }
+
+    if (os) {
+      countQuery += ' AND p.operating_system = $' + (params.length + 1);
+      params.push(os);
+    }
+
+    // Tính tổng số sản phẩm
+    const totalProducts = await db.one(countQuery, params, a => +a.count);
     const totalPages = Math.ceil(totalProducts / limit);
 
+    // Trả về các sản phẩm và thông tin phân trang
     res.json({
       products,
       currentPage: parseInt(page, 10),
@@ -258,7 +323,5 @@ router.get('/products', async (req, res) => {
     res.status(500).send('Lỗi khi lấy sản phẩm');
   }
 });
-
-
 
 module.exports = router;
