@@ -22,7 +22,7 @@
           {{#each categories}}
           <li class="nav-item mx-4 my-2">
             <a class="nav-link px-4 py-2 bg-danger text-white text-center rounded-pill" href="#"
-              onclick="filterProducts('all', 1)">
+              onclick="filterProducts({{id}}, 1)">
               {{name}}
             </a>
           </li>
