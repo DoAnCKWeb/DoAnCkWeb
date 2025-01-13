@@ -7,7 +7,7 @@ const dbConfig = {
     password: 'postgres',
     host: 'localhost',
     port: 5432,
-    database: 'postgres',
+    database: 'webofffical',
 };
 
 

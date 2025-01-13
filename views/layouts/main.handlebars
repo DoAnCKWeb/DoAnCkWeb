@@ -63,13 +63,23 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <a class="nav-link" href="tel:+849090909">
-                    ☎️Hostline 0909.0909<br>
-                </a>
+                <!-- Form tìm kiếm -->
+                <form class="d-flex me-3" method="GET" action="/search" onsubmit="return validateSearch()">
+                    <input class="form-control me-2" type="text" name="q" id="searchInput" placeholder="Tìm kiếm..." value="{{query}}">
+                    <button class="btn btn-outline-light" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="tel:+849090909">
+                        ☎️Hostline 0909.0909<br>
+                    </a>
+                </li>
                 <!-- Mục Tài khoản với dropdown -->
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
                         🚹Tài khoản
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -84,9 +94,9 @@
                         <span id="cart-count">0</span>
                     </a>
                 </li>
-
             </ul>
         </div>
+
         {{else}}
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -94,6 +104,12 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
+                <form class="d-flex me-3" method="GET" action="/search" onsubmit="return validateSearch()">
+                    <input class="form-control me-2" type="text" name="q" id="searchInput" placeholder="Tìm kiếm..." value="{{query}}">
+                    <button class="btn btn-outline-light" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
                 <li class="nav-item">
                     <a class="nav-link" href="/register">Register</a>
                 </li>
@@ -231,6 +247,16 @@
                 }
             });
         });
+
+        function validateSearch() {
+            const searchInput = document.getElementById('searchInput').value.trim();
+            if (!searchInput) {
+                alert('Vui lòng nhập từ khóa để tìm kiếm.');
+                return false; // Ngăn form gửi đi
+            }
+            return true; // Cho phép form gửi đi
+        }
+
         function addToCart(product_id, quantity) {
     fetch('/cart/add', {
       method: 'POST',
@@ -248,7 +274,8 @@
       })
       .catch((err) => {
         console.error('Lỗi:', err);
-        alert('Đã thêm sản phẩm vào giỏ hàng thành công.');
+        alert('Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.');
+        //alert('Lỗi iiiiiiiiiiiiii');
       });
   }
 
