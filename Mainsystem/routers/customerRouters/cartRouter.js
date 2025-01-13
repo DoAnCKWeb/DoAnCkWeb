@@ -289,9 +289,8 @@ router.post('/payment/:ids', async (req, res) => {
       // Thanh toán thành công
       res.redirect('/cart?message=Thanh toán thành công');
     } else {
-      // Thanh toán thất bại
      // Thanh toán thất bại
-      res.redirect('/cart?message=Có lỗi xảy ra khi xử lý thanh toán.');
+      res.redirect(`/cart?message=${encodeURIComponent(response.data.message)}`);
     }
   } catch (error) {
     console.error('Lỗi khi gửi yêu cầu thanh toán:', error);
