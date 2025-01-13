@@ -4,6 +4,10 @@ const customerController = require('../../controllers/customerControllers/custom
 
 // Trang chủ
 router.get('/', customerController.homePage);
+
+// Lấy danh sách danh mục và sản phẩm
+router.get('/user', customerController.userCategories);
+
 // Lấy sản phẩm theo danh mục
 router.get('/user/:id/products', customerController.productsByCategory);
 
