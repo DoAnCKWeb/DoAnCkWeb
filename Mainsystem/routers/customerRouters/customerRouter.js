@@ -36,7 +36,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-
 // Lấy danh sách danh mục và sản phẩm
 router.get('/user', async (req, res) => {
   try {
@@ -146,15 +145,44 @@ router.get('/user/:id/products', async (req, res) => {
   }
 });
 
-// Lấy chi tiết sản phẩm
+function chunkArray(array, size) {
+  const chunks = [];
+  for (let i = 0; i < array.length; i += size) {
+    chunks.push(array.slice(i, i + size));
+  }
+  return chunks;
+}
+
+// Lấy chi tiết sản phẩm cùng sản phẩm liên quan
 router.get('/product/:id', async (req, res) => {
   const productId = req.params.id;
   try {
-    const product = await db.oneOrNone('SELECT * FROM "products" WHERE "product_id" = $1', [productId]);
+    // Lấy thông tin sản phẩm hiện tại
+    const product = await db.oneOrNone(
+      `SELECT p.*, c.name AS category_name 
+       FROM "products" p 
+       INNER JOIN "categories" c ON p.category_id = c.id 
+       WHERE p.product_id = $1`, 
+      [productId]
+    );
+
+    // Lấy danh sách sản phẩm liên quan (cùng danh mục, giới hạn 8 sản phẩm, trừ sản phẩm hiện tại)
+    const relatedProducts = await db.any(
+      `SELECT p.*, c.name AS category_name 
+       FROM "products" p
+       INNER JOIN "categories" c ON p.category_id = c.id
+       WHERE p.category_id = $1 AND p.product_id != $2
+       LIMIT 8`,
+      [product.category_id, productId]
+    );
+
+    // Chia sản phẩm liên quan thành từng nhóm 4
+    const relatedProductsChunks = chunkArray(relatedProducts, 4);
+
     const role = req.session.role;
 
     if (product) {
-      res.render('customerViews/productDetail', { product, role });
+      res.render('customerViews/productDetail', { product, relatedProductsChunks, role });
     } else {
       res.status(404).send('Sản phẩm không tồn tại');
     }

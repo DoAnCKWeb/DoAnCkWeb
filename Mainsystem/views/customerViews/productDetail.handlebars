@@ -1,0 +1,201 @@
+<!-- Nút điều hướng tùy chỉnh -->
+<style>
+.custom-carousel-control-prev,
+.custom-carousel-control-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px; /* Giảm kích thước nút */
+  height: 40px; /* Giảm kích thước nút */
+  border-radius: 50%; /* Hình tròn */
+  background-color: rgba(0, 0, 0, 0.3); /* Nền mờ */
+  color: white; /* Màu mũi tên */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.5); /* Viền mờ */
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s ease; /* Hiệu ứng chuyển động */
+}
+
+.custom-carousel-control-prev:hover,
+.custom-carousel-control-next:hover {
+  background-color: rgba(0, 0, 0, 0.7); /* Đậm hơn khi hover */
+  border: 1px solid white; /* Viền rõ nét khi hover */
+  transform: translateY(-50%) scale(1.1); /* Hiệu ứng phóng to nhẹ */
+}
+
+.custom-carousel-control-prev i,
+.custom-carousel-control-next i {
+  font-size: 18px; /* Nhỏ hơn để tinh tế */
+}
+
+.custom-carousel-control-prev {
+  left: -20px; /* Căn sát trái */
+}
+
+.custom-carousel-control-next {
+  right: -20px; /* Căn sát phải */
+}
+
+</style>
+<div class="container my-5">
+  <div class="row">
+    <!-- Cột hình ảnh sản phẩm -->
+    <div class="col-md-6">
+      <div class="card">
+        <img src="{{product.image}}" class="img-fluid mb-4" alt="{{product.product_name}}"
+          style="max-height: 380px; object-fit: contain;">
+      </div>
+    </div>
+
+    <!-- Cột thông tin sản phẩm -->
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header text-center">
+          <h2 style="background-color: red; color: white; padding: 10px; border-radius: 5px;">
+            {{product.product_name}} - {{product.storage_capacity}}
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <!-- Khung bo cho giá tiền -->
+            <div class="border p-3 rounded shadow-sm">
+              <h3 class="text-danger"><strong>{{ formatCurrency product.price}}</strong></h3>
+            </div>
+            <span class="badge bg-success">{{product.category_name}}</span>
+          </div>
+          <p><strong>Bộ nhớ:</strong> {{product.storage_capacity}}</p>
+          <p><strong>Hệ điều hành:</strong> {{product.operating_system}}</p>
+          <p><strong>Màn hình:</strong> {{product.screen_size}}</p>
+          <p><strong>Năm phát hành:</strong> {{product.release_year}}</p>
+
+          <!-- Phân trang -->
+          <div class="d-flex justify-content-center mt-4">
+            <nav aria-label="Page navigation">
+              <ul class="pagination">
+                {{#if (gt currentPage 1)}}
+                <li class="page-item">
+                  <a class="page-link"
+                    href="{{#if isLoggedIn}}/user?page={{subtract currentPage 1}}{{else}}/?page={{subtract currentPage 1}}{{/if}}"
+                    aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+                {{/if}}
+
+                {{#each (range 1 totalPages)}}
+                <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
+                  <a class="page-link"
+                    href="{{#if ../isLoggedIn}}/user?page={{this}}{{else}}/?page={{this}}{{/if}}">{{this}}</a>
+                </li>
+                {{/each}}
+
+                {{#if (lt currentPage totalPages)}}
+                <li class="page-item">
+                  <a class="page-link"
+                    href="{{#if isLoggedIn}}/user?page={{add currentPage 1}}{{else}}/?page={{add currentPage 1}}{{/if}}"
+                    aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+                {{/if}}
+              </ul>
+            </nav>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center">
+            <a href="/{{role}}" class="btn btn-secondary">Quay lại sản phẩm</a>
+            <button id="add-to-cart-btn" class="btn btn-primary">Thêm vào giỏ hàng</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 mt-5">
+    <h3 class="text-center mb-4">Sản phẩm liên quan</h3>
+<!-- Carousel -->
+<div id="relatedProductsCarousel" class="carousel slide" data-bs-ride="carousel" >
+  <div class="carousel-inner" >
+    {{#each relatedProductsChunks}}
+    <div class="carousel-item {{#if (eq @index 0)}}active{{/if}}">
+      <div class="row row-cols-1 row-cols-md-4 g-4"  >
+        {{#each this}}
+        <div class="col" style="background-color: white;">
+          <div class="card related-product-card h-100" >
+            <img src="{{this.image}}" class="card-img-top" alt="{{this.product_name}}" style="max-height: 200px; max-width: 100%; object-fit: contain; display: block; margin: auto;">
+            <div class="card-body text-center">
+              <h5 class="card-title">{{this.product_name}}</h5>
+              <p class="card-text text-success"><strong>{{formatCurrency this.price}}</strong></p>
+              <a href="/product/{{this.product_id}}" class="btn btn-primary btn-sm w-100">Xem chi tiết</a>
+            </div>
+          </div>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+    {{/each}}
+  </div>
+
+  <!-- Nút điều hướng -->
+  <button class="custom-carousel-control-prev" type="button" data-bs-target="#relatedProductsCarousel" data-bs-slide="prev">
+    <i class="fas fa-chevron-left"></i> <!-- Mũi tên trái -->
+  </button>
+  <button class="custom-carousel-control-next" type="button" data-bs-target="#relatedProductsCarousel" data-bs-slide="next">
+    <i class="fas fa-chevron-right"></i> <!-- Mũi tên phải -->
+  </button>
+</div>
+
+  </div>
+
+  </div>
+</div>
+
+<script>
+  
+  document.addEventListener('DOMContentLoaded', function () {
+    const addToCartButton = document.getElementById('add-to-cart-btn');
+
+    // Lấy thông tin sản phẩm từ đối tượng `product`
+    const productId = {{product.product_id}};
+    const productQuantity = 1; // Mặc định thêm 1 sản phẩm
+
+    // Thêm sự kiện click cho nút "Thêm vào giỏ hàng"
+    addToCartButton.addEventListener('click', async function () {
+      try {
+        const response = await fetch('/cart/add', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ product_id: productId, quantity: productQuantity }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          alert('Sản phẩm đã được thêm vào giỏ hàng!');
+          // Cập nhật số lượng giỏ hàng (nếu cần)
+          updateCartCount();
+        } else {
+          alert(`Lỗi: ${result.message}`);
+        }
+      } catch (error) {
+        console.error('Lỗi khi thêm sản phẩm vào giỏ hàng:', error);
+        alert('Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.');
+      }
+    });
+
+    // Hàm cập nhật số lượng sản phẩm trong giỏ hàng
+    async function updateCartCount() {
+      try {
+        const response = await fetch('/cart/items-count');
+        const data = await response.json();
+        document.getElementById('cart-count').textContent = data.count || 0;
+      } catch (error) {
+        console.error('Lỗi khi cập nhật số lượng giỏ hàng:', error);
+      }
+    }
+  });
+</script>

@@ -1,5 +1,6 @@
 const passport = require('passport');
 const { db } = require('../models/connectDatabase');
+const {checkAccountPayment}=require('../models/authModels/auth')
 
 // Render trang đăng nhập
 const renderLogin = async (req, res) => {
@@ -20,8 +21,14 @@ const login = async (req, res, next) => {
             req.session.user_id = user.id;
             req.session.name = user.name;
             req.session.role = user.role;
-
             try {
+                 if (user.role === "user") {
+                        const accountExists = await checkAccountPayment(user.id); // Chờ kết quả trả về
+                     if (!accountExists) {
+                         console.log(user.id);
+                            await db.query('INSERT INTO "payment_accounts" ("id", "balance") VALUES ($1, $2)', [user.id, 0]);
+                        }
+                }
                 console.log('Session ID during login:', req.sessionID);
 
                 // Đồng bộ dữ liệu từ `temporary_cart` vào `cart_items`
@@ -83,6 +90,17 @@ const googleCallback = async (req, res, next) => {
             req.session.user_id = user.id;
             req.session.name = user.name;
             req.session.role = user.role;
+            try {
+                if (user.role === "user") {
+                    const accountExists = await checkAccountPayment(user.id); // Chờ kết quả trả về
+                    if (!accountExists) {
+                        console.log(user.id);
+                        await db.query('INSERT INTO "payment_accounts" ("id", "balance") VALUES ($1, $2)', [user.id, 0]);
+                    }
+                }
+            } catch (err) {
+                console.log(err);
+            }
 
             // Chuyển hướng dựa trên role
             if (user.role === 'admin') {

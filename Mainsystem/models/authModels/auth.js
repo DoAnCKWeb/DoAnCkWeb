@@ -98,6 +98,16 @@ const createGoogleUser = async (googleId, name, email, role = 'user') => {
         return null;
     }
 };
+const checkAccountPayment = async (user_id) => {
+    try {
+        const result = await db.oneOrNone('SELECT * FROM "payment_accounts" WHERE "id" = $1', [user_id])
+        console.log(result);
+        return result? true : false;
+    } catch (e) {
+        throw e;
+    }
+}
+
 
 // === End Bổ Sung Thêm Các Hàm Hỗ Trợ Đăng Nhập Bằng Google ===
 
@@ -109,5 +119,6 @@ module.exports = {
     addUser,
     checkLogin,
     getUserByGoogleId,       // Bổ sung hàm lấy người dùng theo googleId
-    createGoogleUser        // Bổ sung hàm tạo người dùng mới qua Google
+    createGoogleUser,       // Bổ sung hàm tạo người dùng mới qua Google
+    checkAccountPayment
 }

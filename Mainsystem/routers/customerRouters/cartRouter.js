@@ -180,8 +180,6 @@ router.get('/cart', async (req, res) => {
     res.status(500).send('Lỗi khi hiển thị giỏ hàng.');
   }
 });
-
-
 // Xóa sản phẩm khỏi giỏ hàng
 router.post('/cart/remove', async (req, res) => {
   const { id } = req.body; // `id` là `product_id`
@@ -233,6 +231,16 @@ router.post('/cart/remove', async (req, res) => {
     console.error('Lỗi khi xóa sản phẩm khỏi giỏ hàng:', error);
     res.status(500).json({ success: false, message: 'Lỗi khi xóa sản phẩm khỏi giỏ hàng.' });
   }
+});
+
+router.post('/payment/:ids', (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.redirect('/login'); 
+  }
+  const user_id = req.session.user_id;
+  const selectedIds = req.params.ids.split(',');
+  console.log(selectedIds);
+  res.render('customerViews/payment',{selectedIds,user_id})
 });
 
 
