@@ -3,7 +3,45 @@ const { db } = require('../../../models/connectDatabase'); // Kết nối databa
 // Hàm xử lý thống kê doanh thu
 const getStatistics = async (req, res) => {
     try {
-        // Query 1: Tỉ lệ doanh thu theo danh mục
+        // Nhận tham số ngày từ query string
+        const { startDate, endDate } = req.query;
+
+        // Xác định điều kiện ngày dựa trên bảng `orders.created_at`
+        const dateCondition = startDate && endDate
+            ? `WHERE o.created_at BETWEEN '${startDate}' AND '${endDate}'`
+            : '';
+
+        // Tổng doanh thu
+        const totalRevenueQuery = `SELECT SUM(o.total) AS total_revenue FROM orders o ${dateCondition}`;
+        const totalRevenueResult = await db.oneOrNone(totalRevenueQuery);
+        const totalRevenue = totalRevenueResult ? totalRevenueResult.total_revenue : 0;
+
+        // Tổng sản phẩm bán ra
+        const totalProductsSoldQuery = `
+            SELECT SUM(oi.quantity) AS total_products_sold
+            FROM order_items oi
+            JOIN orders o ON oi.order_id = o.id
+            ${dateCondition}`;
+        const totalProductsSoldResult = await db.oneOrNone(totalProductsSoldQuery);
+        const totalProductsSold = totalProductsSoldResult ? totalProductsSoldResult.total_products_sold : 0;
+
+        // Tổng lượng khách hàng
+        const totalCustomersQuery = `
+            SELECT COUNT(DISTINCT o.user_id) AS total_customers
+            FROM orders o
+            ${dateCondition}`;
+        const totalCustomersResult = await db.oneOrNone(totalCustomersQuery);
+        const totalCustomers = totalCustomersResult ? totalCustomersResult.total_customers : 0;
+
+        // Tổng số đơn hàng
+        const totalOrdersQuery = `
+            SELECT COUNT(DISTINCT o.id) AS total_orders
+            FROM orders o
+            ${dateCondition}`;
+        const totalOrdersResult = await db.oneOrNone(totalOrdersQuery);
+        const totalOrders = totalOrdersResult ? totalOrdersResult.total_orders : 0;
+
+        // Tỉ lệ doanh thu theo danh mục
         const categoryPercentageQuery = `
             SELECT 
                 c.name AS category_name,
@@ -18,14 +56,15 @@ const getStatistics = async (req, res) => {
                 categories c ON p.category_id = c.id
             JOIN 
                 orders o ON oi.order_id = o.id
+            ${dateCondition}
             GROUP BY 
                 c.id, c.name
             ORDER BY 
-                c.id; -- Sắp xếp theo thứ tự ID trong bảng categories
+                c.id;
         `;
         const categoryPercentages = await db.any(categoryPercentageQuery);
 
-        // Query 2: Top 3 sản phẩm theo doanh thu trong từng danh mục
+        // Top 3 sản phẩm theo doanh thu trong từng danh mục
         const topProductsQuery = `
             WITH category_product_revenue AS (
                 SELECT 
@@ -39,6 +78,9 @@ const getStatistics = async (req, res) => {
                     products p ON oi.product_id = p.product_id
                 JOIN 
                     categories c ON p.category_id = c.id
+                JOIN 
+                    orders o ON oi.order_id = o.id
+                ${dateCondition}
                 GROUP BY 
                     c.id, c.name, p.product_name
             ),
@@ -61,7 +103,7 @@ const getStatistics = async (req, res) => {
             WHERE 
                 rank <= 3
             ORDER BY 
-                category_id, rank; -- Sắp xếp theo thứ tự danh mục (ID) và thứ hạng sản phẩm
+                category_id, rank;
         `;
         const topProducts = await db.any(topProductsQuery);
 
@@ -69,17 +111,18 @@ const getStatistics = async (req, res) => {
         const categories = categoryPercentages.map(row => row.category_name);
         const revenues = categoryPercentages.map(row => row.percentage_revenue);
 
-        // Dữ liệu cho biểu đồ 2: Top sản phẩm theo doanh thu
-        const productLabels = topProducts.map(product => `${product.category_name} - ${product.product_name}`);
-        const productRevenues = topProducts.map(product => product.total_revenue);
-
         // Kiểm tra quyền truy cập
         if (!req.isAuthenticated()) {
             return res.redirect('/login'); 
         }
-         const role = req.session.role;
+        const role = req.session.role;
 
+        // Render dữ liệu ra view
         res.render('adminViews/statistics', {
+            totalRevenue, // Tổng doanh thu
+            totalProductsSold, // Tổng sản phẩm bán ra
+            totalCustomers, // Tổng lượng khách hàng
+            totalOrders, // Tổng số đơn hàng
             categories: JSON.stringify(categories),
             revenues: JSON.stringify(revenues),
             topProducts: JSON.stringify(topProducts), // Truyền topProducts
