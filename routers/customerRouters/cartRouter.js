@@ -181,6 +181,94 @@ router.get('/cart', async (req, res) => {
   }
 });
 
+// Hiển thị giỏ hàng (phân trang cho từng danh mục)
+router.get('/cart', async (req, res) => {
+  try {
+    let items = [];
+    let total = 0;
+    const role = req.session.role;
+    const category = req.query.category || null; // Danh mục (nếu có)
+    const page = parseInt(req.query.page) || 1; // Trang hiện tại
+    const limit = 5; // Số sản phẩm trên mỗi trang
+    const offset = (page - 1) * limit; // Bắt đầu từ sản phẩm nào
+
+    if (req.session?.user_id) {
+      const user_id = req.session.user_id;
+
+      // Lấy sản phẩm từ giỏ hàng, có phân trang và lọc theo danh mục (nếu có)
+      items = await db.any(
+        `SELECT 
+           ci.product_id AS id, 
+           p.product_name, 
+           p.storage_capacity, 
+           p.image, 
+           ci.quantity, 
+           ci.price, 
+           (ci.quantity * ci.price) AS sum_price
+         FROM cart_items ci
+         JOIN products p ON ci.product_id = p.product_id
+         JOIN cart c ON ci.cart_id = c.id
+         WHERE c.user_id = $1
+         ${category ? 'AND p.category_id = $2' : ''}
+         LIMIT $3 OFFSET $4`,
+        category ? [user_id, category, limit, offset] : [user_id, limit, offset]
+      );
+
+      // Tính tổng số sản phẩm trong danh mục (nếu có)
+      const [{ total_items }] = await db.any(
+        `SELECT COUNT(*) AS total_items
+         FROM cart_items ci
+         JOIN products p ON ci.product_id = p.product_id
+         JOIN cart c ON ci.cart_id = c.id
+         WHERE c.user_id = $1
+         ${category ? 'AND p.category_id = $2' : ''}`,
+        category ? [user_id, category] : [user_id]
+      );
+    } else {
+      const session_id = req.sessionID;
+
+      // Lấy sản phẩm từ giỏ hàng tạm thời
+      items = await db.any(
+        `SELECT 
+           tc.product_id AS id, 
+           p.product_name, 
+           p.storage_capacity, 
+           p.image, 
+           tc.quantity, 
+           tc.price, 
+           (tc.quantity * tc.price) AS sum_price
+         FROM temporary_cart tc
+         JOIN products p ON tc.product_id = p.product_id
+         WHERE tc.session_id = $1
+         ${category ? 'AND p.category_id = $2' : ''}
+         LIMIT $3 OFFSET $4`,
+        category ? [session_id, category, limit, offset] : [session_id, limit, offset]
+      );
+
+      // Tính tổng số sản phẩm trong danh mục (nếu có)
+      const [{ total_items }] = await db.any(
+        `SELECT COUNT(*) AS total_items
+         FROM temporary_cart tc
+         JOIN products p ON tc.product_id = p.product_id
+         WHERE tc.session_id = $1
+         ${category ? 'AND p.category_id = $2' : ''}`,
+        category ? [session_id, category] : [session_id]
+      );
+    }
+
+    // Tính tổng tiền
+    total = items.reduce((sum, item) => sum + parseFloat(item.sum_price || 0), 0);
+
+    // Tính số trang
+    const totalPages = Math.ceil(total_items / limit);
+
+    res.render('customerViews/cart', { items, total, totalPages, currentPage: page, role, category });
+  } catch (error) {
+    console.error('Lỗi khi hiển thị giỏ hàng:', error);
+    res.status(500).send('Lỗi khi hiển thị giỏ hàng.');
+  }
+});
+
 
 // Xóa sản phẩm khỏi giỏ hàng
 router.post('/cart/remove', async (req, res) => {
