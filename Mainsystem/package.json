@@ -25,6 +25,7 @@
     "express-handlebars": "^8.0.1",
     "express-session": "^1.18.1",
     "fileupload": "^0.2.1",
+    "flash": "^1.1.0",
     "fs": "^0.0.1-security",
     "hbs": "^4.2.0",
     "https": "^1.0.0",

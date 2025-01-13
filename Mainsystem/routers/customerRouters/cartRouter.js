@@ -264,6 +264,8 @@ const agent = new https.Agent({
 
 router.post('/payment/:ids', async (req, res) => {
   if (!req.isAuthenticated()) {
+    // Thêm message thông báo yêu cầu đăng nhập
+    req.flash('error', 'Yêu cầu bạn đăng nhập để thanh toán');
     return res.redirect('/login');
   }
 

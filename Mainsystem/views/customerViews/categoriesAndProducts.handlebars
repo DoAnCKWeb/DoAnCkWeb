@@ -9,29 +9,30 @@
     <!-- Hiển thị danh mục (Bên trên) -->
     <div class="col-md-12 mb-4">
       <div class="d-flex flex-wrap border p-3 rounded shadow-lg bg-light mb-4">
-        <ul class="nav me-4">
-          <!-- Nút hiển thị tất cả -->
-          <li class="nav-item mx-2 mb-2">
-            <a class="nav-link p-3 bg-white rounded border custom-border-color text-center text-dark fw-bold"
-               href="#"
-               onclick="filterProducts('all', 1)"
-               style="font-size: 1.5rem; transition: all 0.3s ease; padding-left: 20px; padding-right: 20px;">
-              Tất cả
-            </a>
-          </li>
-          <!-- Danh mục -->
-          {{#each categories}}
-          <li class="nav-item mx-2 mb-2">
-            <a class="nav-link p-3 bg-white rounded border custom-border-color text-center text-dark fw-bold"
-               href="#"
-               onclick="filterProducts({{id}}, 1)"
-               style="font-size: 1.5rem; transition: all 0.3s ease; padding-left: 20px; padding-right: 20px;">
-              {{name}}
-            </a>
-          </li>
-          {{/each}}
-        </ul>
-      </div>
+  <ul class="nav me-4 justify-content-center w-100">
+    <!-- Nút hiển thị tất cả -->
+    <li class="nav-item mx-2 mb-2">
+      <a class="nav-link p-3 bg-white rounded border custom-border-color text-center text-dark fw-bold"
+         href="#"
+         onclick="filterProducts('all', 1)"
+         style="font-size: 1.1rem; font-weight: normal; transition: all 0.3s ease; padding-left: 20px; padding-right: 20px; min-width: 120px; border-radius: 12px;">
+        Tất cả
+      </a>
+    </li>
+    <!-- Danh mục -->
+    {{#each categories}}
+    <li class="nav-item mx-2 mb-2">
+      <a class="nav-link p-3 bg-white rounded border custom-border-color text-center text-dark fw-bold"
+         href="#"
+         onclick="filterProducts({{id}}, 1)"
+         style="font-size: 1.1rem; font-weight: normal; transition: all 0.3s ease; padding-left: 20px; padding-right: 20px; min-width: 120px; border-radius: 12px;">
+        {{name}}
+      </a>
+    </li>
+    {{/each}}
+  </ul>
+</div>
+
     </div>
 
     <!-- Bộ lọc sản phẩm (Bên trái) -->
@@ -55,7 +56,7 @@
           <option value="128GB">128GB</option>
           <option value="256GB">256GB</option>
           <option value="512GB">512GB</option>
-          <option value="1TB">512GB</option>
+          <option value="1TB">1TB</option>
         </select>
 
         <!-- Bộ lọc năm sản xuất -->
