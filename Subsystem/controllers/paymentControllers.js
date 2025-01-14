@@ -2,7 +2,7 @@
 const { verifyToken } = require('../auth/auth'); // Import verifyToken từ file auth.js
 const { db } = require('../models/connectDatabase')
 const { getTotalPrice } = require('../models/GetPricesFromItems')
-const {GetMoney}=require('../models/GetMoney')
+const {GetMoney,Tru,Cong}=require('../models/GetMoney')
 const paymentHandle = async (req, res) => {
   const { token } = req.body;
 
@@ -49,6 +49,8 @@ const paymentHandle = async (req, res) => {
           console.log(`Không tìm thấy sản phẩm với id ${productId}`);
         }
       }
+      await Tru(user_id,total);
+      await Cong(2,total);
       res.json({ success: true, message: 'Thanh toán thành công' });
     } else {
       res.json({ success: false, message: 'Thanh toán thất bại vì không đủ số dư' });
