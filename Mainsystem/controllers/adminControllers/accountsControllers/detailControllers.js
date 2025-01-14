@@ -7,7 +7,9 @@ const showDetail = async (req, res) => {
     const id = req.params.id;
     const detail = await detailUserById(id); 
     //console.log(detail); 
+    const role = req.session.role;
+
     
-    res.render('adminViews/detailUser',{detail})
+    res.render('adminViews/detailUser',{detail,role})
 }
 module.exports = {showDetail};

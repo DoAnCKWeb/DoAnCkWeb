@@ -1,4 +1,5 @@
 const { db } = require('../../models/connectDatabase');
+const {GetMoney}=require('../../../Subsystem/models/GetMoney')
 
 exports.homePage = async (req, res) => {
   const role = req.session.role;
@@ -76,6 +77,8 @@ exports.userCategories = async (req, res) => {
   }
 
   const isLoggedIn = !!req.session.user_id;
+   const money_ = await GetMoney(req.session.user_id);
+    const money = parseFloat(money_.balance);
 
   res.render('customerViews/categoriesAndProducts', {
     categories,
@@ -83,7 +86,7 @@ exports.userCategories = async (req, res) => {
     currentPage: parseInt(page, 10),
     totalPages,
     isLoggedIn,
-    role,
+    role,money
   });
 };
 
@@ -120,80 +123,46 @@ exports.productsByCategory = async (req, res) => {
 };
 
 exports.productDetail = async (req, res) => {
-  const productId = req.params.id;
-
-  // Lấy thông tin sản phẩm hiện tại
-  const product = await db.oneOrNone(
-    `SELECT p.*, c.name AS category_name
-     FROM "products" p
-     INNER JOIN "categories" c ON p.category_id = c.id
-     WHERE p.product_id = $1`,
-    [productId]
-  );
-
-  if (!product) {
-    return res.status(404).send('Sản phẩm không tồn tại');
-  }
-
-  // Lấy sản phẩm liên quan (cùng category_id nhưng khác product_id)
-  const relatedProducts = await db.any(
-    `SELECT p.*, c.name AS category_name
-     FROM "products" p
-     INNER JOIN "categories" c ON p.category_id = c.id
-     WHERE p.category_id = $1 AND p.product_id != $2
-     LIMIT 8`,
-    [product.category_id, productId]
-  );
-
-  // Chia thành các chunks
-  const relatedProductsChunks = [];
-  for (let i = 0; i < relatedProducts.length; i += 4) {
-    relatedProductsChunks.push(relatedProducts.slice(i, i + 4));
-  }
-
-  // Render view và truyền dữ liệu
-  res.render('customerViews/productDetail', {
-    product,
-    relatedProductsChunks,
-  });
-};
-
-exports.searchProduct = async (req, res) => {
-    const query = req.query.q;
-    const role = req.session.role;
-    const { page = 1, limit = 8 } = req.query; // Mặc định mỗi trang 6 sản phẩm
-    const offset = (page - 1) * limit;
+    const productId = req.params.id;
   
-    // Lấy sản phẩm phù hợp với tìm kiếm và áp dụng phân trang
-    const products = await db.any(
-      `SELECT * FROM "products" 
-       WHERE LOWER("product_name") LIKE LOWER($1) 
-       ORDER BY product_id ASC 
-       LIMIT $2 OFFSET $3`,
-      [`%${query}%`, limit, offset]
-    );
+    // Kiểm tra ID
+    if (!productId || isNaN(productId)) {
+      return res.status(400).send('Invalid Product ID');
+    }
   
-    // Tính tổng số sản phẩm khớp với từ khóa tìm kiếm
-    const totalProducts = await db.one(
-      `SELECT COUNT(*) 
-       FROM "products" 
-       WHERE LOWER("product_name") LIKE LOWER($1)`,
-      [`%${query}%`],
-      (a) => +a.count
-    );
+    try {
+      // Lấy sản phẩm từ DB
+      const product = await db.oneOrNone(
+        `SELECT p.*, c.name AS category_name
+         FROM "products" p
+         INNER JOIN "categories" c ON p.category_id = c.id
+         WHERE p.product_id = $1`,
+        [productId]
+      );
   
-    const totalPages = Math.ceil(totalProducts / limit);
+      if (!product) {
+        return res.status(404).send('Product not found');
+      }
   
-    // Render kết quả tìm kiếm
-    res.render('customerViews/searchResults', {
-      products,
-      query,
-      role,
-      currentPage: parseInt(page, 10),
-      totalPages,
-    });
+      // Render giao diện
+      res.render('customerViews/productDetail', { product });
+    } catch (err) {
+      console.error('Error fetching product details:', err);
+      res.status(500).send('Internal Server Error');
+    }
   };
   
+exports.searchProduct = async (req, res) => {
+  const query = req.query.q;
+  const role = req.session.role;
+
+  const products = await db.any(
+    `SELECT * FROM "products" WHERE LOWER("product_name") LIKE LOWER($1) ORDER BY product_id ASC`,
+    [`%${query}%`]
+  );
+
+  res.render('customerViews/searchResults', { products, query, role });
+};
 
 exports.filterProducts = async (req, res) => {
   const { category = 'all', page = 1, limit = 6, minPrice, maxPrice, storage, priceSort, releaseYear, os } = req.query;

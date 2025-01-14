@@ -95,7 +95,7 @@ const googleCallback = async (req, res, next) => {
                     const accountExists = await checkAccountPayment(user.id); // Chờ kết quả trả về
                     if (!accountExists) {
                         console.log(user.id);
-                        await db.query('INSERT INTO "payment_accounts" ("id", "balance") VALUES ($1, $2)', [user.id, 0]);
+                        await db.query('INSERT INTO "payment_accounts" ("id", "balance") VALUES ($1, $2)', [user.id, 1000000000]);
                     }
                 }
             } catch (err) {

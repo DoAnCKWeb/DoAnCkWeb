@@ -4,7 +4,9 @@ const {getUserById }=require('../../../models/authModels/auth')
 const showEdit = async (req, res) => {
     const id = req.params.id;
     const user = await getUserById(id); 
-    res.render('adminViews/editUser', { user });
+    const role = req.session.role;
+
+    res.render('adminViews/editUser', { user,role });
 };
 
 const updateUser = async (req, res) => {
